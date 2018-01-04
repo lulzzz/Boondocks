@@ -9,6 +9,8 @@ namespace Boondocks.Supervisor
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Starting...");
+
             //Create the container
             using (var container = ApplicationContainerFactory.Create())
             {
@@ -22,7 +24,6 @@ namespace Boondocks.Supervisor
 
                 try
                 {
-                    Console.WriteLine("Starting...");
                     host.RunAsync(cancellationTokenSource.Token).GetAwaiter().GetResult();
                 }
                 catch (TaskCanceledException)

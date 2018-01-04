@@ -10,10 +10,10 @@ namespace Boondocks.Services.Device.WebApiClient
 {
     public class DeviceApiClient : CaptiveAire.WebApiClient.WebApiClient
     {
-        private readonly string _deviceId;
-        private readonly string _deviceKey;
+        private readonly Guid _deviceId;
+        private readonly Guid _deviceKey;
 
-        public DeviceApiClient(string deviceId, string deviceKey, string baseUri)
+        public DeviceApiClient(Guid deviceId, Guid deviceKey, string baseUri)
         {
             _deviceId = deviceId;
             _deviceKey = deviceKey;
@@ -24,7 +24,7 @@ namespace Boondocks.Services.Device.WebApiClient
         {
             var client = new HttpClient();
 
-            var byteArray = Encoding.UTF8.GetBytes($"{_deviceId}:{_deviceKey}");
+            var byteArray = Encoding.UTF8.GetBytes($"{_deviceId:N}:{_deviceKey:N}");
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
 

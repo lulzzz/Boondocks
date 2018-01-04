@@ -60,6 +60,7 @@ namespace Boondocks.Supervisor
                 }, cancellationToken);
 
                 Console.WriteLine("Containers:");
+                Console.WriteLine("-----------------------------------");
 
                 foreach (var container in containers)
                 {
@@ -74,6 +75,7 @@ namespace Boondocks.Supervisor
                 }, cancellationToken);
 
                 Console.WriteLine("Images:");
+                Console.WriteLine("-----------------------------------");
 
                 foreach (var image in images)
                 {
@@ -97,10 +99,12 @@ namespace Boondocks.Supervisor
 
             }, cancellationToken);
 
-            foreach (var envVar in response.EnvironmentVariables)
-            {
-                Console.WriteLine($"  {envVar.Name}: {envVar.Value}");
-            }
+            Console.WriteLine($"\t{response.ConfigurationVersion}");
+
+            //foreach (var envVar in response.EnvironmentVariables)
+            //{
+            //    Console.WriteLine($"  {envVar.Name}: {envVar.Value}");
+            //}
         }
     }
 }

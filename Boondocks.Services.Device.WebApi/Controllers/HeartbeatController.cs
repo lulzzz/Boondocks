@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Text;
-using System.Threading.Tasks;
 using Boondocks.Services.Device.Contracts;
 using Boondocks.Services.Device.WebApi.Common;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Boondocks.Services.Device.WebApi.Controllers
 {
     [Produces("application/json")]
     [Route("v1/Heartbeat")]
+    //[Authorize]
     public class HeartbeatController : DeviceControllerBase
     {
         /// <summary>
@@ -18,24 +16,12 @@ namespace Boondocks.Services.Device.WebApi.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Post(HeartbeatRequest request)
+        public HeartbeatResponse Post(HeartbeatRequest request)
         {
-            if (Authorization == null)
+            return new HeartbeatResponse()
             {
-                return Unauthorized();
-            }
-
-            return Ok(new HeartbeatResponse()
-            {
-                EnvironmentVariables = new EnvironmentVariable[]
-                {
-                    new EnvironmentVariable()
-                    {
-                        Name = "device-key",
-                        Value = Authorization.DeviceKey
-                    },
-                }
-            });
+                ConfigurationVersion = Guid.NewGuid()
+            };
         }
     }
 }
