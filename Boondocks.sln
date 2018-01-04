@@ -21,9 +21,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Services.DataAcce
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Supervisor", "Boondocks.Supervisor\Boondocks.Supervisor.csproj", "{A73F3FDD-1D59-4489-A284-21B4D5380B14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boondocks.Services.Contracts", "Boondocks.Services.Contracts\Boondocks.Services.Contracts.csproj", "{6BAFA661-7AC3-4773-9E2C-4DA7627182D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Services.Contracts", "Boondocks.Services.Contracts\Boondocks.Services.Contracts.csproj", "{6BAFA661-7AC3-4773-9E2C-4DA7627182D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boondocks.Services.Device.WebApiClient", "Boondocks.Services.Device.WebApiClient\Boondocks.Services.Device.WebApiClient.csproj", "{FB341243-797C-42B2-B42D-DCEE30A42860}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Services.Device.WebApiClient", "Boondocks.Services.Device.WebApiClient\Boondocks.Services.Device.WebApiClient.csproj", "{FB341243-797C-42B2-B42D-DCEE30A42860}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boondocks.Services.DataAccess.Tests", "Boondocks.Services.DataAccess.Tests\Boondocks.Services.DataAccess.Tests.csproj", "{BF385E2C-F153-4DCB-89A1-BC664E380146}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +69,10 @@ Global
 		{FB341243-797C-42B2-B42D-DCEE30A42860}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB341243-797C-42B2-B42D-DCEE30A42860}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB341243-797C-42B2-B42D-DCEE30A42860}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF385E2C-F153-4DCB-89A1-BC664E380146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF385E2C-F153-4DCB-89A1-BC664E380146}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF385E2C-F153-4DCB-89A1-BC664E380146}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF385E2C-F153-4DCB-89A1-BC664E380146}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -81,6 +87,7 @@ Global
 		{A73F3FDD-1D59-4489-A284-21B4D5380B14} = {EAED4170-1E29-4BA3-B2B4-1DEBD136C61F}
 		{6BAFA661-7AC3-4773-9E2C-4DA7627182D7} = {1CBA6859-2A56-4F66-AEC1-2A3893D1B365}
 		{FB341243-797C-42B2-B42D-DCEE30A42860} = {1CBA6859-2A56-4F66-AEC1-2A3893D1B365}
+		{BF385E2C-F153-4DCB-89A1-BC664E380146} = {1CBA6859-2A56-4F66-AEC1-2A3893D1B365}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C1BE404-502A-44E6-9CC7-34B3066B0DE5}

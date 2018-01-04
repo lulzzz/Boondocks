@@ -1,8 +1,12 @@
 ﻿using System.IO;
+using Autofac;
+using Boondocks.Services.DataAccess;
+using Boondocks.Services.DataAccess.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -51,6 +55,15 @@ namespace Boondocks.Services.Management.WebApi
             });
 
             app.UseMvc();
+        }
+     
+        // This is the default if you don't have an environment specific method.
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            // Add things to the Autofac ContainerBuilder.
+            builder.RegisterInstance(new SqlServerDbConnectionFactory(@"Server=localhost\sqlexpress;Database=Boondocks;User Id=boondocks;Password=#Px@S:w_j+V97ngz;"))
+                .As<IDbConnectionFactory>()
+                .SingleInstance();
         }
     }
 }

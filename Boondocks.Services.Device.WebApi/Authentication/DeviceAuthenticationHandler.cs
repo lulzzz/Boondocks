@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Boondocks.Services.Device.WebApi.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -34,17 +35,17 @@ namespace Boondocks.Services.Device.WebApi.Authentication
 
             int seperatorIndex = usernamePassword.IndexOf(':');
 
-            string deviceId = usernamePassword.Substring(0, seperatorIndex);
-            string deviceKeyRaw = usernamePassword.Substring(seperatorIndex + 1);
+            Guid? deviceId = usernamePassword.Substring(0, seperatorIndex).ParseGuid();
+            Guid? deviceKey = usernamePassword.Substring(seperatorIndex + 1).ParseGuid();
 
-            if (Guid.TryParse(deviceKeyRaw, out Guid deviceKey))
+            if (deviceId != null && deviceKey != null)
             {
                 //TODO: Verify the devicekey / password
 
                 return Task.FromResult(
                     AuthenticateResult.Success(
                         new AuthenticationTicket(
-                            new ClaimsPrincipal(new DeviceIdentity(deviceId, true)),
+                            new ClaimsPrincipal(new DeviceIdentity(deviceId.Value, true)),
                             new AuthenticationProperties(),
                             "Bearer")));
             }
@@ -52,7 +53,7 @@ namespace Boondocks.Services.Device.WebApi.Authentication
             return Task.FromResult(
                 AuthenticateResult.Success(
                     new AuthenticationTicket(
-                        new ClaimsPrincipal(new DeviceIdentity(deviceId, false)),
+                        new ClaimsPrincipal(new DeviceIdentity(deviceId ?? Guid.Empty, false)),
                         new AuthenticationProperties(),
                         "Bearer")));
 
