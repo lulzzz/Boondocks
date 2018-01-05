@@ -60,6 +60,36 @@ namespace Boondocks.Services.DataAccess
             return deviceEvent;
         }
 
+        public static ApplicationEvent InsertApplicationEvent(
+            this IDbConnection connection,
+            IDbTransaction transaction,
+            Guid applicationId,
+            ApplicationEventType eventType,
+            string message)
+        {
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+
+            var applicationEvent = new ApplicationEvent
+            {
+                ApplicationId = applicationId,
+                EventType = eventType,
+                Message = message
+            }.SetNew();
+
+            const string sql = "insert DeviceEvents " +
+                               "(" +
+                               "  Id, " +
+                               "  DeviceId, " +
+                               "  EventType, " +
+                               "  Message, " +
+                               "  CreatedUtc" +
+                               ")";
+
+            connection.Execute(sql, applicationEvent, transaction);
+
+            return applicationEvent;
+        }
+
         /// <summary>
         /// Inserts a device (and corresponding DeviceStatus) into the database.
         /// </summary>
@@ -146,37 +176,6 @@ namespace Boondocks.Services.DataAccess
 
             //Return the same entity because fluent api's rock.
             return entity;
-        }
-
-        
-
-        public static T[] Select<T>(this IDbConnection connection, IDbTransaction transaction, string tableName, string defaultSortColumn, string[] filters)
-        {
-
-            throw new NotImplementedException();
-
-            //StringBuilder sql = new StringBuilder();
-
-            //sql.Append($"select * from [{tableName}] ");
-
-            //if (filters != null && filters.Length > 0)
-            //{
-            //    sql.Append(" where ");
-
-            //    foreach (var filter in filters)
-            //    {
-            //        sql.Append(FilterToWhere(filter) + " ");
-            //    }
-            //}
-
-            //DynamicParameters parameters = new DynamicParameters();
-
-
-
-            //sql.Append($" order by [{defaultSortColumn}]");
-
-
-            //return connection.Query<T>(sql, parameters, transaction);
         }
     }
 }

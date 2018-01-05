@@ -22,6 +22,10 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
+        /// <summary>
+        /// Can add query parameters such as applicationId.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public Device[] Get()
         {

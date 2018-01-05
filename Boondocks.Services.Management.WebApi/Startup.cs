@@ -57,7 +57,6 @@ namespace Boondocks.Services.Management.WebApi
             app.UseMvc();
         }
      
-        // This is the default if you don't have an environment specific method.
         public void ConfigureContainer(ContainerBuilder builder)
         {
             // Add things to the Autofac ContainerBuilder.

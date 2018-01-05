@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Boondocks.Services.Base;
+using Boondocks.Services.DataAccess.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,9 +13,12 @@ namespace Boondocks.Services.Device.WebApi.Authentication
 {
     public class DeviceAuthenticationHandler : AuthenticationHandler<DeviceAuthenticationOptions>
     {
-        public DeviceAuthenticationHandler(IOptionsMonitor<DeviceAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) 
+        private readonly IDbConnectionFactory _connectionFactory;
+
+        public DeviceAuthenticationHandler(IOptionsMonitor<DeviceAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IDbConnectionFactory connectionFactory) 
             : base(options, logger, encoder, clock)
         {
+            _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -25,7 +29,8 @@ namespace Boondocks.Services.Device.WebApi.Authentication
 
             if (string.IsNullOrWhiteSpace(authorization) || !authorization.StartsWith(Basic))
             {
-                return null;
+                return Task.FromResult(
+                    AuthenticateResult.Fail("No authorization header was found."));
             }
 
             string encodedUsernamePassword = authorization.Substring(Basic.Length);
@@ -38,9 +43,12 @@ namespace Boondocks.Services.Device.WebApi.Authentication
             Guid? deviceId = usernamePassword.Substring(0, seperatorIndex).ParseGuid();
             Guid? deviceKey = usernamePassword.Substring(seperatorIndex + 1).ParseGuid();
 
+            
+
             if (deviceId != null && deviceKey != null)
             {
                 //TODO: Verify the devicekey / password
+
 
                 return Task.FromResult(
                     AuthenticateResult.Success(
@@ -51,11 +59,7 @@ namespace Boondocks.Services.Device.WebApi.Authentication
             }
 
             return Task.FromResult(
-                AuthenticateResult.Success(
-                    new AuthenticationTicket(
-                        new ClaimsPrincipal(new DeviceIdentity(deviceId ?? Guid.Empty, false)),
-                        new AuthenticationProperties(),
-                        "Bearer")));
+                AuthenticateResult.Fail("Unable to find device id / key"));
 
 
         }

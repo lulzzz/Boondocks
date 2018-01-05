@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Boondocks.Services.Contracts;
 using Boondocks.Services.DataAccess;
 using Boondocks.Services.DataAccess.Interfaces;
 using Boondocks.Services.Management.Contracts;
 using Boondocks.Services.Management.WebApi.Model;
 using Dapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Boondocks.Services.Management.WebApi.Controllers
@@ -50,6 +47,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         public Application Post(CreateApplicationRequest request)
         {
             using (var connection = _connectionFactory.CreateAndOpen())
+            using (var transaction = connection.BeginTransaction())
             {
                 Application application = new Application()
                 {
@@ -59,7 +57,15 @@ namespace Boondocks.Services.Management.WebApi.Controllers
 
                 connection.Execute(
                     @"insert Applications(Id, Name, DeviceTypeId, CreatedUtc) values (@Id, @Name, @DeviceTypeId, @CreatedUtc)",
-                    application);
+                    application, transaction);
+
+                connection.InsertApplicationEvent(
+                    transaction, 
+                    application.Id, 
+                    ApplicationEventType.Created, 
+                    $"Application '{application.Name}' created.");
+
+                transaction.Commit();
 
                 return application;
             }
@@ -93,6 +99,14 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                 //TODO: Update the configuration version on all of the effected devices
 
                 //TODO: Add application events
+                if (original.Name != application.Name)
+                {
+                    connection.InsertApplicationEvent(
+                        transaction, 
+                        application.Id, 
+                        ApplicationEventType.Renamed, 
+                        $"Application name changed from '{original.Name}' to '{application.Name}'.");
+                }
 
                 //TODO: Add device events
 

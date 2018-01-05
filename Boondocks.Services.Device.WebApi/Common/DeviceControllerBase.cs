@@ -1,4 +1,5 @@
 ﻿using System;
+using Boondocks.Services.Base;
 using Boondocks.Services.Device.WebApi.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +12,15 @@ namespace Boondocks.Services.Device.WebApi.Common
         /// </summary>
         public Guid DeviceId
         {
-            get { return ((DeviceIdentity) HttpContext.User.Identity).DeviceId; }
+            get
+            {
+                Guid? deviceId = HttpContext.User.Identity.Name.ParseGuid();
+
+                if (deviceId == null)
+                    throw new InvalidOperationException("Unable to find deviceId.");
+
+                return deviceId.Value;
+            }
         }
     }
 }

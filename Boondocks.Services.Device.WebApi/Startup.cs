@@ -1,8 +1,14 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
+using Autofac;
+using Boondocks.Services.DataAccess;
+using Boondocks.Services.DataAccess.Interfaces;
 using Boondocks.Services.Device.WebApi.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +32,9 @@ namespace Boondocks.Services.Device.WebApi
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = "DeviceBearerToken";
-            }).AddCustomAuthentication("DeviceBearerToken", "Device Authentication Scheme", o => { });
+            }).AddCustomAuthentication("DeviceBearerToken", "Device Authentication Scheme", o =>
+            {
+            });
 
             services.AddMvc(o =>
             {
@@ -34,7 +42,7 @@ namespace Boondocks.Services.Device.WebApi
                     .RequireAuthenticatedUser()
                     .Build();
 
-                o.Filters.Add(new AuthorizeFilter(policy));
+                //o.Filters.Add(new AuthorizeFilter(policy));
             });
 
             // Register the Swagger generator, defining one or more Swagger documents
@@ -69,6 +77,14 @@ namespace Boondocks.Services.Device.WebApi
             });
 
             app.UseMvc();
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            // Add things to the Autofac ContainerBuilder.
+            builder.RegisterInstance(new SqlServerDbConnectionFactory(@"Server=localhost\sqlexpress;Database=Boondocks;User Id=boondocks;Password=#Px@S:w_j+V97ngz;"))
+                .As<IDbConnectionFactory>()
+                .SingleInstance();
         }
     }
 }
