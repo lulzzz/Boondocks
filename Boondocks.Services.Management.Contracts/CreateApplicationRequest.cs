@@ -8,13 +8,7 @@ namespace Boondocks.Services.Management.Contracts
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("device-type-id")]
+        [JsonProperty("deviceTypeId")]
         public Guid DeviceTypeId { get; set; }
-    }
-
-    public class CreateApplicationResponse
-    {
-        [JsonProperty("id")]
-        public Guid Id { get; set; }
     }
 }

@@ -8,25 +8,7 @@ namespace Boondocks.Services.Management.Contracts
         [JsonProperty("id")]
         public Guid Id { get; set; }
 
-        [JsonProperty("device-key")]
+        [JsonProperty("deviceKey")]
         public Guid DeviceKey { get; set; }
     }
-
-    public class GetDevicesResponse
-    {
-        public Device[] Devices { get; set; }
-
-        public class Device
-        {
-            public Guid Id { get; set; }
-
-            public string Name { get; set; }
-
-            public DateTime CreatedUtc { get; set; }
-        }
-    }
-
-    
-
-
 }
