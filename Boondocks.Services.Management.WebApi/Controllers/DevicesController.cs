@@ -68,28 +68,10 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             using (var connection = _connectionFactory.CreateAndOpen())
             using (var transaction = connection.BeginTransaction())
             {
-                string sql = "insert Devices " +
-                             "(" +
-                             "  Id, " +
-                             "  Name, " +
-                             "  ApplicationId, " +
-                             "  DeviceKey, " +
-                             "  CreatedUtc, " +
-                             "  IsDisabled, " +
-                             "  ConfigurationVersion" +
-                             ") values (" +
-                             "  @Id, " +
-                             "  @Name, " +
-                             "  @ApplicationId, " +
-                             "  @DeviceKey, " +
-                             "  @CreatedUtc, " +
-                             "  0, " +
-                             "  @ConfigurationVersion" +
-                             ")";
+                connection.InsertDevice(transaction, request.Name, request.ApplicationId, request.DeviceKey);
 
-                connection.Execute(sql, device, transaction);
-
-                //TODO: Create the event record               
+                //Create the event record               
+                connection.InsertDeviceEvent(transaction, device.Id, DeviceEventType.Created, "Device created.");
 
                 transaction.Commit();
 
@@ -108,11 +90,21 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                 if (original == null)
                     return NotFound();
 
+                //Check to see if we're trying to move the device to another application.
                 bool applicationChanged = original.ApplicationId != device.ApplicationId;
+
+                //We don't need to get these in call cases
+                Lazy<Application> oldApplication = new Lazy<Application>(() => connection.GetApplication(original.ApplicationId));
+                Lazy<Application> newApplication = new Lazy<Application>(() => connection.GetApplication(device.ApplicationId));
 
                 if (applicationChanged)
                 {
                     //TODO: Check to see if the new application has the same device type.
+                    if (oldApplication.Value.DeviceTypeId != newApplication.Value.DeviceTypeId)
+                    {
+                        //TODO: Log this
+                        return StatusCode(500);
+                    }
                 }
 
                 bool configuredChanged = applicationChanged
@@ -134,14 +126,32 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     "ApplicationId = @ApplicationId, " + 
                     "ApplicationVersionId = @ApplicationVersionId, " + 
                     "SupervisorVersionId = @SupervisorVersionId, " +  
-                    "RootFileSystemVersionId = @RootFileSystemVersionId " + 
+                    "RootFileSystemVersionId = @RootFileSystemVersionId," + 
+                    "ConfigurationVersion = @ConfigurationVersion " +
                     "where Id = @Id";
 
                 //Update the application record
                 if (connection.Execute(sql, device, transaction) != 1)
                     return NotFound();
 
-                //TODO: Add device events
+                //Add device events
+                if (original.Name != device.Name)
+                {
+                    connection.InsertDeviceEvent(
+                        transaction, 
+                        device.Id, 
+                        DeviceEventType.Renamed, 
+                        $"Device renamed from '{original.Name}' to '{device.Name}'.");
+                }
+
+                if (applicationChanged)
+                {
+                    connection.InsertDeviceEvent(
+                        transaction,
+                        device.Id,
+                        DeviceEventType.Moved,
+                        $"Device moved from '{oldApplication.Value.Name}' to '{newApplication.Value.Name}'.");
+                }
 
                 transaction.Commit();
             }
