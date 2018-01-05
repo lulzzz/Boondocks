@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using System.Text;
 using Boondocks.Services.Contracts;
 using Dapper;
 
@@ -134,10 +135,48 @@ namespace Boondocks.Services.DataAccess
         /// <returns></returns>
         public static T SetNew<T>(this T entity) where T : EntityBase
         {
-            entity.Id = Guid.NewGuid();
+            //Allow callers to specify their own id
+            if (entity.Id == Guid.Empty)
+            {
+                entity.Id = Guid.NewGuid();
+            }
+
+            //Always set a fresh created date.
             entity.CreatedUtc = DateTime.UtcNow;
 
+            //Return the same entity because fluent api's rock.
             return entity;
+        }
+
+        
+
+        public static T[] Select<T>(this IDbConnection connection, IDbTransaction transaction, string tableName, string defaultSortColumn, string[] filters)
+        {
+
+            throw new NotImplementedException();
+
+            //StringBuilder sql = new StringBuilder();
+
+            //sql.Append($"select * from [{tableName}] ");
+
+            //if (filters != null && filters.Length > 0)
+            //{
+            //    sql.Append(" where ");
+
+            //    foreach (var filter in filters)
+            //    {
+            //        sql.Append(FilterToWhere(filter) + " ");
+            //    }
+            //}
+
+            //DynamicParameters parameters = new DynamicParameters();
+
+
+
+            //sql.Append($" order by [{defaultSortColumn}]");
+
+
+            //return connection.Query<T>(sql, parameters, transaction);
         }
     }
 }

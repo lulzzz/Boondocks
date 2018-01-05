@@ -62,14 +62,11 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Put([FromQuery]Guid id, [FromBody]DeviceType deviceType)
+        [HttpPut]
+        public IActionResult Put([FromBody]DeviceType deviceType)
         {
             using (var connection = _connectionFactory.CreateAndOpen())
             {
-                //Make sure that the id is the same
-                deviceType.Id = id;
-
                 //Execute the update
                 return connection
                     .Execute("update DeviceTypes set Name = @Name where Id = @Id", deviceType)

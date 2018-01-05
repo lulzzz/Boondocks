@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Boondocks.Services.Device.WebApi.Extensions
+namespace Boondocks.Services.Base
 {
     public static class ParseExtensions
     {

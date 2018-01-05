@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Boondocks.Services.Base;
 using Boondocks.Services.Contracts;
 using Boondocks.Services.DataAccess;
 using Boondocks.Services.DataAccess.Interfaces;
@@ -24,21 +25,13 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         [HttpGet]
         public Device[] Get()
         {
-            using (var connection = _connectionFactory.CreateAndOpen())
-            {
-                return connection
-                    .Query<Device>("select * from Devices order by Name")
-                    .ToArray();
-            }
-        }
+            var queryBuilder = new SelectQueryBuilder<Device>("select * from Devices", Request.Query);
 
-        [HttpGet("{filter}")]
-        public Device[] Get(string filter)
-        {
+            queryBuilder.AddGuidParameter("applicationId", "ApplicationId");
+
             using (var connection = _connectionFactory.CreateAndOpen())
             {
-                return connection
-                    .Query<Device>("select * from Devices order by Name")
+                return queryBuilder.Execute(connection)
                     .ToArray();
             }
         }
@@ -79,13 +72,13 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Put([FromQuery]Guid id, [FromBody]Device device)
+        [HttpPut]
+        public IActionResult Put([FromBody]Device device)
         {
             using (var connection = _connectionFactory.CreateAndOpen())
             using (var transaction = connection.BeginTransaction())
             {
-                var original = connection.GetDevice(id);
+                var original = connection.GetDevice(device.Id);
 
                 if (original == null)
                     return NotFound();

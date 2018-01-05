@@ -65,13 +65,16 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Put([FromQuery] Guid id, [FromBody] Application application)
+        [HttpPut]
+        public IActionResult Put([FromBody] Application application)
         {
             using (var connection = _connectionFactory.CreateAndOpen())
             using (var transaction = connection.BeginTransaction())
             {
-                var original = connection.GetApplication(id);
+                var original = connection.GetApplication(application.Id);
+
+                if (original == null)
+                    return NotFound();
 
                 //TODO: Verify the versions
 
