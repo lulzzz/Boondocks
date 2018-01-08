@@ -14,5 +14,12 @@
         /// Moved to another application.
         /// </summary>
         Moved = 4,
+
+
+        EnvironmentVariableCreated = 5,
+
+        EnvironmentVariableRemoved = 6,
+
+        EnvironmentVariableUpdated = 7
     }
 }

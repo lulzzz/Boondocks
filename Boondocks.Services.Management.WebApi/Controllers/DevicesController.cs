@@ -29,9 +29,13 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         [HttpGet]
         public Device[] Get()
         {
+            const string sql = "select * from Devices ";
+                               
+
             var queryBuilder = new SelectQueryBuilder<Device>("select * from Devices", Request.Query);
 
             queryBuilder.AddGuidParameter("applicationId", "ApplicationId");
+            queryBuilder.AddCondition("IsDeleted", false);
 
             using (var connection = _connectionFactory.CreateAndOpen())
             {
@@ -119,13 +123,15 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                 }
 
                 string sql =
-                    "update Devices set Name = @Name, " + 
-                    "ApplicationId = @ApplicationId, " + 
-                    "ApplicationVersionId = @ApplicationVersionId, " + 
-                    "SupervisorVersionId = @SupervisorVersionId, " +  
-                    "RootFileSystemVersionId = @RootFileSystemVersionId," + 
-                    "ConfigurationVersion = @ConfigurationVersion " +
-                    "where Id = @Id";
+                    "update Devices set " +
+                    "  Name = @Name, " + 
+                    "  ApplicationId = @ApplicationId, " + 
+                    "  ApplicationVersionId = @ApplicationVersionId, " + 
+                    "  SupervisorVersionId = @SupervisorVersionId, " +  
+                    "  RootFileSystemVersionId = @RootFileSystemVersionId," + 
+                    "  ConfigurationVersion = @ConfigurationVersion " +
+                    "where " +
+                    "  Id = @Id";
 
                 //Update the application record
                 if (connection.Execute(sql, device, transaction) != 1)
@@ -157,16 +163,36 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         }
 
 
+        /// <summary>
+        /// Disables the device so that the server will no longer .
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
             using (var connection = _connectionFactory.CreateAndOpen())
+            using (var transaction = connection.BeginTransaction())
             {
-                connection.Execute("delete DeviceTypes where Id = @id", new { id })
-                    .HandleUpdateResult();
-            }
+                const string sql = "update Device set " +
+                                   "  IsDeleted = 1 " +
+                                   "where " +
+                                   "  Id = @id" +
+                                   "  and IsDeleted = 0 ";
 
-            return Ok();
+                //Execute the delete
+                if (connection.Execute(sql, new {id}, transaction) != 1)
+                    return NotFound();
+
+                //Log it!!!!!
+                connection.InsertDeviceEvent(transaction, id, DeviceEventType.Disabled, $"Device {id:N} has been deleted (logically - not physically).");
+
+                //We're done
+                transaction.Commit();
+
+                //Everything is good
+                return Ok();
+            }
         }
     }
 }

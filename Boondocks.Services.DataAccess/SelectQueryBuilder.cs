@@ -45,11 +45,11 @@ namespace Boondocks.Services.DataAccess
 
             if (value != null)
             {
-                Add(columnName, value);
+                AddCondition(columnName, value);
             }
         }
 
-        private void Add(string columnName, object value)
+        public void AddCondition(string columnName, object value)
         {
             string parameterName = $"P{_parameterIndex}";
 

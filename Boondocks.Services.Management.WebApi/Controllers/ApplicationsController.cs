@@ -96,9 +96,14 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     application,
                     transaction);
 
-                //TODO: Update the configuration version on all of the effected devices
+                //Did we update anything that affects the devices?
+                if (deviceConfigurationChanged)
+                {
+                    // Update the configuration version on all of the effected devices
+                    connection.SetNewDeviceConfigurationVersionForApplication(transaction, application.Id);
+                }
 
-                //TODO: Add application events
+                //Name changed event
                 if (original.Name != application.Name)
                 {
                     connection.InsertApplicationEvent(
@@ -107,6 +112,8 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                         ApplicationEventType.Renamed, 
                         $"Application name changed from '{original.Name}' to '{application.Name}'.");
                 }
+
+                //TODO: Add other application events
 
                 //TODO: Add device events
 
@@ -121,6 +128,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         {
             using (var connection = _connectionFactory.CreateAndOpen())
             {
+                //Note that we're counting on the database to prevent deleting anything where there are devices.
                 int result = connection.Execute("delete from Applications where Id = @id", new { id });
 
                 if (result == 0)

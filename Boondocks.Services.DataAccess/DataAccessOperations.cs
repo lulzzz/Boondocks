@@ -130,6 +130,7 @@ namespace Boondocks.Services.DataAccess
                                "  DeviceKey, " +
                                "  CreatedUtc, " +
                                "  IsDisabled, " +
+                               "  IsDeleted," +
                                "  ConfigurationVersion" +
                                ") values (" +
                                "  @Id, " +
@@ -137,6 +138,7 @@ namespace Boondocks.Services.DataAccess
                                "  @ApplicationId, " +
                                "  @DeviceKey, " +
                                "  @CreatedUtc, " +
+                               "  0, " +
                                "  0, " +
                                "  @ConfigurationVersion" +
                                ")";
@@ -197,7 +199,101 @@ namespace Boondocks.Services.DataAccess
             public Guid DeviceKey { get; set; }
         }
 
+        public static DeviceEnvironmentVariable GetDeviceEnvironmentVariable(this IDbConnection connection, Guid id)
+        {
+            return connection
+                .QuerySingleOrDefault<DeviceEnvironmentVariable>("select * from DeviceEnvironmentVariables where Id = @id", new { id });
+        }
 
+        public static DeviceEnvironmentVariable InsertDeviceEnvironmentVariable(
+            this IDbConnection connection, 
+            IDbTransaction transaction, 
+            Guid deviceId, 
+            string name, 
+            string value)
+        {
+            DeviceEnvironmentVariable variable = new DeviceEnvironmentVariable()
+            {
+                DeviceId = deviceId,
+                Name = name,
+                Value = value
+            }.SetNew();
+
+            const string sql = "insert DeviceEvents " +
+                               "(" +
+                               "  Id, " +
+                               "  DeviceId, " +
+                               "  Name, " +
+                               "  Value, " +
+                               "  CreatedUtc" +
+                               ") values ( " +
+                               "  @Id, " +
+                               "  @DeviceId," +
+                               "  @Name, " +
+                               "  @Value, " +
+                               "  @CreatedUtc" +
+                               ")";
+
+            connection.Execute(sql, variable, transaction);
+
+            return variable;
+        }
+
+        /// <summary>
+        /// Sets a new device configuration for a single device. This is done to notify the the device that it needs to 
+        /// download a new configuration.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="transaction"></param>
+        /// <param name="deviceId"></param>
+        public static void SetNewDeviceConfigurationVersionForDevice(
+            this IDbConnection connection,
+            IDbTransaction transaction,
+            Guid deviceId)
+        {
+            const string sql = "update devices set " +
+                               "  ConfigurationVersion = @ConfigurationVersion" +
+                               "where " +
+                               "  Id = @DeviceId" +
+                               "  and IsDisabled = 0" +
+                               "  and IsDeleted = 0 ";
+
+            var parameters = new
+            {
+                ConfigurationVersion = Guid.NewGuid(),
+                DeviceId = deviceId
+            };
+
+            connection.Execute(sql, parameters, transaction);
+        }
+
+        /// <summary>
+        /// Sets a new device configuration all of the devices in a given application. This is done to notify the the device that it needs to 
+        /// download a new configuration.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="transaction"></param>
+        /// <param name="applicationId"></param>
+        public static void SetNewDeviceConfigurationVersionForApplication(
+            this IDbConnection connection,
+            IDbTransaction transaction,
+            Guid applicationId)
+        {
+            const string sql = "update devices set " +
+                               "  ConfigurationVersion = @ConfigurationVersion" +
+                               "where " +
+                               "  ApplicationId = @ApplicationId " +
+                               "  and IsDisabled = 0" +
+                               "  and IsDeleted = 0 ";
+
+            var parameters = new
+            {
+                ConfigurationVersion = Guid.NewGuid(),
+                ApplicationID = applicationId
+            };
+
+            connection.Execute(sql, parameters, transaction);
+        }
 
 
     }
