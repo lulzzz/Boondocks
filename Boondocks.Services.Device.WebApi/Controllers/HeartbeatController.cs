@@ -37,7 +37,8 @@ namespace Boondocks.Services.Device.WebApi.Controllers
                 const string updateSql = "update DeviceStatus " +
                                          "set " +
                                          "  UptimeSeconds = @UptimeSeconds, " +
-                                         "  LastContactUtc = @Utc " +
+                                         "  LastContactUtc = @Utc, " +
+                                         "  State = @State " +
                                          "where " +
                                          "  DeviceId = @DeviceId";
 
@@ -46,7 +47,8 @@ namespace Boondocks.Services.Device.WebApi.Controllers
                 {
                     UptimeSeconds = request.UptimeSeconds,
                     Utc = DateTime.UtcNow,
-                    DeviceId = DeviceId
+                    DeviceId = DeviceId,
+                    State = request.State
                 });
 
                 const string responseSql = "select ConfigurationVersion from Devices where Id = @Id";

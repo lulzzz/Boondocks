@@ -1,4 +1,5 @@
 ﻿using System;
+using Boondocks.Services.Contracts;
 using Newtonsoft.Json;
 
 namespace Boondocks.Services.Device.Contracts
@@ -31,5 +32,11 @@ namespace Boondocks.Services.Device.Contracts
         /// </summary>
         [JsonProperty("applicationVersionId")]
         public Guid ApplicationVersionId { get; set; }
+
+        /// <summary>
+        /// The current state of the devices.
+        /// </summary>
+        [JsonProperty("state")]
+        public DeviceState State { get; set; }
     }
 }

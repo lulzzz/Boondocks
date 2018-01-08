@@ -7,7 +7,7 @@ namespace Boondocks.Supervisor
 {
     class Program
     {
-        static void Main(string[] args)
+        private static async Task<int> Main(string[] args)
         {
             Console.WriteLine("Starting...");
 
@@ -24,12 +24,14 @@ namespace Boondocks.Supervisor
 
                 try
                 {
-                    host.RunAsync(cancellationTokenSource.Token).GetAwaiter().GetResult();
+                    await host.RunAsync(cancellationTokenSource.Token);
                 }
                 catch (TaskCanceledException)
                 {
                 }
-            }   
+            }
+
+            return 0;
         }
     }
 }

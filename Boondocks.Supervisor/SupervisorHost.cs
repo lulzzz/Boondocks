@@ -12,14 +12,17 @@ namespace Boondocks.Supervisor
 {
     public class SupervisorHost
     {
+        private readonly DeviceStateProvider _deviceStateProvider;
         private readonly UptimeProvider _uptimeProvider;
         private readonly DeviceConfiguration _deviceConfiguration;
         private readonly DeviceApiClient _deviceApiClient;
 
         public SupervisorHost(
             DeviceConfiguration deviceConfiguration,
-            UptimeProvider uptimeProvider)
+            UptimeProvider uptimeProvider,
+            DeviceStateProvider _deviceStateProvider)
         {
+            this._deviceStateProvider = _deviceStateProvider ?? throw new ArgumentNullException(nameof(_deviceStateProvider));
             _uptimeProvider = uptimeProvider ?? throw new ArgumentNullException(nameof(uptimeProvider));
             _deviceConfiguration = deviceConfiguration ?? throw new ArgumentNullException(nameof(deviceConfiguration));
 
@@ -100,7 +103,8 @@ namespace Boondocks.Supervisor
             //Create the request.
             var request = new HeartbeatRequest()
             {
-                UptimeSeconds = _uptimeProvider.Ellapsed.TotalSeconds
+                UptimeSeconds = _uptimeProvider.Ellapsed.TotalSeconds,
+                State = _deviceStateProvider.State
             };
 
             //Send the request.
