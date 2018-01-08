@@ -12,12 +12,14 @@ namespace Boondocks.Supervisor
 
             builder.RegisterInstance(new DeviceConfiguration
             {
-                DeviceId = new Guid("133F0274-204B-4635-A232-0D0CEEF87730"),
-                DeviceKey = new Guid("05438596-8975-4946-8304-00D76B532C6A"),
+                DeviceId = new Guid("B77D8247-037D-4744-940D-53E312F5E4EF"),
+                DeviceKey = new Guid("D0A974F0-2529-4143-88D8-E6F05C268FD9"),
                 DeviceApiUrl = "http://localhost:54983/",
                 DockerEndpoint = "http://10.0.4.72:2375",
                 PollSeconds = 10
             });
+
+            builder.RegisterType<UptimeProvider>().SingleInstance();
 
             builder.RegisterType<SupervisorHost>();
 

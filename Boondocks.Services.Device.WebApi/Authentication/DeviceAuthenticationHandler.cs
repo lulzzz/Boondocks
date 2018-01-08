@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Boondocks.Services.Base;
 using Boondocks.Services.Contracts;
 using Boondocks.Services.DataAccess;
 using Boondocks.Services.DataAccess.Interfaces;
-using Dapper;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -24,45 +21,53 @@ namespace Boondocks.Services.Device.WebApi.Authentication
         private readonly IDbConnectionFactory _connectionFactory;
         private static readonly SecurityKey[] _emptySecurityKeys = { };
         private readonly JwtSecurityTokenHandler _tokenHandler = new JwtSecurityTokenHandler();
+        private readonly TokenValidationParameters _tokenValidationParameters;
 
         public DeviceAuthenticationHandler(IOptionsMonitor<DeviceAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IDbConnectionFactory connectionFactory) 
             : base(options, logger, encoder, clock)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+
+            _tokenValidationParameters = new TokenValidationParameters()
+            {
+                IssuerSigningKeyResolver = IssuerSigningKeyResolver,
+                ValidAudiences = new[]
+                {
+                    TokenConstants.DeviceTokenAudience
+                },
+                ValidIssuers = new[]
+                {
+                    TokenConstants.DeviceTokenIssuer
+                },
+            };
         }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
+            //Get the value from the header
             string authorization = Request.Headers["Authorization"];
 
+            //Make sure we got a value
             if (string.IsNullOrWhiteSpace(authorization))
             {
                 return Task.FromResult(
                     AuthenticateResult.Fail("No authorization header was found."));
             }
 
+            //Attempt to validate the token
             ClaimsPrincipal principal = _tokenHandler.ValidateToken(
                 authorization,
-                new TokenValidationParameters()
-                {
-                    IssuerSigningKeyResolver = IssuerSigningKeyResolver,
-                    ValidAudiences = new[]
-                    {
-                        TokenConstants.DeviceTokenAudience
-                    },
-                    ValidIssuers = new[]
-                    {
-                        TokenConstants.DeviceTokenIssuer
-                    },
-                },
+                _tokenValidationParameters,
                 out SecurityToken _);
 
             //Get the device id
             string deviceId = principal.Claims
                 .FirstOrDefault(c => c.Type == TokenConstants.DeviceIdClaimName)?.Value;
                 
+            //Create an identity
             var deviceIdentity = new ClaimsPrincipal(new DeviceIdentity(deviceId, true));
 
+            //Return it.
             return Task.FromResult(
                     AuthenticateResult.Success(
                         new AuthenticationTicket(
@@ -92,6 +97,7 @@ namespace Boondocks.Services.Device.WebApi.Authentication
                 .FirstOrDefault(c => c.Type == TokenConstants.DeviceIdClaimName)?.Value?
                 .ParseGuid();
 
+            //Check to see if we got a deviceId.
             if (deviceId == null)
                 return _emptySecurityKeys;
 
@@ -104,6 +110,7 @@ namespace Boondocks.Services.Device.WebApi.Authentication
                 if (deviceKey == null)
                     return _emptySecurityKeys;
 
+                //Return the security key(s) for this device.
                 return new SecurityKey[]
                 {
                     new SymmetricSecurityKey(deviceKey.Value.ToByteArray())
@@ -113,7 +120,5 @@ namespace Boondocks.Services.Device.WebApi.Authentication
                 };
             }
         }
-
-       
     }
 }

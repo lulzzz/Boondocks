@@ -1,17 +1,20 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using Autofac;
 using Boondocks.Services.DataAccess;
 using Boondocks.Services.DataAccess.Interfaces;
 using Boondocks.Services.Device.WebApi.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -36,13 +39,13 @@ namespace Boondocks.Services.Device.WebApi
             {
             });
 
+            services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.AddSeq();
+            });
+
             services.AddMvc(o =>
             {
-                var policy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
-
-                //o.Filters.Add(new AuthorizeFilter(policy));
             });
 
             // Register the Swagger generator, defining one or more Swagger documents
@@ -63,6 +66,10 @@ namespace Boondocks.Services.Device.WebApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler();
             }
 
             app.UseAuthentication();

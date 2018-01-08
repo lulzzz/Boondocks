@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Boondocks.Services.Device.Contracts
 {
@@ -7,20 +8,20 @@ namespace Boondocks.Services.Device.Contracts
         /// <summary>
         /// The version of the supervisor.
         /// </summary>
-        [JsonProperty("supervisor-version")]
-        public string SupervisorVersion { get; set; }
+        [JsonProperty("supervisorVersionId")]
+        public Guid SupervisorVersionId { get; set; }
 
         /// <summary>
         /// The version of the root file system.
         /// </summary>
-        [JsonProperty("root-file-system-version")]
-        public string RootFileSystemVersion { get; set; }
+        [JsonProperty("rootFileSystemVersionId")]
+        public Guid RootFileSystemVersionId { get; set; }
 
         /// <summary>
         /// The application version.
         /// </summary>
-        [JsonProperty("application-version")]
-        public string ApplicationVersion { get; set; }
+        [JsonProperty("applicationVersionId")]
+        public Guid ApplicationVersionId { get; set; }
 
         /// <summary>
         /// The effective environment variables for this device.

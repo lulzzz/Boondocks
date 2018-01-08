@@ -12,11 +12,15 @@ namespace Boondocks.Supervisor
 {
     public class SupervisorHost
     {
+        private readonly UptimeProvider _uptimeProvider;
         private readonly DeviceConfiguration _deviceConfiguration;
         private readonly DeviceApiClient _deviceApiClient;
 
-        public SupervisorHost(DeviceConfiguration deviceConfiguration)
+        public SupervisorHost(
+            DeviceConfiguration deviceConfiguration,
+            UptimeProvider uptimeProvider)
         {
+            _uptimeProvider = uptimeProvider ?? throw new ArgumentNullException(nameof(uptimeProvider));
             _deviceConfiguration = deviceConfiguration ?? throw new ArgumentNullException(nameof(deviceConfiguration));
 
             _deviceApiClient = new DeviceApiClient(
@@ -93,11 +97,14 @@ namespace Boondocks.Supervisor
 
         private async Task HeartbeatAsync(CancellationToken cancellationToken)
         {
-            var response = await _deviceApiClient.HeartbeatAsync(new HeartbeatRequest()
+            //Create the request.
+            var request = new HeartbeatRequest()
             {
-                RootFileSystemVersion = "rfs 1.0.0"
+                UptimeSeconds = _uptimeProvider.Ellapsed.TotalSeconds
+            };
 
-            }, cancellationToken);
+            //Send the request.
+            var response = await _deviceApiClient.HeartbeatAsync(request, cancellationToken);
 
             Console.WriteLine($"\t{response.ConfigurationVersion}");
 
