@@ -21,12 +21,17 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
+        /// <summary>
+        /// Query parameters are 'deviceId'.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public DeviceEnvironmentVariable[] Get()
         {
             var queryBuilder = new SelectQueryBuilder<DeviceEnvironmentVariable>("select * from DeviceEnvironmentVariables", Request.Query);
 
-            queryBuilder.AddGuidParameter("deviceId", "DeviceId");
+            queryBuilder.TryAddGuidParameter("deviceId", "DeviceId");
+            
 
             using (var connection = _connectionFactory.CreateAndOpen())
             {
@@ -51,6 +56,11 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Create an environment variable.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost]
         public DeviceEnvironmentVariable Post([FromBody] CreateDeviceEnvironmentVariableRequest request)
         {
@@ -66,7 +76,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     transaction,
                     variable.DeviceId,
                     DeviceEventType.EnvironmentVariableCreated,
-                    $"Device {request.DeviceId:D} Environment variable created: {variable.Name}/{variable.Value}).");
+                    $"Device {request.DeviceId:D} Environment variable '{variable.Name}' created with value: '{variable.Value}'.");
 
                 //Update the configuration version
                 connection.SetNewDeviceConfigurationVersionForDevice(transaction, request.DeviceId);
@@ -74,11 +84,15 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                 //We're done
                 transaction.Commit();
 
-
                 return variable;
             }
         }
 
+        /// <summary>
+        /// Updates an environment variable.
+        /// </summary>
+        /// <param name="variable"></param>
+        /// <returns></returns>
         [HttpPut]
         public IActionResult Put([FromBody] DeviceEnvironmentVariable variable)
         {
@@ -86,14 +100,14 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             using (var transaction = connection.BeginTransaction())
             {
                 //Get the original so we can log the delta.
-                DeviceEnvironmentVariable original = connection.GetDeviceEnvironmentVariable(variable.Id);
+                DeviceEnvironmentVariable original = connection.GetDeviceEnvironmentVariable(variable.Id, transaction);
 
                 if (original == null)
                     return NotFound();
 
                 const string sql = " update DeviceEnvironmentVariables set" +
-                                   "  Name = name," +
-                                   "  Value = value " +
+                                   "  Name = @Name," +
+                                   "  Value = @Value " +
                                    "where" +
                                    "  Id = @Id";
 
@@ -118,6 +132,11 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Deletes an environment variable.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
@@ -125,22 +144,28 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             using (var transaction = connection.BeginTransaction())
             {
                 //Get the device variable (so we can log the using the DeviceId)
-                DeviceEnvironmentVariable variable = connection.GetDeviceEnvironmentVariable(id);
+                DeviceEnvironmentVariable original = connection.GetDeviceEnvironmentVariable(id, transaction);
 
-                if (variable == null)
+                if (original == null)
                     return NotFound();
 
                 const string deleteSql = "delete from DeviceEnvironmentVariables where Id = @Id";
 
-                connection.Execute(deleteSql, new {Id = id}, transaction);
+                //Delete it!
+                if (connection.Execute(deleteSql, new {Id = id}, transaction) != 1)
+                    return NotFound();
 
                 //Insert an event
                 connection.InsertDeviceEvent(
                     transaction,
-                    variable.DeviceId,
+                    original.DeviceId,
                     DeviceEventType.EnvironmentVariableUpdated,
-                    $"Device {variable.DeviceId:D} Environment variable '{variable.Name}' deleted.");
+                    $"Device {original.DeviceId:D} Environment variable '{original.Name}' deleted.");
 
+                //Update the configuration version
+                connection.SetNewDeviceConfigurationVersionForDevice(transaction, original.DeviceId);
+
+                //We're done here.
                 transaction.Commit();
             }
 

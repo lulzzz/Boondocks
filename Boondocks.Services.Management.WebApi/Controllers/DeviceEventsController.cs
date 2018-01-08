@@ -19,13 +19,24 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
+        /// <summary>
+        /// Available query parameters are deviceId, eventType.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public DeviceEvent[] Get()
         {
+            var queryBuilder = new SelectQueryBuilder<DeviceEvent>("select * from DeviceEvents", Request.Query);
+
+            queryBuilder.TryAddGuidParameter("deviceId", "DeviceId");
+            queryBuilder.TryAddIntParameter("eventType", "EventType");
+
             using (var connection = _connectionFactory.CreateAndOpen())
             {
-                return connection
-                    .Query<DeviceEvent>("select * from DeviceEvents order by CreatedUtc desc")
+                
+
+                return queryBuilder
+                    .Execute(connection)
                     .ToArray();
             }
         }

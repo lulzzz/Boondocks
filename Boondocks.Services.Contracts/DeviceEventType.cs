@@ -20,6 +20,18 @@
 
         EnvironmentVariableRemoved = 6,
 
-        EnvironmentVariableUpdated = 7
+        EnvironmentVariableUpdated = 7,
+
+        /// <summary>
+        /// The device has been logically deleted.
+        /// </summary>
+        Deleted = 8,
+
+        /// <summary>
+        /// The device has been brought back from the dead (logical deletion).
+        /// </summary>
+        Resurrected = 9
+
+          
     }
 }

@@ -53,6 +53,12 @@ namespace Boondocks.Services.DataAccess
                                "  EventType, " +
                                "  Message, " +
                                "  CreatedUtc" +
+                               ") values (" +
+                               "  @Id," +
+                               "  @DeviceId, " +
+                               "  @EventType, " +
+                               "  @Message, " +
+                               "  @CreatedUtc" +
                                ")";
 
             connection.Execute(sql, deviceEvent, transaction);
@@ -76,13 +82,19 @@ namespace Boondocks.Services.DataAccess
                 Message = message
             }.SetNew();
 
-            const string sql = "insert DeviceEvents " +
+            const string sql = "insert ApplicationEvents " +
                                "(" +
                                "  Id, " +
-                               "  DeviceId, " +
+                               "  ApplicationId, " +
                                "  EventType, " +
                                "  Message, " +
                                "  CreatedUtc" +
+                               ") values ( " +
+                               "  @Id," +
+                               "  @ApplicationId, " +
+                               "  @EventType, " +
+                               "  @Message, " +
+                               "  @CreatedUtc" +
                                ")";
 
             connection.Execute(sql, applicationEvent, transaction);
@@ -199,10 +211,13 @@ namespace Boondocks.Services.DataAccess
             public Guid DeviceKey { get; set; }
         }
 
-        public static DeviceEnvironmentVariable GetDeviceEnvironmentVariable(this IDbConnection connection, Guid id)
+        public static DeviceEnvironmentVariable GetDeviceEnvironmentVariable(this IDbConnection connection, Guid id, IDbTransaction transaction = null)
         {
             return connection
-                .QuerySingleOrDefault<DeviceEnvironmentVariable>("select * from DeviceEnvironmentVariables where Id = @id", new { id });
+                .QuerySingleOrDefault<DeviceEnvironmentVariable>(
+                    "select * from DeviceEnvironmentVariables where Id = @id", 
+                    new { id }, 
+                    transaction);
         }
 
         public static DeviceEnvironmentVariable InsertDeviceEnvironmentVariable(
@@ -219,7 +234,7 @@ namespace Boondocks.Services.DataAccess
                 Value = value
             }.SetNew();
 
-            const string sql = "insert DeviceEvents " +
+            const string sql = "insert DeviceEnvironmentVariables " +
                                "(" +
                                "  Id, " +
                                "  DeviceId, " +
@@ -252,7 +267,7 @@ namespace Boondocks.Services.DataAccess
             Guid deviceId)
         {
             const string sql = "update devices set " +
-                               "  ConfigurationVersion = @ConfigurationVersion" +
+                               "  ConfigurationVersion = @ConfigurationVersion " +
                                "where " +
                                "  Id = @DeviceId" +
                                "  and IsDisabled = 0" +

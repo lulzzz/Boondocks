@@ -39,14 +39,41 @@ namespace Boondocks.Services.DataAccess
         /// </summary>
         /// <param name="queryStringName">the name of the parameter as it would appear in the query string.</param>
         /// <param name="columnName">The name of the column to be filtered.</param>
-        public void AddGuidParameter(string queryStringName, string columnName)
+        /// <returns>Returns true if the condition was added, false otherwise.</returns>
+        public bool TryAddGuidParameter(string queryStringName, string columnName)
         {
             Guid? value = ((string) _query[queryStringName]).ParseGuid();
 
-            if (value != null)
-            {
-                AddCondition(columnName, value);
-            }
+            if (value == null)
+                return false;
+            
+            AddCondition(columnName, value);
+
+            return true;
+        }
+
+        public bool TryAddBitParameter(string queryStringName, string columnName)
+        {
+            bool? value = ((string)_query[queryStringName]).ParseBool();
+
+            if (value == null)
+                return false;
+
+            AddCondition(columnName, value);
+
+            return true;
+        }
+
+        public bool TryAddIntParameter(string queryStringName, string columnName)
+        {
+            int? value = ((string)_query[queryStringName]).ParseInt();
+
+            if (value == null)
+                return false;
+
+            AddCondition(columnName, value);
+
+            return true;
         }
 
         public void AddCondition(string columnName, object value)

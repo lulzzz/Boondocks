@@ -23,19 +23,22 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         }
 
         /// <summary>
-        /// Can add query parameters such as applicationId.
+        /// Can add query parameters such as applicationId, isDisabled and isDeleted.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         public Device[] Get()
         {
-            const string sql = "select * from Devices ";
-                               
-
             var queryBuilder = new SelectQueryBuilder<Device>("select * from Devices", Request.Query);
 
-            queryBuilder.AddGuidParameter("applicationId", "ApplicationId");
-            queryBuilder.AddCondition("IsDeleted", false);
+            queryBuilder.TryAddGuidParameter("applicationId", "ApplicationId");
+            queryBuilder.TryAddBitParameter("isDisabled", "IsDisabled");
+
+            //Ignore deleted devices, unless the caller specifically asks for them.
+            if (!queryBuilder.TryAddBitParameter("isDeleted", "IsDeleted"))
+            {
+                queryBuilder.AddCondition("IsDeleted", false);
+            }
 
             using (var connection = _connectionFactory.CreateAndOpen())
             {
@@ -164,7 +167,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
 
 
         /// <summary>
-        /// Disables the device so that the server will no longer .
+        /// Logically deletes the device.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -185,7 +188,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     return NotFound();
 
                 //Log it!!!!!
-                connection.InsertDeviceEvent(transaction, id, DeviceEventType.Disabled, $"Device {id:N} has been deleted (logically - not physically).");
+                connection.InsertDeviceEvent(transaction, id, DeviceEventType.Deleted, $"Device {id:N} has been deleted (logically - not physically).");
 
                 //We're done
                 transaction.Commit();

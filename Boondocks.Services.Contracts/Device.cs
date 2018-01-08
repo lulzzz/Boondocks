@@ -28,5 +28,8 @@ namespace Boondocks.Services.Contracts
 
         [JsonProperty("isDisabled")]
         public bool IsDisabled { get; set; }
+
+        [JsonProperty("isDeleted")]
+        public bool IsDeleted { get; set; }
     }
 }

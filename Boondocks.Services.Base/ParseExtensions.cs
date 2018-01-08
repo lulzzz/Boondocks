@@ -11,5 +11,21 @@ namespace Boondocks.Services.Base
 
             return null;
         }
+
+        public static bool? ParseBool(this string value)
+        {
+            if (bool.TryParse(value, out bool parsed))
+                return parsed;
+
+            return null;
+        }
+
+        public static int? ParseInt(this string value)
+        {
+            if (int.TryParse(value, out int parsed))
+                return parsed;
+
+            return null;
+        }
     }
 }
