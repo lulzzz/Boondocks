@@ -1,34 +1,70 @@
 ﻿using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Boondocks.Services.Contracts;
 using Boondocks.Services.Device.Contracts;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Boondocks.Services.Device.WebApiClient
 {
     public class DeviceApiClient : CaptiveAire.WebApiClient.WebApiClient
     {
-        private readonly Guid _deviceId;
-        private readonly Guid _deviceKey;
+        private readonly ClaimsIdentity _claimsIdentity;
+        private readonly SigningCredentials _signingCredentials;
+        private readonly JwtSecurityTokenHandler _tokenHandler;
 
         public DeviceApiClient(Guid deviceId, Guid deviceKey, string baseUri)
         {
-            _deviceId = deviceId;
-            _deviceKey = deviceKey;
             BaseUri = baseUri;
+
+            //Create the claims
+            var claims = new Claim[]
+            {
+                new Claim(TokenConstants.DeviceIdClaimName, deviceId.ToString("D"))
+            };
+
+            //Create the claims identity
+            _claimsIdentity = new ClaimsIdentity(claims);
+
+            //Create the signing credentials
+            _signingCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(deviceKey.ToByteArray()), 
+                SecurityAlgorithms.HmacSha256Signature);
+
+            _tokenHandler = new JwtSecurityTokenHandler();
         }
 
         protected override Task<HttpClient> CreateHttpClientAsync()
         {
             var client = new HttpClient();
 
-            var byteArray = Encoding.UTF8.GetBytes($"{_deviceId:N}:{_deviceKey:N}");
-
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+            string token = CreateToken();
+            
+            //Add the authorization header
+            client.DefaultRequestHeaders.Add("Authorization", token);
 
             return Task.FromResult(client);
+        }
+
+        protected virtual string CreateToken()
+        {
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = _claimsIdentity,
+
+                Issuer = TokenConstants.DeviceTokenIssuer,
+                Audience = TokenConstants.DeviceTokenAudience,
+
+                Expires = DateTime.UtcNow.Add(TimeSpan.FromMinutes(30)),
+                SigningCredentials = _signingCredentials
+            };
+
+            SecurityToken securityToken = _tokenHandler.CreateToken(tokenDescriptor);
+
+            return _tokenHandler.WriteToken(securityToken);
         }
 
         protected override string BaseUri { get; }

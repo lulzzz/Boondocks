@@ -5,18 +5,25 @@ namespace Boondocks.Services.Device.WebApi.Authentication
 {
     public class DeviceIdentity : IIdentity
     {
-        public DeviceIdentity(Guid deviceId, bool isAuthenticated)
+        public DeviceIdentity(Guid deviceId, bool isAuthenticated) 
+            : this(deviceId.ToString("D"), isAuthenticated)
         {
-            DeviceId = deviceId;
+        }
+
+        public DeviceIdentity(string deviceId, bool isAuthenticated) : this(isAuthenticated)
+        {
+            Name = deviceId;
+        }
+
+        private DeviceIdentity(bool isAuthenticated)
+        {
             IsAuthenticated = isAuthenticated;
         }
 
         public string AuthenticationType => "Device";
 
-        public Guid DeviceId { get; }
-
         public bool IsAuthenticated { get; }
 
-        public string Name => DeviceId.ToString("N");
+        public string Name { get; }
     }
 }

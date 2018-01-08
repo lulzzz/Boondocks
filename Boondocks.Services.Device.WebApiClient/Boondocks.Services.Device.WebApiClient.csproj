@@ -6,9 +6,11 @@
 
   <ItemGroup>
     <PackageReference Include="CaptiveAire.WebApiClient" Version="1.0.6" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.1.5" />			
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Boondocks.Services.Contracts\Boondocks.Services.Contracts.csproj" />
     <ProjectReference Include="..\Boondocks.Services.Device.Contracts\Boondocks.Services.Device.Contracts.csproj" />
     <ProjectReference Include="..\Boondocks.Supervisor.Contracts\Boondocks.Supervisor.Contracts.csproj" />
   </ItemGroup>

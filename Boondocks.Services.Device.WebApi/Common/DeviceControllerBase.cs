@@ -1,6 +1,5 @@
 ﻿using System;
 using Boondocks.Services.Base;
-using Boondocks.Services.Device.WebApi.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Boondocks.Services.Device.WebApi.Common

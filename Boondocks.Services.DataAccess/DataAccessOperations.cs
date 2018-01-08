@@ -177,5 +177,28 @@ namespace Boondocks.Services.DataAccess
             //Return the same entity because fluent api's rock.
             return entity;
         }
+
+        /// <summary>
+        /// Gets a device key given a device id.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="deviceId"></param>
+        /// <returns>The DeviceKey if found, null otherwise.</returns>
+        public static Guid? GetDeviceKey(this IDbConnection connection, Guid deviceId)
+        {
+            const string sql = "select DeviceKey from Devices where Id = @DeviceId";
+
+            return connection
+                .QueryFirstOrDefault<DeviceKeyFromDatabase>(sql, new { DeviceId = deviceId })?.DeviceKey;
+        }
+
+        private class DeviceKeyFromDatabase
+        {
+            public Guid DeviceKey { get; set; }
+        }
+
+
+
+
     }
 }
