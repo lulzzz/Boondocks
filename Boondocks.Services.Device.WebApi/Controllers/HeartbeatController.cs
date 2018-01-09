@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace Boondocks.Services.Device.WebApi.Controllers
 {
     [Produces("application/json")]
-    [Route("v1/Heartbeat")]
+    [Route("v1/heartbeat")]
     [Authorize]
     public class HeartbeatController : DeviceControllerBase
     {

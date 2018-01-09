@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 using Boondocks.Services.Contracts;
 using Boondocks.Services.DataAccess;
@@ -6,12 +7,13 @@ using Boondocks.Services.DataAccess.Interfaces;
 using Boondocks.Services.Management.Contracts;
 using Boondocks.Services.Management.WebApi.Model;
 using Dapper;
+using Dapper.Contrib.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Boondocks.Services.Management.WebApi.Controllers
 {
     [Produces("application/json")]
-    [Route("api/DeviceEnvironmentVariables")]
+    [Route("v1/deviceEnvironmentVariables")]
     public class DeviceEnvironmentVariablesController : Controller
     {
         private readonly IDbConnectionFactory _connectionFactory;
@@ -46,18 +48,19 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [Produces(typeof(DeviceEnvironmentVariable))]
         public IActionResult Get(Guid id)
         {
             using (var connection = _connectionFactory.CreateAndOpen())
             {
                 return connection
-                    .GetDeviceEnvironmentVariable(id)
+                    .Get<DeviceEnvironmentVariable>(id)
                     .ObjectOrNotFound();
             }
         }
 
         /// <summary>
-        /// Create an environment variable.
+        /// Create an environment variable at the device level.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -76,7 +79,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     transaction,
                     variable.DeviceId,
                     DeviceEventType.EnvironmentVariableCreated,
-                    $"Device {request.DeviceId:D} Environment variable '{variable.Name}' created with value: '{variable.Value}'.");
+                    $"Device Environment variable '{variable.Name}' created with value: '{variable.Value}'.");
 
                 //Update the configuration version
                 connection.SetNewDeviceConfigurationVersionForDevice(transaction, request.DeviceId);
@@ -100,7 +103,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             using (var transaction = connection.BeginTransaction())
             {
                 //Get the original so we can log the delta.
-                DeviceEnvironmentVariable original = connection.GetDeviceEnvironmentVariable(variable.Id, transaction);
+                DeviceEnvironmentVariable original = connection.Get<DeviceEnvironmentVariable>(variable.Id, transaction);
 
                 if (original == null)
                     return NotFound();
@@ -120,7 +123,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     transaction, 
                     variable.DeviceId,
                     DeviceEventType.EnvironmentVariableUpdated,
-                    $"Device {original.DeviceId:D} Environment variable changed from ({original.Name}/{original.Value}) to ({variable.Name}/{variable.Value}).");
+                    $"Device Environment variable changed from ({original.Name}/{original.Value}) to ({variable.Name}/{variable.Value}).");
 
                 //Update the configuration version
                 connection.SetNewDeviceConfigurationVersionForDevice(transaction, original.DeviceId);
@@ -144,7 +147,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             using (var transaction = connection.BeginTransaction())
             {
                 //Get the device variable (so we can log the using the DeviceId)
-                DeviceEnvironmentVariable original = connection.GetDeviceEnvironmentVariable(id, transaction);
+                DeviceEnvironmentVariable original = connection.Get<DeviceEnvironmentVariable>(id, transaction);
 
                 if (original == null)
                     return NotFound();
@@ -160,7 +163,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     transaction,
                     original.DeviceId,
                     DeviceEventType.EnvironmentVariableUpdated,
-                    $"Device {original.DeviceId:D} Environment variable '{original.Name}' deleted.");
+                    $"Device Environment variable '{original.Name}' deleted.");
 
                 //Update the configuration version
                 connection.SetNewDeviceConfigurationVersionForDevice(transaction, original.DeviceId);

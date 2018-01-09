@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Boondocks.Services.Management.WebApi.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Application")]
+    [Route("v1/applications")]
     public class ApplicationsController : Controller
     {
         private readonly IDbConnectionFactory _connectionFactory;
@@ -35,6 +35,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [Produces(typeof(Application))]
         public IActionResult Get(Guid id)
         {
             using (var connection = _connectionFactory.CreateAndOpen())

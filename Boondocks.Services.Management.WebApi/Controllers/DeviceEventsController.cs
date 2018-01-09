@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Boondocks.Services.Management.WebApi.Controllers
 {
     [Produces("application/json")]
-    [Route("api/DeviceEvents")]
+    [Route("v1/deviceEvents")]
     public class DeviceEventsController : Controller
     {
         private readonly IDbConnectionFactory _connectionFactory;

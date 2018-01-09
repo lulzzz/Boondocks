@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Boondocks.Services.Management.WebApi.Controllers
 {
     [Produces("application/json")]
-    [Route("v1/device")]
+    [Route("v1/devices")]
     public class DevicesController : Controller
     {
         private readonly IDbConnectionFactory _connectionFactory;
@@ -50,6 +50,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [Produces(typeof(Device))]
         public IActionResult Get(Guid id)
         {
             using (var connection = _connectionFactory.CreateAndOpen())

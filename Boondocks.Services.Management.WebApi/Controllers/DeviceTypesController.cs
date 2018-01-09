@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.Linq;
 using Boondocks.Services.Contracts;
 using Boondocks.Services.DataAccess;
@@ -8,14 +7,12 @@ using Boondocks.Services.Management.Contracts;
 using Boondocks.Services.Management.WebApi.Model;
 using Dapper;
 using Dapper.Contrib.Extensions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Boondocks.Services.Management.WebApi.Controllers
 {
     [Produces("application/json")]
-    [Route("api/DeviceType")]
+    [Route("v1/deviceTypes")]
     public class DeviceTypesController : Controller
     {
         private readonly IDbConnectionFactory _connectionFactory;
@@ -37,11 +34,12 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [Produces(typeof(DeviceType))]
         public IActionResult Get(Guid id)
         {
             using (var connection = _connectionFactory.CreateAndOpen())
             {
-                return connection.Get<DeviceType>(id, null)
+                return connection.Get<DeviceType>(id)
                     .ObjectOrNotFound();
             }
         }
@@ -56,8 +54,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     Name = request.Name
                 }.SetNew();
 
-                connection.Execute(@"insert DeviceTypes(Id, Name, CreatedUtc) values (@Id, @Name, @CreatedUtc)",
-                    deviceType);
+                connection.Insert(deviceType);
 
                 return deviceType;
             }

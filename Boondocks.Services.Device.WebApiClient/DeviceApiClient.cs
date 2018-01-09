@@ -77,7 +77,7 @@ namespace Boondocks.Services.Device.WebApiClient
         /// <returns></returns>
         public Task<HeartbeatResponse> HeartbeatAsync(HeartbeatRequest request, CancellationToken cancellationToken = new CancellationToken())
         {
-            return PostAsync<HeartbeatResponse>("v1/Heartbeat", request, null, cancellationToken);
+            return PostAsync<HeartbeatResponse>("v1/heartbeat", request, null, cancellationToken);
         }
     }
 }

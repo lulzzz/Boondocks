@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Boondocks.Services.Contracts;
 using Boondocks.Services.DataAccess;
 using Boondocks.Services.DataAccess.Interfaces;
 using Dapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Boondocks.Services.Management.WebApi.Controllers
 {
     [Produces("application/json")]
-    [Route("api/ApplicationVersions")]
+    [Route("v1/applicationVersions")]
     public class ApplicationVersionsController : Controller
     {
         private readonly IDbConnectionFactory _connectionFactory;

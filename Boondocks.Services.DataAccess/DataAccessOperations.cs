@@ -129,11 +129,6 @@ namespace Boondocks.Services.DataAccess
             public Guid DeviceKey { get; set; }
         }
 
-        public static DeviceEnvironmentVariable GetDeviceEnvironmentVariable(this IDbConnection connection, Guid id, IDbTransaction transaction = null)
-        {
-            return connection.Get<DeviceEnvironmentVariable>(id, transaction);
-        }
-
         public static DeviceEnvironmentVariable InsertDeviceEnvironmentVariable(
             this IDbConnection connection, 
             IDbTransaction transaction, 
@@ -144,6 +139,25 @@ namespace Boondocks.Services.DataAccess
             DeviceEnvironmentVariable variable = new DeviceEnvironmentVariable()
             {
                 DeviceId = deviceId,
+                Name = name,
+                Value = value
+            }.SetNew();
+
+            connection.Insert(variable, transaction);
+
+            return variable;
+        }
+
+        public static ApplicationEnvironmentVariable InsertApplicationEnvironmentVariable(
+            this IDbConnection connection,
+            IDbTransaction transaction,
+            Guid applicationID,
+            string name,
+            string value)
+        {
+            ApplicationEnvironmentVariable variable = new ApplicationEnvironmentVariable()
+            {
+                ApplicationId = applicationID,
                 Name = name,
                 Value = value
             }.SetNew();

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Boondocks.Services.Device.WebApi.Controllers
 {
     [Produces("application/json")]
-    [Route("v1/DeviceConfiguration")]
+    [Route("v1/deviceConfiguration")]
     [Authorize]
     public class DeviceConfigurationController : ControllerBase
     {
