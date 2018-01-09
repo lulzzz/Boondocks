@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 using Boondocks.Services.Contracts;
 using Boondocks.Services.DataAccess;
@@ -6,6 +7,7 @@ using Boondocks.Services.DataAccess.Interfaces;
 using Boondocks.Services.Management.Contracts;
 using Boondocks.Services.Management.WebApi.Model;
 using Dapper;
+using Dapper.Contrib.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Boondocks.Services.Management.WebApi.Controllers
@@ -37,8 +39,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         {
             using (var connection = _connectionFactory.CreateAndOpen())
             {
-                return connection
-                    .GetApplication(id)
+                return connection.Get<Application>(id, null)
                     .ObjectOrNotFound();
             }
         }
@@ -77,7 +78,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             using (var connection = _connectionFactory.CreateAndOpen())
             using (var transaction = connection.BeginTransaction())
             {
-                var original = connection.GetApplication(application.Id);
+                var original = connection.Get<Application>(application.Id, null);
 
                 if (original == null)
                     return NotFound();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 using Boondocks.Services.Base;
 using Boondocks.Services.Contracts;
@@ -7,6 +8,7 @@ using Boondocks.Services.DataAccess.Interfaces;
 using Boondocks.Services.Management.Contracts;
 using Boondocks.Services.Management.WebApi.Model;
 using Dapper;
+using Dapper.Contrib.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Boondocks.Services.Management.WebApi.Controllers
@@ -52,8 +54,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         {
             using (var connection = _connectionFactory.CreateAndOpen())
             {
-                return connection
-                    .GetDevice(id)
+                return connection.Get<Device>(id)
                     .ObjectOrNotFound();
             }
         }
@@ -89,7 +90,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             using (var connection = _connectionFactory.CreateAndOpen())
             using (var transaction = connection.BeginTransaction())
             {
-                var original = connection.GetDevice(device.Id);
+                var original = connection.Get<Device>(device.Id, null);
 
                 if (original == null)
                     return NotFound();
@@ -98,8 +99,8 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                 bool applicationChanged = original.ApplicationId != device.ApplicationId;
 
                 //We don't need to get these in call cases
-                Lazy<Application> oldApplication = new Lazy<Application>(() => connection.GetApplication(original.ApplicationId));
-                Lazy<Application> newApplication = new Lazy<Application>(() => connection.GetApplication(device.ApplicationId));
+                Lazy<Application> oldApplication = new Lazy<Application>(() => connection.Get<Application>(original.ApplicationId, transaction));
+                Lazy<Application> newApplication = new Lazy<Application>(() => connection.Get<Application>(device.ApplicationId, transaction));
 
                 if (applicationChanged)
                 {

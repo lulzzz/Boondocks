@@ -33,8 +33,6 @@ namespace Boondocks.Services.Management.WebApi.Controllers
 
             using (var connection = _connectionFactory.CreateAndOpen())
             {
-                
-
                 return queryBuilder
                     .Execute(connection)
                     .ToArray();

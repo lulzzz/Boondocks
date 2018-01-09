@@ -1,35 +1,13 @@
 ﻿using System;
 using System.Data;
-using System.Linq;
-using System.Text;
 using Boondocks.Services.Contracts;
 using Dapper;
+using Dapper.Contrib.Extensions;
 
 namespace Boondocks.Services.DataAccess
 {
     public static class DataAccessOperations
     {
-        public static DeviceType GetDeviceType(this IDbConnection connection, Guid id)
-        {
-            return connection
-                .QuerySingleOrDefault<DeviceType>(
-                    "select Id, Name, CreatedUtc from DeviceTypes where Id = @id",
-                    new { id });
-        }
-
-        public static Application GetApplication(this IDbConnection connection, Guid id)
-        {
-            return connection
-                .QuerySingleOrDefault("select * from Applications where Id = @id", 
-                new { id });
-        }
-
-        public static Device GetDevice(this IDbConnection connection, Guid id)
-        {
-            return connection
-                .QuerySingleOrDefault("select * from Device where Id = @id", new { id });
-        }
-
         public static DeviceEvent InsertDeviceEvent(
             this IDbConnection connection,
             IDbTransaction transaction,
@@ -46,22 +24,7 @@ namespace Boondocks.Services.DataAccess
                 Message = message
             }.SetNew();
 
-            const string sql = "insert DeviceEvents " +
-                               "(" +
-                               "  Id, " +
-                               "  DeviceId, " +
-                               "  EventType, " +
-                               "  Message, " +
-                               "  CreatedUtc" +
-                               ") values (" +
-                               "  @Id," +
-                               "  @DeviceId, " +
-                               "  @EventType, " +
-                               "  @Message, " +
-                               "  @CreatedUtc" +
-                               ")";
-
-            connection.Execute(sql, deviceEvent, transaction);
+            connection.Insert(deviceEvent, transaction);
 
             return deviceEvent;
         }
@@ -82,22 +45,7 @@ namespace Boondocks.Services.DataAccess
                 Message = message
             }.SetNew();
 
-            const string sql = "insert ApplicationEvents " +
-                               "(" +
-                               "  Id, " +
-                               "  ApplicationId, " +
-                               "  EventType, " +
-                               "  Message, " +
-                               "  CreatedUtc" +
-                               ") values ( " +
-                               "  @Id," +
-                               "  @ApplicationId, " +
-                               "  @EventType, " +
-                               "  @Message, " +
-                               "  @CreatedUtc" +
-                               ")";
-
-            connection.Execute(sql, applicationEvent, transaction);
+            connection.Insert(applicationEvent, transaction);
 
             return applicationEvent;
         }
@@ -134,39 +82,9 @@ namespace Boondocks.Services.DataAccess
                 State = DeviceState.New
             };
 
-            const string deviceSql = "insert Devices " +
-                               "(" +
-                               "  Id, " +
-                               "  Name, " +
-                               "  ApplicationId, " +
-                               "  DeviceKey, " +
-                               "  CreatedUtc, " +
-                               "  IsDisabled, " +
-                               "  IsDeleted," +
-                               "  ConfigurationVersion" +
-                               ") values (" +
-                               "  @Id, " +
-                               "  @Name, " +
-                               "  @ApplicationId, " +
-                               "  @DeviceKey, " +
-                               "  @CreatedUtc, " +
-                               "  0, " +
-                               "  0, " +
-                               "  @ConfigurationVersion" +
-                               ")";
-
-            connection.Execute(deviceSql, device, transaction);
-
-            const string deviceStatusSql = "insert DeviceStatus " +
-                                           "( " +
-                                           "  DeviceId, " +
-                                           "  State " + 
-                                           ") values (" +
-                                           "  @DeviceId, " +
-                                           "  @State" +
-                                           ")";
-
-            connection.Execute(deviceStatusSql, deviceStatus, transaction);
+            //Insert these 
+            connection.Insert(device, transaction);
+            connection.Insert(deviceStatus, transaction);
 
             return device;
         }
@@ -213,11 +131,7 @@ namespace Boondocks.Services.DataAccess
 
         public static DeviceEnvironmentVariable GetDeviceEnvironmentVariable(this IDbConnection connection, Guid id, IDbTransaction transaction = null)
         {
-            return connection
-                .QuerySingleOrDefault<DeviceEnvironmentVariable>(
-                    "select * from DeviceEnvironmentVariables where Id = @id", 
-                    new { id }, 
-                    transaction);
+            return connection.Get<DeviceEnvironmentVariable>(id, transaction);
         }
 
         public static DeviceEnvironmentVariable InsertDeviceEnvironmentVariable(
@@ -234,22 +148,7 @@ namespace Boondocks.Services.DataAccess
                 Value = value
             }.SetNew();
 
-            const string sql = "insert DeviceEnvironmentVariables " +
-                               "(" +
-                               "  Id, " +
-                               "  DeviceId, " +
-                               "  Name, " +
-                               "  Value, " +
-                               "  CreatedUtc" +
-                               ") values ( " +
-                               "  @Id, " +
-                               "  @DeviceId," +
-                               "  @Name, " +
-                               "  @Value, " +
-                               "  @CreatedUtc" +
-                               ")";
-
-            connection.Execute(sql, variable, transaction);
+            connection.Insert(variable, transaction);
 
             return variable;
         }
@@ -309,7 +208,5 @@ namespace Boondocks.Services.DataAccess
 
             connection.Execute(sql, parameters, transaction);
         }
-
-
     }
 }
