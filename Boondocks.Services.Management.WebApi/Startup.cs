@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
+using MongoDB.Driver;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Boondocks.Services.Management.WebApi
@@ -35,7 +36,24 @@ namespace Boondocks.Services.Management.WebApi
                 var basePath = PlatformServices.Default.Application.ApplicationBasePath;
                 var xmlPath = Path.Combine(basePath, "Boondocks.Services.Management.WebApi.xml");
                 c.IncludeXmlComments(xmlPath);
+
+                c.OperationFilter<FileUploadOperation>();
             });
+
+            //services.ConfigureSwaggerGen(options =>
+            //{
+            //    options.SingleApiVersion(new Info
+            //    {
+            //        Version = "v1",
+            //        Title = "My API",
+            //        Description = "My First Core Web API",
+            //        TermsOfService = "None",
+            //        Contact = new Contact() { Name = "Talking Dotnet", Email = "contact@talkingdotnet.com", Url = "www.talkingdotnet.com" }
+            //    });
+            //    options.IncludeXmlComments(GetXmlCommentsPath());
+            //    options.DescribeAllEnumsAsStrings();
+            //    options.OperationFilter<FileUploadOperation>(); //Register File Upload Operation Filter
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,6 +81,12 @@ namespace Boondocks.Services.Management.WebApi
             builder.RegisterInstance(new SqlServerDbConnectionFactory(@"Server=localhost\sqlexpress;Database=Boondocks;User Id=boondocks;Password=#Px@S:w_j+V97ngz;"))
                 .As<IDbConnectionFactory>()
                 .SingleInstance();
+
+            var mongoClient = new MongoClient();
+
+            var database = mongoClient.GetDatabase("Boondocks");
+
+            builder.RegisterInstance(database);
         }
     }
 }

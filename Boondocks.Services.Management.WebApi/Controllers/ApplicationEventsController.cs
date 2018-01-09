@@ -3,18 +3,17 @@ using System.Linq;
 using Boondocks.Services.Contracts;
 using Boondocks.Services.DataAccess;
 using Boondocks.Services.DataAccess.Interfaces;
-using Dapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Boondocks.Services.Management.WebApi.Controllers
 {
     [Produces("application/json")]
-    [Route("v1/deviceEvents")]
-    public class DeviceEventsController : Controller
+    [Route("v1/applicationEvents")]
+    public class ApplicationEventsController : Controller
     {
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public DeviceEventsController(IDbConnectionFactory connectionFactory)
+        public ApplicationEventsController(IDbConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
@@ -24,19 +23,19 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public DeviceEvent[] Get()
+        public ApplicationEvent[] Get()
         {
-            var queryBuilder = new SelectQueryBuilder<DeviceEvent>(
-                "select * from DeviceEvents", 
+            var queryBuilder = new SelectQueryBuilder<ApplicationEvent>(
+                "select * from ApplicationEvents",
                 Request.Query,
-                new SortableColumn[]
+                new []
                 {
-                    new SortableColumn("deviceId", "DeviceId"),
+                    new SortableColumn("applicationId", "ApplicationId"),
                     new SortableColumn("eventType", "EventType"),
                     new SortableColumn("createdUtc", "CreatedUtc", true, SortDirection.Descending),
                 });
 
-            queryBuilder.TryAddGuidParameter("deviceId", "DeviceId");
+            queryBuilder.TryAddGuidParameter("applicationId", "ApplicationId");
             queryBuilder.TryAddIntParameter("eventType", "EventType");
 
             using (var connection = _connectionFactory.CreateAndOpen())

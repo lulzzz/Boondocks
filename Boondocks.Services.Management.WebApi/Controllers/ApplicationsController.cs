@@ -26,10 +26,18 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         [HttpGet]
         public Application[] Get()
         {
+            var queryBuilder = new SelectQueryBuilder<Application>(
+                "select * from Applications", 
+                Request.Query,
+                new []
+                {
+                    new SortableColumn("name", "Name", true), 
+                    new SortableColumn("createdUtc", "CreatedUtc"), 
+                });
+
             using (var connection = _connectionFactory.CreateAndOpen())
             {
-                return connection
-                    .Query<Application>("select * from Applications order by Name")
+                return queryBuilder.Execute(connection)
                     .ToArray();
             }
         }
