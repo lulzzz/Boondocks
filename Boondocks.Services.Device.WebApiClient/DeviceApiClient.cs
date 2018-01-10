@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
@@ -78,6 +79,27 @@ namespace Boondocks.Services.Device.WebApiClient
         public Task<HeartbeatResponse> HeartbeatAsync(HeartbeatRequest request, CancellationToken cancellationToken = new CancellationToken())
         {
             return PostAsync<HeartbeatResponse>("v1/heartbeat", request, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the configuration for the device.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task<GetDeviceConfigurationResponse> GetConfigurationAsync(CancellationToken cancellationToken = new CancellationToken())
+        {
+            return GetAsync<GetDeviceConfigurationResponse>("v1/deviceConfiguration", null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the download stream for an application image.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task<Stream> DownloadApplicationVersionImage(Guid id, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return DownloadFileAsync("v1/applicationVersion", null, cancellationToken);
         }
     }
 }

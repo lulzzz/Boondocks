@@ -14,6 +14,8 @@
     <PackageReference Include="Dapper" Version="1.50.4" />
     <PackageReference Include="Dapper.Contrib" Version="1.50.4" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="1.1.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.5.0" />
+    <PackageReference Include="MongoDB.Driver.GridFS" Version="2.5.0" />
   </ItemGroup>
 
   <ItemGroup>

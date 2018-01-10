@@ -100,11 +100,17 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     || original.SupervisorVersionId != application.SupervisorVersionId
                     || original.RootFileSystemVersionId != application.RootFileSystemVersionId;
 
+                const string sql =
+                    @"update Applications set " +
+                    "  Name = @Name, " +
+                    "  ApplicationVersionId = @ApplicationVersionId, " +
+                    "  SupervisorVersionId = @SupervisorVersionId, " +
+                    "  RootFileSystemVersionId = @RootFileSystemVersionId  " +
+                    "where" +
+                    "  Id = @Id";
+
                 //Update the application record
-                connection.Execute(
-                    @"update Applications set Name = @Name, ApplicationVersionId = @ApplicationVersionId, SupervisorVersionId = @SupervisorVersionId, RootFileSystemVersionId = @RootFileSystemVersionId  where Id = @Id",
-                    application,
-                    transaction);
+                connection.Execute(sql, application, transaction);
 
                 //Did we update anything that affects the devices?
                 if (deviceConfigurationChanged)

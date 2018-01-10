@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using Boondocks.Services.Contracts;
 using Dapper;
 using Dapper.Contrib.Extensions;
@@ -221,6 +222,24 @@ namespace Boondocks.Services.DataAccess
             };
 
             connection.Execute(sql, parameters, transaction);
+        }
+
+        public static DeviceEnvironmentVariable[] GetDeviceEnvironmentVariables(this IDbConnection connection, Guid deviceId)
+        {
+            const string sql = "select * from DeviceEnvironmentVariables where DeviceId = @deviceId";
+
+            return connection
+                .Query<DeviceEnvironmentVariable>(sql, new { deviceId})
+                .ToArray();
+        }
+
+        public static ApplicationEnvironmentVariable[] GetApplicationEnvironmentVariables(this IDbConnection connection, Guid applicationId)
+        {
+            const string sql = "select * from ApplicationEnvironmentVariables where ApplicationId = @applicationId";
+
+            return connection
+                .Query<ApplicationEnvironmentVariable>(sql, new { applicationId })
+                .ToArray();
         }
     }
 }

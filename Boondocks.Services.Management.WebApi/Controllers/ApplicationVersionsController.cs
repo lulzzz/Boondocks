@@ -19,12 +19,13 @@ namespace Boondocks.Services.Management.WebApi.Controllers
     [Route("v1/applicationVersions")]
     public class ApplicationVersionsController : Controller
     {
-        private readonly IMongoDatabase _mongoDatabase;
+        private readonly IBlobDataAccessProvider _blobDataAccessProvider;
+
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public ApplicationVersionsController(IDbConnectionFactory connectionFactory, IMongoDatabase mongooDatabase)
+        public ApplicationVersionsController(IDbConnectionFactory connectionFactory, IBlobDataAccessProvider blobDataAccessProvider)
         {
-            _mongoDatabase = mongooDatabase ?? throw new ArgumentNullException(nameof(mongooDatabase));
+            _blobDataAccessProvider = blobDataAccessProvider ?? throw new ArgumentNullException(nameof(blobDataAccessProvider));
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
@@ -32,7 +33,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         public ApplicationVersion[] Get()
         {
             var queryBuilder = new SelectQueryBuilder<ApplicationVersion>(
-                "select * from ApplicationVersions",
+                "select * from ApplicationVersionImages",
                 Request.Query,
                 new []
                 {
@@ -97,13 +98,9 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     ApplicationId = applicationId
                 }.SetNew();
 
-                var bucket = new GridFSBucket(_mongoDatabase);
-
-                string filename = $"ApplicationVersion_{id:D}";
-
                 using (var sourceStream = file.OpenReadStream())
                 {
-                    bucket.UploadFromStream(filename, sourceStream);
+                    _blobDataAccessProvider.ApplicationVersionImages.UploadFromStream(id, sourceStream);
                 }
 
                 connection.Insert(applicationVersion);
@@ -112,6 +109,4 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             }
         }
     }
-
-    
 }

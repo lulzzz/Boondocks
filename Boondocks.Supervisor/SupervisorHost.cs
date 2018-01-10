@@ -112,10 +112,14 @@ namespace Boondocks.Supervisor
 
             Console.WriteLine($"\t{response.ConfigurationVersion}");
 
-            //foreach (var envVar in response.EnvironmentVariables)
-            //{
-            //    Console.WriteLine($"  {envVar.Name}: {envVar.Value}");
-            //}
+            var configuration = await _deviceApiClient.GetConfigurationAsync(cancellationToken);
+
+            foreach (var envVar in configuration.EnvironmentVariables)
+            {
+                Console.WriteLine($"  {envVar.Name}: {envVar.Value}");
+            }
+
+            Console.WriteLine($"Application Version: {configuration.ApplicationVersionId}");
         }
     }
 }

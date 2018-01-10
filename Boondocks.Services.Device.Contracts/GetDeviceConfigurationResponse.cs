@@ -9,19 +9,19 @@ namespace Boondocks.Services.Device.Contracts
         /// The version of the supervisor.
         /// </summary>
         [JsonProperty("supervisorVersionId")]
-        public Guid SupervisorVersionId { get; set; }
+        public Guid? SupervisorVersionId { get; set; }
 
         /// <summary>
         /// The version of the root file system.
         /// </summary>
         [JsonProperty("rootFileSystemVersionId")]
-        public Guid RootFileSystemVersionId { get; set; }
+        public Guid? RootFileSystemVersionId { get; set; }
 
         /// <summary>
         /// The application version.
         /// </summary>
         [JsonProperty("applicationVersionId")]
-        public Guid ApplicationVersionId { get; set; }
+        public Guid? ApplicationVersionId { get; set; }
 
         /// <summary>
         /// The effective environment variables for this device.

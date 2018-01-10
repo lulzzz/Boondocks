@@ -39,21 +39,6 @@ namespace Boondocks.Services.Management.WebApi
 
                 c.OperationFilter<FileUploadOperation>();
             });
-
-            //services.ConfigureSwaggerGen(options =>
-            //{
-            //    options.SingleApiVersion(new Info
-            //    {
-            //        Version = "v1",
-            //        Title = "My API",
-            //        Description = "My First Core Web API",
-            //        TermsOfService = "None",
-            //        Contact = new Contact() { Name = "Talking Dotnet", Email = "contact@talkingdotnet.com", Url = "www.talkingdotnet.com" }
-            //    });
-            //    options.IncludeXmlComments(GetXmlCommentsPath());
-            //    options.DescribeAllEnumsAsStrings();
-            //    options.OperationFilter<FileUploadOperation>(); //Register File Upload Operation Filter
-            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -82,11 +67,14 @@ namespace Boondocks.Services.Management.WebApi
                 .As<IDbConnectionFactory>()
                 .SingleInstance();
 
-            var mongoClient = new MongoClient();
+            //blob config
+            builder.RegisterInstance(new BlobDataAccessConfiguration("mongodb://localhost", "Boondocks"))
+                .As<IBlobDataAccesConfiguration>();
 
-            var database = mongoClient.GetDatabase("Boondocks");
-
-            builder.RegisterInstance(database);
+            //blob access
+            builder.RegisterType<BlobDataAccessProvider>()
+                .As<IBlobDataAccessProvider>()
+                .SingleInstance();
         }
     }
 }

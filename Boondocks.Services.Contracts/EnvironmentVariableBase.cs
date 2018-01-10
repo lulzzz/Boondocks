@@ -2,7 +2,7 @@
 
 namespace Boondocks.Services.Contracts
 {
-    public class EnvironmentVariable : EntityBase
+    public class EnvironmentVariableBase : EntityBase
     {
         [JsonProperty("name")]
         public string Name { get; set; }

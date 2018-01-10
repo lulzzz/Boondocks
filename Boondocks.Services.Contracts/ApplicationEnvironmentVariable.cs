@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Boondocks.Services.Contracts
 {
-    public class ApplicationEnvironmentVariable : EnvironmentVariable
+    public class ApplicationEnvironmentVariable : EnvironmentVariableBase
     {
         [JsonProperty("applicationId")]
         public Guid ApplicationId { get; set; }
