@@ -2,7 +2,7 @@
   "profiles": {
     "BoondocksCli": {
       "commandName": "Project",
-      "commandLineArgs": "list-apps -t \"ac81d788-3f97-4591-b337-f296f78ac400\""
+      "commandLineArgs": "deploy-app -a 44b8a5c4-04cf-4ddb-9eb1-ce8ebf8e1144 -d \"http://10.0.4.79:2375\" -n \"1.0.0\" -i \"resin/raspberry-pi2-debian\""
     }
   }
 }

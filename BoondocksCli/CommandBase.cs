@@ -2,7 +2,7 @@
 
 namespace BoondocksCli
 {
-    public abstract class OptionsBase
+    public abstract class CommandBase
     {
         public abstract Task<int> ExecuteAsync(ExecutionContext context);
 

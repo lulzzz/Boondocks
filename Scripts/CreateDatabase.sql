@@ -12,13 +12,13 @@
 USE [master]
 GO
 
-/****** Object:  Database [Boondocks]    Script Date: 1/5/2018 2:11:53 PM ******/
+/****** Object:  Database [Boondocks]    Script Date: 1/10/2018 5:36:04 PM ******/
 CREATE DATABASE [Boondocks]
  CONTAINMENT = NONE
  ON  PRIMARY 
-( NAME = N'Boondocks', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.SQLEXPRESS\MSSQL\DATA\Boondocks.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+( NAME = N'Boondocks', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.SQLEXPRESS\MSSQL\DATA\Boondocks_dev.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
  LOG ON 
-( NAME = N'Boondocks_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.SQLEXPRESS\MSSQL\DATA\Boondocks_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+( NAME = N'Boondocks_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.SQLEXPRESS\MSSQL\DATA\Boondocks_dev_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
 GO
 
 ALTER DATABASE [Boondocks] SET COMPATIBILITY_LEVEL = 140

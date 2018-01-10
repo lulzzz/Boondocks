@@ -7,8 +7,8 @@ using CommandLine;
 
 namespace BoondocksCli.Commands
 {
-    [Verb("list-devices", HelpText = "List devices.")]
-    public class ListDevicesOptions : OptionsBase
+    [Verb("device-list", HelpText = "List devices.")]
+    public class DeviceListCommand : CommandBase
     {
         [Option('a', "app-id", HelpText = "The id of the application to filter on.")]
         public string ApplicationId { get; set; }

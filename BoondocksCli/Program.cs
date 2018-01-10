@@ -9,7 +9,7 @@ namespace BoondocksCli
         static int Main(string[] args)
         {
             //All commands are based off of this type.
-            Type baseType = typeof(OptionsBase);
+            Type baseType = typeof(CommandBase);
 
             //Get the command types via reflection.
             var commandTypes = baseType.Assembly.GetTypes()
@@ -22,7 +22,7 @@ namespace BoondocksCli
             //Do it now
             return Parser.Default.ParseArguments(args, commandTypes)
                 .MapResult(
-                    (OptionsBase opts) => opts.ExecuteAsync(executionContext).GetAwaiter().GetResult(),
+                    (CommandBase opts) => opts.ExecuteAsync(executionContext).GetAwaiter().GetResult(),
                     errs => 1);
         }
     }

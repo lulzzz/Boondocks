@@ -78,8 +78,8 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             [FromQuery] string name,
             IFormFile file)
         {
-            if (id == Guid.Empty)
-                return BadRequest("A default id was specified.");
+            if (applicationId == Guid.Empty)
+                return BadRequest("A default application id was specified.");
 
             if (file == null)
                 return BadRequest("No upload file was provided.");
@@ -100,7 +100,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
 
                 using (var sourceStream = file.OpenReadStream())
                 {
-                    _blobDataAccessProvider.ApplicationVersionImages.UploadFromStream(id, sourceStream);
+                    _blobDataAccessProvider.ApplicationVersionImages.UploadFromStream(applicationVersion.Id, sourceStream);
                 }
 
                 connection.Insert(applicationVersion);

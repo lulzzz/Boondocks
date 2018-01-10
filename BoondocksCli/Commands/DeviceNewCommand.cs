@@ -6,8 +6,8 @@ using CommandLine;
 
 namespace BoondocksCli.Commands
 {
-    [Verb("new-dev", HelpText = "Create a new device.")]
-    public class NewDeviceOptions : OptionsBase
+    [Verb("device-new", HelpText = "Create a new device.")]
+    public class DeviceNewCommand : CommandBase
     {
         [Option('n', "name", Required = true, HelpText = "The name of the device.")]
         public string Name { get; set; }

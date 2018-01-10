@@ -5,8 +5,8 @@ using CommandLine;
 
 namespace BoondocksCli.Commands
 {
-    [Verb("list-device-types", HelpText = "List device types.")]
-    public class ListDeviceTypesOptions : OptionsBase
+    [Verb("device-type-list", HelpText = "List device types.")]
+    public class DeviceTypeListCommand : CommandBase
     {
         public override async Task<int> ExecuteAsync(ExecutionContext context)
         {
