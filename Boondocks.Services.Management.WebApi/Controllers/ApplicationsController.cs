@@ -56,7 +56,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         }
 
         [HttpPost]
-        public Application Post(CreateApplicationRequest request)
+        public Application Post([FromBody]CreateApplicationRequest request)
         {
             using (var connection = _connectionFactory.CreateAndOpen())
             using (var transaction = connection.BeginTransaction())

@@ -33,7 +33,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         public ApplicationVersion[] Get()
         {
             var queryBuilder = new SelectQueryBuilder<ApplicationVersion>(
-                "select * from ApplicationVersionImages",
+                "select * from ApplicationVersions",
                 Request.Query,
                 new []
                 {

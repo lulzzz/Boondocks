@@ -83,7 +83,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             using (var connection = _connectionFactory.CreateAndOpen())
             using (var transaction = connection.BeginTransaction())
             {
-                var original = connection.Get<Device>(device.Id, null);
+                var original = connection.Get<Device>(device.Id, transaction);
 
                 if (original == null)
                     return NotFound();

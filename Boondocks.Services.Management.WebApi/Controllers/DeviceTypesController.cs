@@ -45,7 +45,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         }
 
         [HttpPost]
-        public DeviceType Post(CreateDeviceTypeRequest request)
+        public DeviceType Post([FromBody]CreateDeviceTypeRequest request)
         {
             using (var connection = _connectionFactory.CreateAndOpen())
             {

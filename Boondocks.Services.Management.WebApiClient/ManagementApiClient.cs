@@ -26,6 +26,28 @@ namespace Boondocks.Services.Management.WebApiClient
 
         protected override string BaseUri { get; }
 
+        public Task<ApplicationVersion[]> GetApplicationVersionsAsync(GetApplicationVersionsRequest request, CancellationToken cancellationToken = new CancellationToken())
+        {
+            dynamic query = new ExpandoObject();
+
+            if (request.ApplicationId != null)
+            {
+                query.applicationId = request.ApplicationId.Value;
+            }
+
+            return GetAsync<ApplicationVersion[]>(ResourceUrls.ApplicationVersions, query, cancellationToken);
+        }
+
+        public Task<DeviceType> CreateDeviceTypeAsync(string name, CancellationToken cancellationToken = new CancellationToken())
+        {
+            var request = new CreateDeviceTypeRequest()
+            {
+                Name = name
+            };
+
+            return PostAsync<DeviceType>(ResourceUrls.DeviceTypes, request, null, cancellationToken);
+        }
+
         public Task<DeviceType[]> GetDeviceTypes(CancellationToken cancellationToken = new CancellationToken())
         {
             return GetAsync<DeviceType[]>(ResourceUrls.DeviceTypes, null, cancellationToken);
@@ -110,6 +132,16 @@ namespace Boondocks.Services.Management.WebApiClient
             return GetAsync<Device[]>(ResourceUrls.Devices, query, cancellationToken);
         }
 
+        public Task<Device> GetDeviceAsync(Guid id, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return GetAsync<Device>(ResourceUrls.Devices, new { id }, cancellationToken);
+        }
+
+        public Task UpdateDeviceAsync(Device device, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return PutAsync(ResourceUrls.Devices, device, null, cancellationToken);
+        }
+
         protected async Task<TResponse> UploadFileAsyncLocal<TResponse>(string relativePath, string filename, Stream stream, object routeValues = null, string formName = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             string uri = null;
@@ -154,12 +186,7 @@ namespace Boondocks.Services.Management.WebApiClient
         }
     }
 
-    public class GetApplicationsRequest
-    {
-        public Guid? DeviceTypeId { get; set; }
-    }
-
-    public class GetDevicesRequest
+    public class GetApplicationVersionsRequest
     {
         public Guid? ApplicationId { get; set; }
     }

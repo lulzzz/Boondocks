@@ -67,7 +67,9 @@ namespace BoondocksCli.Commands
             using (var sourceStream = await dockerClient.Images.SaveImageAsync(image.ID))
             {
                 //Upload this joker
-                await context.Client.UploadApplicationVersionAsync(applicationId.Value, Name, sourceStream);
+                var applicationVersion =  await context.Client.UploadApplicationVersionAsync(applicationId.Value, Name, sourceStream);
+
+                Console.WriteLine($"ApplicationVersion {applicationVersion.Id} successfuly created.");
             }
 
             return 0;
