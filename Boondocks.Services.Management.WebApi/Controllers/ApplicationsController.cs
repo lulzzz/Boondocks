@@ -35,6 +35,8 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     new SortableColumn("createdUtc", "CreatedUtc"), 
                 });
 
+            queryBuilder.TryAddGuidParameter("deviceTypeId", "DeviceTypeId");
+
             using (var connection = _connectionFactory.CreateAndOpen())
             {
                 return queryBuilder.Execute(connection)

@@ -61,20 +61,12 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         }
 
         [HttpPost]
-        public Device Post(CreateDeviceRequest request)
+        public Device Post([FromBody] CreateDeviceRequest request)
         {
-            var device = new Device()
-            {
-                Name = request.Name,
-                ApplicationId = request.ApplicationId,
-                DeviceKey = request.DeviceKey ?? Guid.NewGuid(),
-                ConfigurationVersion = Guid.NewGuid()
-            }.SetNew();
-
             using (var connection = _connectionFactory.CreateAndOpen())
             using (var transaction = connection.BeginTransaction())
             {
-                connection.InsertDevice(transaction, request.Name, request.ApplicationId, request.DeviceKey);
+                var device = connection.InsertDevice(transaction, request.Name, request.ApplicationId, request.DeviceKey);
 
                 //Create the event record               
                 connection.InsertDeviceEvent(transaction, device.Id, DeviceEventType.Created, "Device created.");

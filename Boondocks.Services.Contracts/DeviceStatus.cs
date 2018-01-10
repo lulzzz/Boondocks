@@ -1,10 +1,13 @@
 ﻿using System;
+using Dapper.Contrib.Extensions;
 using Newtonsoft.Json;
 
 namespace Boondocks.Services.Contracts
 {
+    [Table("DeviceStatus")]
     public class DeviceStatus
     {
+        [ExplicitKey]
         [JsonProperty("deviceId")]
         public Guid DeviceId { get; set; }
 
