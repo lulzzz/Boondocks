@@ -4,6 +4,7 @@ using Boondocks.Services.DataAccess;
 using Boondocks.Services.DataAccess.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,6 +27,13 @@ namespace Boondocks.Services.Management.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
+            // https://stackoverflow.com/a/40364756/232566
+            services.Configure<FormOptions>(o =>
+            {
+                o.ValueLengthLimit = int.MaxValue;
+                o.MultipartBodyLengthLimit = int.MaxValue; // In case of multipart
+            });
 
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>

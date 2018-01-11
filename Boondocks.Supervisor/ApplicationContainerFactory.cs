@@ -13,8 +13,8 @@ namespace Boondocks.Supervisor
 
             builder.RegisterInstance(new DeviceConfiguration
             {
-                DeviceId = new Guid("B77D8247-037D-4744-940D-53E312F5E4EF"),
-                DeviceKey = new Guid("D0A974F0-2529-4143-88D8-E6F05C268FD9"),
+                DeviceId = new Guid("7A6B6940-C7C1-482C-B382-0AC2FE2A96B0"),
+                DeviceKey = new Guid("208F075A-59CE-486B-B98E-1436D62224EA"),
                 DeviceApiUrl = "http://localhost:54983/",
                 DockerEndpoint = "http://10.0.4.72:2375",
                 PollSeconds = 10

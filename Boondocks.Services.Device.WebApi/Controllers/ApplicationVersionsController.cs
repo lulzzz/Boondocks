@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace Boondocks.Services.Device.WebApi.Controllers
 {
     [Produces("application/json")]
-    [Route("v1/applicationVersion")]
+    [Route("v1/applicationVersions")]
     [Authorize]
-    public class ApplicationVersionController : Controller
+    public class ApplicationVersionsController : Controller
     {
         private readonly IBlobDataAccessProvider _blobDataAccessProvider;
 
-        public ApplicationVersionController(IBlobDataAccessProvider blobDataAccessProvider)
+        public ApplicationVersionsController(IBlobDataAccessProvider blobDataAccessProvider)
         {
             _blobDataAccessProvider = blobDataAccessProvider ?? throw new ArgumentNullException(nameof(blobDataAccessProvider));
         }

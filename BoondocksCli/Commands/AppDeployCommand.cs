@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Boondocks.Services.Base;
 using CommandLine;
@@ -44,24 +45,33 @@ namespace BoondocksCli.Commands
 
             var listParameters = new ImagesListParameters()
             {
-                MatchName = ImageUuid
+                All = true,
+                //MatchName = ImageUuid
             };
 
             var images = await dockerClient.Images.ListImagesAsync(listParameters);
 
-            if (images.Count == 0)
+            var image = images.FirstOrDefault(i => i.ID.Contains(ImageUuid));
+
+            if (image == null)
             {
-                Console.WriteLine("No images found.");
+                Console.WriteLine($"Unable to find image '{ImageUuid}'.");
                 return 1;
             }
 
-            if (images.Count > 1)
-            {
-                Console.WriteLine($"{images.Count} images found. Need just one!");
-                return 1;
-            }
+            //if (images.Count == 0)
+            //{
+            //    Console.WriteLine("No images found.");
+            //    return 1;
+            //}
 
-            var image = images[0];
+            //if (images.Count > 1)
+            //{
+            //    Console.WriteLine($"{images.Count} images found. Need just one!");
+            //    return 1;
+            //}
+
+            //var image = images[0];
 
             //Get the download stream
             using (var sourceStream = await dockerClient.Images.SaveImageAsync(image.ID))

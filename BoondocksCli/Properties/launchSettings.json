@@ -1,7 +1,8 @@
 {
   "profiles": {
     "BoondocksCli": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "app-deploy -a be573be2-5cca-4726-8ecc-7d50aa53e487 -d \"http://10.0.4.79:2375\" -n \"1.0.0\" -i \"b0cd95ba15d3\""
     }
   }
 }

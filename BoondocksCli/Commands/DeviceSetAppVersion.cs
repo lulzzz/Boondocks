@@ -18,7 +18,7 @@ namespace BoondocksCli.Commands
         public override async Task<int> ExecuteAsync(ExecutionContext context)
         {
             Guid? deviceId = DeviceId.ParseGuid();
-            Guid? applicationVersionId = DeviceId.ParseGuid();
+            Guid? applicationVersionId = ApplicationVersionId.ParseGuid();
 
             if (deviceId == null)
             {

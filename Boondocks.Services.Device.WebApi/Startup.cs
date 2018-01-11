@@ -92,6 +92,15 @@ namespace Boondocks.Services.Device.WebApi
             builder.RegisterInstance(new SqlServerDbConnectionFactory(@"Server=localhost\sqlexpress;Database=Boondocks;User Id=boondocks;Password=#Px@S:w_j+V97ngz;"))
                 .As<IDbConnectionFactory>()
                 .SingleInstance();
+
+            //blob config
+            builder.RegisterInstance(new BlobDataAccessConfiguration("mongodb://localhost", "Boondocks"))
+                .As<IBlobDataAccesConfiguration>();
+
+            //blob access
+            builder.RegisterType<BlobDataAccessProvider>()
+                .As<IBlobDataAccessProvider>()
+                .SingleInstance();
         }
     }
 }
