@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Docker.DotNet;
 using Docker.DotNet.Models;
@@ -60,6 +62,50 @@ namespace Boondocks.Supervisor
                     PruneChildren = true
                 });
             }
+        }
+
+        public static async Task<ImagesListResponse> GetImageAsync(
+            this DockerClient dockerClient, 
+            string imageId, 
+            CancellationToken cancellationToken)
+        {
+            var images = await dockerClient.Images.ListImagesAsync(new ImagesListParameters()
+            {
+                All = true
+            }, cancellationToken);
+
+            return images.FirstOrDefault(i => i.ID == imageId);
+        }
+        
+        public static async Task<bool> IsContainerRunningAsync(this DockerClient client, string containerId, CancellationToken cancellationToken)
+        {
+            var runningContainers = await client.Containers.ListContainersAsync(new ContainersListParameters(), cancellationToken);
+
+            return runningContainers.Any(c => c.ID == containerId);
+        }
+
+        public static async Task<int> GetNumberOfRunningContainersAsync(this DockerClient client, string imageId, CancellationToken cancellationToken)
+        {
+            var runningContainers = await client.Containers.ListContainersAsync(new ContainersListParameters(), cancellationToken);
+
+            return runningContainers.Count(c => c.ImageID == imageId);
+        }
+
+        public static async Task<bool> DoesImageExistAsync(this DockerClient client, string imageId, CancellationToken cancellationToken)
+        {
+            var image = await client.GetImageAsync(imageId, cancellationToken);
+
+            return image != null;
+        }
+
+        public static async Task<ContainerListResponse> GetContainerByImageId(this DockerClient client, string imageId, CancellationToken cancellationToken)
+        {
+            var allContainers = await client.Containers.ListContainersAsync(new ContainersListParameters()
+            {
+                All = true
+            }, cancellationToken);
+
+            return allContainers.FirstOrDefault(c => c.ImageID == imageId);
         }
     }
 }

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Boondocks.Services.Device.Contracts
 {
-    public class ImageReference
+    public class VersionReference
     {
         /// <summary>
         /// The internal id of the image.

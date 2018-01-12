@@ -8,8 +8,8 @@ namespace Boondocks.Services.Device.Contracts
         /// <summary>
         /// The version of the supervisor.
         /// </summary>
-        [JsonProperty("supervisorVersionId")]
-        public Guid? SupervisorVersionId { get; set; }
+        [JsonProperty("supervisorVersion")]
+        public VersionReference SupervisorVersion { get; set; }
 
         /// <summary>
         /// The version of the root file system.
@@ -21,7 +21,7 @@ namespace Boondocks.Services.Device.Contracts
         /// The application version.
         /// </summary>
         [JsonProperty("applicationVersion")]
-        public ImageReference ApplicationVersion { get; set; }
+        public VersionReference ApplicationVersion { get; set; }
 
         /// <summary>
         /// The effective environment variables for this device.

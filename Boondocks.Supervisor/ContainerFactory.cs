@@ -5,7 +5,7 @@ using Boondocks.Supervisor.Model;
 
 namespace Boondocks.Supervisor
 {
-    internal static class ApplicationContainerFactory
+    internal static class ContainerFactory
     {
         public static IContainer Create()
         {
@@ -26,8 +26,10 @@ namespace Boondocks.Supervisor
             });
 
             builder.RegisterType<UptimeProvider>().SingleInstance();
-
-            builder.RegisterType<SupervisorHost>();
+            builder.RegisterType<SupervisorHost>().SingleInstance();
+            builder.RegisterType<ApplicationContainerFactory>().SingleInstance();
+            builder.RegisterType<PathFactory>().SingleInstance();
+            builder.RegisterType<OperationalStateProvider>().SingleInstance();
 
             return builder.Build();
         }

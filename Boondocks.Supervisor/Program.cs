@@ -12,7 +12,7 @@ namespace Boondocks.Supervisor
             Console.WriteLine("Starting...");
 
             //Create the container
-            using (var container = ApplicationContainerFactory.Create())
+            using (var container = ContainerFactory.Create())
             {
                 //Get the supervisor host
                 var host = container.Resolve<SupervisorHost>();

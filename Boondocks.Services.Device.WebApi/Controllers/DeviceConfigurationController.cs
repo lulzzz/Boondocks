@@ -47,17 +47,17 @@ namespace Boondocks.Services.Device.WebApi.Controllers
                 var applicationEnvironmentVariables = connection.GetApplicationEnvironmentVariables(application.Id);
 
                 Guid? applicationVersionId = application.ApplicationVersionId;
+                Guid? supervisorVersionId = application.SupervisorVersionId;
 
                 //Start out with the version information at the application level.
                 var response = new GetDeviceConfigurationResponse()
                 {
-                    SupervisorVersionId = application.SupervisorVersionId,
                     RootFileSystemVersionId = application.RootFileSystemVersionId
                 };
 
                 //Override with device level version information (if available)
                 if (device.SupervisorVersionId != null)
-                    response.SupervisorVersionId = device.SupervisorVersionId.Value;
+                    supervisorVersionId = device.SupervisorVersionId.Value;
 
                 if (device.ApplicationVersionId != null)
                     applicationVersionId = device.ApplicationVersionId.Value;
@@ -73,10 +73,24 @@ namespace Boondocks.Services.Device.WebApi.Controllers
                         return StatusCode(StatusCodes.Status500InternalServerError);
 
                     //Set thhe image reference
-                    response.ApplicationVersion = new ImageReference()
+                    response.ApplicationVersion = new VersionReference()
                     {
                         Id = applicationVersion.Id,
                         ImageId = applicationVersion.ImageId
+                    };
+                }
+
+                if (supervisorVersionId != null)
+                {
+                    var supervisorVersion = connection.Get<SupervisorVersion>(supervisorVersionId);
+
+                    if (supervisorVersion == null)
+                        return StatusCode(StatusCodes.Status500InternalServerError);
+
+                    response.SupervisorVersion = new VersionReference()
+                    {
+                        Id = supervisorVersion.Id,
+                        ImageId = supervisorVersion.ImageId
                     };
                 }
 

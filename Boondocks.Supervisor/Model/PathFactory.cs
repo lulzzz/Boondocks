@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Boondocks.Supervisor.Model
 {
@@ -22,6 +23,8 @@ namespace Boondocks.Supervisor.Model
 
         public string Root => _root;
 
+        public string SupervisorStatusDirectory => Path.Combine(Root, "boondocks-stats");
 
+        public string OperationStatePath => Path.Combine(Root, SupervisorStatusDirectory, "dev-op-state.json");
     }
 }
