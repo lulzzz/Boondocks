@@ -16,5 +16,8 @@ namespace Boondocks.Services.Contracts
 
         [JsonProperty("isDeleted")]
         public bool IsDeleted { get; set; }
+
+        [JsonProperty("imageId")]
+        public string ImageId { get; set; }
     }
 }

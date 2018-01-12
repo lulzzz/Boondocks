@@ -2,10 +2,12 @@
 using System.Dynamic;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Boondocks.Services.Contracts;
 using Boondocks.Services.Management.Contracts;
+using Newtonsoft.Json;
 
 namespace Boondocks.Services.Management.WebApiClient
 {
@@ -87,22 +89,48 @@ namespace Boondocks.Services.Management.WebApiClient
             return PutAsync(ResourceUrls.Applications, application, null, cancellationToken);
         }
 
-        public Task<ApplicationVersion> UploadApplicationVersionAsync(Guid applicationId, string name, Stream stream, Guid? versionId = null, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<ApplicationVersion> UploadApplicationVersionAsync(Guid applicationId, string name,
+            string imageId, Stream stream, Guid? versionId = null,
+            CancellationToken cancellationToken = new CancellationToken())
         {
-            var queryValues = new
+            //Create the uri
+            string uri = CreateRequestUri(ResourceUrls.ApplicationVersions, new { });
+
+            var request = new CreateApplicationVersionRequest()
             {
-                id = versionId,
-                name,
-                applicationId
+                ApplicationId = applicationId,
+                Name = name,
+                ImageId = imageId
             };
 
-            return UploadFileAsyncLocal<ApplicationVersion>(
-                ResourceUrls.ApplicationVersions, 
-                "image.image", 
-                stream, 
-                queryValues, 
-                "file",
-                cancellationToken);
+            try
+            {
+                // http://stackoverflow.com/a/10744043/232566
+                using (var client = await CreateHttpClientAsync())
+                {
+                    using (var content = new MultipartFormDataContent())
+                    {
+                        using (var stringContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"))
+                        using (var fileContent = new StreamContent(stream))
+                        {
+                            //Add the content
+                            content.Add(stringContent, "request");
+                            content.Add(fileContent, "file", $"{request.ImageId.Replace(":", "_")}.image");
+
+                            using (var response = await client.PostAsync(uri, content, cancellationToken))
+                            {
+                                return await ParseResponse<ApplicationVersion>(uri, response);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Unable to Post {Uri}", uri);
+
+                throw;
+            }
         }
 
         public Task<Device> CreateDeviceAsync(Guid applicationId, string name, Guid? applicationVersionId = null, Guid? deviceKey = null, CancellationToken cancellationToken = new CancellationToken())
@@ -142,48 +170,48 @@ namespace Boondocks.Services.Management.WebApiClient
             return PutAsync(ResourceUrls.Devices, device, null, cancellationToken);
         }
 
-        protected async Task<TResponse> UploadFileAsyncLocal<TResponse>(string relativePath, string filename, Stream stream, object routeValues = null, string formName = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            string uri = null;
+        //protected async Task<TResponse> UploadFileAsyncLocal<TResponse>(string relativePath, string filename, Stream stream, object routeValues = null, string formName = null, CancellationToken cancellationToken = default(CancellationToken))
+        //{
+        //    string uri = null;
 
-            try
-            {
-                uri = CreateRequestUri(relativePath, routeValues);
+        //    try
+        //    {
+        //        uri = CreateRequestUri(relativePath, routeValues);
 
-                // http://stackoverflow.com/a/10744043/232566
+        //        // http://stackoverflow.com/a/10744043/232566
 
-                using (var client = await CreateHttpClientAsync())
-                {
-                    using (var content = new MultipartFormDataContent())
-                    {
-                        using (var fileContent = new StreamContent(stream))
-                        {
-                            //fileContent.Headers.Add("Content-Disposition", $"attachment; filename={filename}");
+        //        using (var client = await CreateHttpClientAsync())
+        //        {
+        //            using (var content = new MultipartFormDataContent())
+        //            {
+        //                using (var fileContent = new StreamContent(stream))
+        //                {
+        //                    //fileContent.Headers.Add("Content-Disposition", $"attachment; filename={filename}");
 
-                            if (string.IsNullOrWhiteSpace(formName))
-                            {
-                                content.Add(fileContent);
-                            }
-                            else
-                            {
-                                content.Add(fileContent, formName, filename);
-                            }
+        //                    if (string.IsNullOrWhiteSpace(formName))
+        //                    {
+        //                        content.Add(fileContent);
+        //                    }
+        //                    else
+        //                    {
+        //                        content.Add(fileContent, formName, filename);
+        //                    }
 
-                            using (var response = await client.PostAsync(uri, content, cancellationToken))
-                            {
-                                return await ParseResponse<TResponse>(uri, response);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Unable to Post {Uri}", uri);
+        //                    using (var response = await client.PostAsync(uri, content, cancellationToken))
+        //                    {
+        //                        return await ParseResponse<TResponse>(uri, response);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.Error(ex, "Unable to Post {Uri}", uri);
 
-                throw;
-            }
-        }
+        //        throw;
+        //    }
+        //}
     }
 
     public class GetApplicationVersionsRequest

@@ -62,14 +62,14 @@ namespace Boondocks.Supervisor
                 //Get the configuration from the device api
                 var configuration = await _deviceApiClient.GetConfigurationAsync(cancellationToken);
 
-                if (configuration.ApplicationVersionId == null)
+                if (configuration.ApplicationVersion == null)
                 {
                     Console.WriteLine("No application version id was specified for this device.");
                 }
                 else
                 {
                     Console.WriteLine(
-                        $"Clearing out existing containers and images to load {configuration.ApplicationVersionId}...");
+                        $"Clearing out existing containers and images to load {configuration.ApplicationVersion}...");
 
                     var dockerClientConfiguration =
                         new DockerClientConfiguration(new Uri(_deviceConfiguration.DockerEndpoint));
@@ -82,9 +82,17 @@ namespace Boondocks.Supervisor
                     //ditch all of the images
                     await dockerClient.DeleteAllImagesAsync();
 
+                    if (configuration.ApplicationVersion == null)
+                    {
+                        Console.WriteLine("No application.");
+                        return;
+                    }
+
+                    Console.WriteLine($"Downloading image '{configuration.ApplicationVersion.ImageId}'...");
+
                     //Download the application image
                     using (var sourceStream =
-                        await _deviceApiClient.DownloadApplicationVersionImage(configuration.ApplicationVersionId.Value,
+                        await _deviceApiClient.DownloadApplicationVersionImage(configuration.ApplicationVersion.Id,
                             cancellationToken))
                     {
                         //Load it up
@@ -101,12 +109,12 @@ namespace Boondocks.Supervisor
                         cancellationToken);
 
                     //Get the first image
-                    var image = images.FirstOrDefault();
+                    var image = images.FirstOrDefault(i => i.ID == configuration.ApplicationVersion.ImageId);
 
                     //Make sure we got it
                     if (image == null)
                     {
-                        Console.WriteLine("Unable to find an image");
+                        Console.WriteLine($"Unable to find image '{configuration.ApplicationVersion.ImageId}'");
                     }
                     else
                     {
@@ -223,12 +231,9 @@ namespace Boondocks.Supervisor
                         //Star the container.
                         bool started = await dockerClient.Containers.StartContainerAsync(response.ID, new ContainerStartParameters(), cancellationToken);
 
-                        Console.WriteLine($"Container {response.ID} started.");
+                        Console.WriteLine($"Container {response.ID} started: {started}.");
                     }
                 }
-
-                
-
             }
             catch (Exception e)
             {
@@ -258,7 +263,7 @@ namespace Boondocks.Supervisor
                 Console.WriteLine($"  {envVar.Name}: {envVar.Value}");
             }
 
-            Console.WriteLine($"Application Version: {configuration.ApplicationVersionId}");
+            Console.WriteLine($"Application Version: {configuration.ApplicationVersion?.Id}");
         }
     }
 

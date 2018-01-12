@@ -8,6 +8,7 @@ using Boondocks.Services.Device.Contracts;
 using Boondocks.Services.Device.WebApi.Common;
 using Dapper.Contrib.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Boondocks.Services.Device.WebApi.Controllers
@@ -45,11 +46,12 @@ namespace Boondocks.Services.Device.WebApi.Controllers
                 var deviceEnvironmentVariables = connection.GetDeviceEnvironmentVariables(DeviceId);
                 var applicationEnvironmentVariables = connection.GetApplicationEnvironmentVariables(application.Id);
 
+                Guid? applicationVersionId = application.ApplicationVersionId;
+
                 //Start out with the version information at the application level.
                 var response = new GetDeviceConfigurationResponse()
                 {
                     SupervisorVersionId = application.SupervisorVersionId,
-                    ApplicationVersionId = application.ApplicationVersionId,
                     RootFileSystemVersionId = application.RootFileSystemVersionId
                 };
 
@@ -58,10 +60,25 @@ namespace Boondocks.Services.Device.WebApi.Controllers
                     response.SupervisorVersionId = device.SupervisorVersionId.Value;
 
                 if (device.ApplicationVersionId != null)
-                    response.ApplicationVersionId = device.ApplicationVersionId.Value;
+                    applicationVersionId = device.ApplicationVersionId.Value;
 
                 if (device.RootFileSystemVersionId != null)
                     response.RootFileSystemVersionId = device.RootFileSystemVersionId.Value;
+
+                if (applicationVersionId != null)
+                {
+                    var applicationVersion = connection.Get<ApplicationVersion>(applicationVersionId.Value);
+
+                    if (applicationVersion == null)
+                        return StatusCode(StatusCodes.Status500InternalServerError);
+
+                    //Set thhe image reference
+                    response.ApplicationVersion = new ImageReference()
+                    {
+                        Id = applicationVersion.Id,
+                        ImageId = applicationVersion.ImageId
+                    };
+                }
 
                 //Once again, start out with the application level (this time environment variables)
                 Dictionary<string, string> effectiveEnvironmentVariables = new Dictionary<string, string>();

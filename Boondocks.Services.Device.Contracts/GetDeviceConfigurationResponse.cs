@@ -20,8 +20,8 @@ namespace Boondocks.Services.Device.Contracts
         /// <summary>
         /// The application version.
         /// </summary>
-        [JsonProperty("applicationVersionId")]
-        public Guid? ApplicationVersionId { get; set; }
+        [JsonProperty("applicationVersion")]
+        public ImageReference ApplicationVersion { get; set; }
 
         /// <summary>
         /// The effective environment variables for this device.
