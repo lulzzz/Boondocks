@@ -16,5 +16,23 @@ namespace Boondocks.Services.Device.Contracts
         /// </summary>
         [JsonProperty("imageId")]
         public string ImageId { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is VersionReference other))
+                return false;
+
+            return other.Id == Id && other.ImageId == ImageId;
+        }
+
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return $"{Id}_{ImageId}";
+        }
     }
 }

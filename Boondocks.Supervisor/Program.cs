@@ -9,7 +9,7 @@ namespace Boondocks.Supervisor
     {
         private static async Task<int> Main(string[] args)
         {
-            Console.WriteLine("Starting...");
+            Console.WriteLine("Starting supervisor...");
 
             //Create the container
             using (var container = ContainerFactory.Create())
@@ -29,7 +29,10 @@ namespace Boondocks.Supervisor
                 catch (TaskCanceledException)
                 {
                 }
+
             }
+
+            Console.WriteLine("Supervisor exiting.");
 
             return 0;
         }

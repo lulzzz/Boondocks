@@ -31,6 +31,9 @@ namespace Boondocks.Services.Device.WebApi.Controllers
         {
             using (var connection = _connectionFactory.CreateAndOpen())
             {
+                //TODO: Consider executing a single command with multiple result sets.
+                //      Might have to use some T-SQL to get the application given the device id.
+
                 //Get the device
                 var device = connection.Get<Services.Contracts.Device>(DeviceId);
 
@@ -52,7 +55,8 @@ namespace Boondocks.Services.Device.WebApi.Controllers
                 //Start out with the version information at the application level.
                 var response = new GetDeviceConfigurationResponse()
                 {
-                    RootFileSystemVersionId = application.RootFileSystemVersionId
+                    RootFileSystemVersionId = application.RootFileSystemVersionId,
+                    ConfigurationVersion = device.ConfigurationVersion
                 };
 
                 //Override with device level version information (if available)

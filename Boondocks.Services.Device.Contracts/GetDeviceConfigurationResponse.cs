@@ -26,7 +26,13 @@ namespace Boondocks.Services.Device.Contracts
         /// <summary>
         /// The effective environment variables for this device.
         /// </summary>
-        [JsonProperty("environment-variables")]
+        [JsonProperty("environmentVariables")]
         public EnvironmentVariable[] EnvironmentVariables { get; set; }
+
+        /// <summary>
+        /// The configuration version for this device.
+        /// </summary>
+        [JsonProperty("configurationVersion")]
+        public Guid ConfigurationVersion { get; set; }
     }
 }

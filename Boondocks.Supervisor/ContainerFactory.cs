@@ -30,6 +30,7 @@ namespace Boondocks.Supervisor
             builder.RegisterType<ApplicationContainerFactory>().SingleInstance();
             builder.RegisterType<PathFactory>().SingleInstance();
             builder.RegisterType<OperationalStateProvider>().SingleInstance();
+            builder.RegisterType<PlatformDetector>().SingleInstance();
 
             return builder.Build();
         }

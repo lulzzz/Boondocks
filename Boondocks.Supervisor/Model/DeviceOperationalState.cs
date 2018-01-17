@@ -9,9 +9,14 @@ namespace Boondocks.Supervisor.Model
     public class DeviceOperationalState
     {
         /// <summary>
-        /// The application version.
+        /// The current application. This is what we should make sure is running before working about the NextApplicationVersion.
         /// </summary>
-        public ApplicationReference CurrentApplicationVersion { get; set; }
+        public VersionReference CurrentApplicationVersion { get; set; }
+
+        /// <summary>
+        /// This is the application that we should be downloading / installing.
+        /// </summary>
+        public VersionReference NextApplicationVersion { get; set; }
 
         /// <summary>
         /// Keep track of this to see if it has changed.
