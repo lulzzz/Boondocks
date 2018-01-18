@@ -4,6 +4,9 @@ using Boondocks.Agent.Interfaces;
 
 namespace Boondocks.Agent.Model
 {
+    /// <summary>
+    /// Responsible for generating the paths we use throughout the agent.
+    /// </summary>
     internal class PathFactory
     {
         public PathFactory(IPlatformDetector platformDetector)
@@ -13,14 +16,29 @@ namespace Boondocks.Agent.Model
             Root = platformDetector.IsLinux ? "/" : @"c:\Boondocks\";
         }
 
+        /// <summary>
+        /// The root of the file system.
+        /// </summary>
         public string Root { get; }
 
+        /// <summary>
+        /// The boot directory
+        /// </summary>
         public string Boot => Path.Combine(Root, "boot");
 
+        /// <summary>
+        /// The path of the device configuration file.
+        /// </summary>
         public string DeviceConfigFile => Path.Combine(Boot, "device.config");
 
-        public string SupervisorStatusDirectory => Path.Combine(Root, "boondocks-status");
+        /// <summary>
+        /// The directory in which we put the agent status.
+        /// </summary>
+        public string AgentStatusDirectory => Path.Combine(Root, "boondocks-status");
 
-        public string OperationStatePath => Path.Combine(Root, SupervisorStatusDirectory, "dev-op-state.json");
+        /// <summary>
+        /// The path to where we put the device operational state file.
+        /// </summary>
+        public string OperationStatePath => Path.Combine(Root, AgentStatusDirectory, "dev-op-state.json");
     }
 }

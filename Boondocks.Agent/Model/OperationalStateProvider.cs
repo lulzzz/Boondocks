@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Boondocks.Agent.Domain;
+using Boondocks.Services.Device.Contracts;
 using Newtonsoft.Json;
 
 namespace Boondocks.Agent.Model
@@ -34,12 +36,18 @@ namespace Boondocks.Agent.Model
                 //Create a default state.
                 State = new DeviceOperationalState();
             }
+
+            //Ensure we have a value here.
+            if (State.ApplicationsToRemove == null)
+            {
+                State.ApplicationsToRemove = new List<VersionReference>();
+            }
         }
 
         public void Save()
         {
             //Make sure the directory exists.
-            Directory.CreateDirectory(_pathFactory.SupervisorStatusDirectory);
+            Directory.CreateDirectory(_pathFactory.AgentStatusDirectory);
 
             //Serial the state
             var json = JsonConvert.SerializeObject(State, Formatting.Indented);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Boondocks.Agent.Interfaces;
@@ -59,7 +60,7 @@ namespace Boondocks.Agent
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    Console.WriteLine($"Heartbeat error: {e.Message}");
                 }
 
                 //Wait for a bit.
@@ -234,6 +235,12 @@ namespace Boondocks.Agent
                             _operationalStateProvider.State.CurrentApplicationVersion.ImageId, cancellationToken);
                     }
 
+                    //Save this in case we need to delete this version.
+                    if (_operationalStateProvider.State.PreviousApplicationVersion != null)
+                    {
+                        _operationalStateProvider.State.ApplicationsToRemove.Add(_operationalStateProvider.State.PreviousApplicationVersion);   
+                    }
+
                     //Update the operational state
                     _operationalStateProvider.State.CurrentApplicationVersion = _operationalStateProvider.State.NextApplicationVersion;
                     _operationalStateProvider.State.NextApplicationVersion = null;
@@ -242,12 +249,70 @@ namespace Boondocks.Agent
                     //Start the new application
                     await EnsureCurrentApplicationRunning(cancellationToken);
 
-                    //TODO: Clean up the old application
+                    //TODO: Clean up the old applications
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"A problem occurred getting the next application version: '{ex.Message}'");
+            }
+         }
+
+       /// <summary>
+        /// Gets image ids that are referenced by current / next / previous applications
+        /// </summary>
+        /// <returns></returns>
+        private HashSet<string> GetUsedApplicationImageIds()
+        {
+            var images = new HashSet<string>();
+
+            images.TryAdd(_operationalStateProvider.State.CurrentApplicationVersion);
+            images.TryAdd(_operationalStateProvider.State.PreviousApplicationVersion);
+            images.TryAdd(_operationalStateProvider.State.NextApplicationVersion);
+           
+            return images;
+        }
+
+        /// <summary>
+        /// Delete previous applications.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        private async Task GarbageCollectApplications(CancellationToken cancellationToken)
+        {
+            //Get the applications to remove
+            var applicationsToRemove = _operationalStateProvider.State.ApplicationsToRemove?.ToArray();
+
+            if (applicationsToRemove == null || applicationsToRemove.Length == 0)
+                return;
+
+            //Create the docker client
+            var dockerClient = CreateDockerClient();
+
+            //Remove them!
+            foreach (var applicationToRemove in applicationsToRemove)
+            {
+                //Get the image ids that are in use.
+                var usedImageIds = GetUsedApplicationImageIds();
+
+                //Check to see if they're in use.
+                if (usedImageIds.Contains(applicationToRemove.ImageId))
+                {
+                    //Nope. Can't delete it.
+                    Console.WriteLine($"Unable to remove image with id '{usedImageIds}'. It is in use.");
+                }
+                else
+                {
+                    //Delete the container(s)
+                    await dockerClient.RemoveContainersByImageIdAsync(applicationToRemove.ImageId, cancellationToken);
+
+                    //Delete the image
+                    await dockerClient.DeleteImageByImageId(applicationToRemove.ImageId, cancellationToken);
+
+                    //Remove this from the list
+                    _operationalStateProvider.State.ApplicationsToRemove.Remove(applicationToRemove);
+                    _operationalStateProvider.Save();
+                }
             }
         }
 
@@ -271,9 +336,16 @@ namespace Boondocks.Agent
             {
                 //Update the configuration
                 await DownloadAndUpdateConfigurationAsync(cancellationToken);
+            }
 
-                //Save it
-                _operationalStateProvider.Save();
+            //Clean up the old applications.
+            try
+            {
+                await GarbageCollectApplications(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Problem garbage collecting applications: {ex.Message}");
             }
         }
     }

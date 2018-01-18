@@ -64,6 +64,57 @@ namespace Boondocks.Agent
             }
         }
 
+        public static async Task DeleteImageByImageId(this DockerClient client, string imageId, CancellationToken cancellationToken)
+        {
+            var images = await client.Images.ListImagesAsync(new ImagesListParameters()
+            {
+                All = true
+            }, cancellationToken);
+
+            foreach (var image in images.Where(i => i.ID == imageId))
+            {
+                Console.WriteLine($"Deleting image '{image.ID}'...");
+
+                await client.Images.DeleteImageAsync(image.ID, new ImageDeleteParameters()
+                {
+                    Force = true,
+                    PruneChildren = true
+                }, cancellationToken);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="imageId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>The number of containers removed.</returns>
+        public static async Task<int> RemoveContainersByImageIdAsync<T>(this DockerClient client, string imageId, CancellationToken cancellationToken)
+        {
+            int containersRemovedCount = 0;
+
+            var containers = await client.Containers.ListContainersAsync(new ContainersListParameters()
+            {
+                All = true
+            }, cancellationToken);
+
+            foreach (var container in containers.Where(c => c.ImageID == imageId))
+            {
+                Console.WriteLine($"Deleting container {container.ID}...");
+
+                await client.Containers.RemoveContainerAsync(container.ID, new ContainerRemoveParameters()
+                {
+                    Force = false
+                }, cancellationToken);
+
+                containersRemovedCount++;
+            }
+
+            return containersRemovedCount;
+        }
+
         /// <summary>
         /// Should theoretically only ever stop one container.
         /// </summary>

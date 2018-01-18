@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Boondocks.Services.Device.Contracts;
 
 namespace Boondocks.Agent.Domain
@@ -17,6 +18,16 @@ namespace Boondocks.Agent.Domain
         /// This is the application that we should be downloading / installing.
         /// </summary>
         public VersionReference NextApplicationVersion { get; set; }
+
+        /// <summary>
+        /// This will be used to calculate a delta.
+        /// </summary>
+        public VersionReference PreviousApplicationVersion { get; set; }
+
+        /// <summary>
+        /// Old applications that we need to remove.
+        /// </summary>
+        public List<VersionReference> ApplicationsToRemove { get; set; }
 
         /// <summary>
         /// Keep track of this to see if it has changed.
