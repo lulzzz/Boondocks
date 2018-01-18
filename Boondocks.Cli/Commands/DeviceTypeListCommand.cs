@@ -7,7 +7,7 @@ namespace Boondocks.Cli.Commands
     [Verb("device-type-list", HelpText = "List device types.")]
     public class DeviceTypeListCommand : CommandBase
     {
-        public override async Task<int> ExecuteAsync(ExecutionContext context)
+        protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
             var deviceTypes = await context.Client.GetDeviceTypes();
 

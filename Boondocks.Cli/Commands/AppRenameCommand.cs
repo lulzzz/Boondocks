@@ -14,7 +14,7 @@ namespace Boondocks.Cli.Commands
         [Option('n', "name", Required = true, HelpText = "The new name of the application.")]
         public string Name { get; set; }
 
-        public override async Task<int> ExecuteAsync(ExecutionContext context)
+        protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
             //Console.WriteLine($"Deploy app: {ApplicationId} {ImageId}");
             Guid? applicationId = ApplicationId.TryParseGuid();

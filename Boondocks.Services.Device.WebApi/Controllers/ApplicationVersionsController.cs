@@ -21,6 +21,8 @@ namespace Boondocks.Services.Device.WebApi.Controllers
         [Produces("application/octet-stream")]
         public IActionResult Get(Guid id)
         {
+            //TODO: Determine if spinnig up a dedicated docker repository would be more efficient.
+
             //Get the download stream
             var stream = _blobDataAccessProvider.ApplicationVersionImages.GetDownloadStream(id);
 

@@ -7,9 +7,9 @@ using Docker.DotNet.Models;
 namespace Boondocks.Agent.Model
 {
     /// <summary>
-    /// Responsible for creating a docker container for a 
+    /// Responsible for creating a docker container for an application.
     /// </summary>
-    public class ApplicationContainerFactory
+    public class ApplicationDockerContainerFactory
     {
         public Task<CreateContainerResponse> CreateApplicationContainerAsync(DockerClient dockerClient, string imageId, CancellationToken cancellationToken)
         {

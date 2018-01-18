@@ -16,6 +16,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Boondocks.Services.Device.WebApi.Authentication
 {
+    /// <summary>
+    /// Implements our custom authentication for devices.
+    /// </summary>
     public class DeviceAuthenticationHandler : AuthenticationHandler<DeviceAuthenticationOptions>
     {
         private readonly IDbConnectionFactory _connectionFactory;
@@ -90,6 +93,9 @@ namespace Boondocks.Services.Device.WebApi.Authentication
             string kid, 
             TokenValidationParameters validationParameters)
         {
+            //TODO: implement multiple keys. That seems to be "good". MS does it. Other IoT identity providers do it.
+
+            //Parse the token
             var parsed = new JwtSecurityToken(token);
 
             //Get the device id
@@ -98,6 +104,7 @@ namespace Boondocks.Services.Device.WebApi.Authentication
                 .TryParseGuid();
 
             //Check to see if we got a deviceId.
+            //TODO: Determin if there is a more informative exception that we could throw.
             if (deviceId == null)
                 return _emptySecurityKeys;
 

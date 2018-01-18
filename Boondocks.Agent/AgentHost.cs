@@ -10,24 +10,24 @@ using Docker.DotNet.Models;
 
 namespace Boondocks.Agent
 {
-    public class SupervisorHost
+    public class AgentHost : IAgentHost
     {
         private readonly OperationalStateProvider _operationalStateProvider;
-        private readonly ApplicationContainerFactory _applicationContainerFactory;
+        private readonly ApplicationDockerContainerFactory _applicationDockerContainerFactory;
         private readonly DeviceStateProvider _deviceStateProvider;
-        private readonly UptimeProvider _uptimeProvider;
+        private readonly IUptimeProvider _uptimeProvider;
         private readonly IDeviceConfiguration _deviceConfiguration;
         private readonly DeviceApiClient _deviceApiClient;
 
-        public SupervisorHost(
+        public AgentHost(
             IDeviceConfiguration deviceConfiguration,
-            UptimeProvider uptimeProvider,
+            IUptimeProvider uptimeProvider,
             DeviceStateProvider deviceStateProvider,
-            ApplicationContainerFactory applicationContainerFactory,
+            ApplicationDockerContainerFactory applicationDockerContainerFactory,
             OperationalStateProvider operationalStateProvider)
         {
             _operationalStateProvider = operationalStateProvider ?? throw new ArgumentNullException(nameof(operationalStateProvider));
-            _applicationContainerFactory = applicationContainerFactory ?? throw new ArgumentNullException(nameof(applicationContainerFactory));
+            _applicationDockerContainerFactory = applicationDockerContainerFactory ?? throw new ArgumentNullException(nameof(applicationDockerContainerFactory));
             _deviceStateProvider = deviceStateProvider ?? throw new ArgumentNullException(nameof(deviceStateProvider));
             _uptimeProvider = uptimeProvider ?? throw new ArgumentNullException(nameof(uptimeProvider));
             _deviceConfiguration = deviceConfiguration ?? throw new ArgumentNullException(nameof(deviceConfiguration));
@@ -126,7 +126,7 @@ namespace Boondocks.Agent
                         {
                             //Create the container
                             CreateContainerResponse createContainerResponse
-                                = await _applicationContainerFactory.CreateApplicationContainerAsync(
+                                = await _applicationDockerContainerFactory.CreateApplicationContainerAsync(
                                     dockerClient,
                                     _operationalStateProvider.State.CurrentApplicationVersion.ImageId,
                                     cancellationToken);

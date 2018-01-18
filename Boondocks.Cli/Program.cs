@@ -16,13 +16,10 @@ namespace Boondocks.Cli
                 .Where(t => baseType.IsAssignableFrom(t) && !t.IsAbstract)
                 .ToArray();
 
-            //Create the execution context.
-            var executionContext = new ExecutionContext();
-
             //Do it now
             return Parser.Default.ParseArguments(args, commandTypes)
                 .MapResult(
-                    (CommandBase opts) => opts.ExecuteAsync(executionContext).GetAwaiter().GetResult(),
+                    (CommandBase opts) => opts.ExecuteAsync().GetAwaiter().GetResult(),
                     errs => 1);
         }
     }

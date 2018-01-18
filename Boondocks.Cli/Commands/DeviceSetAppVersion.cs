@@ -5,7 +5,7 @@ using CommandLine;
 
 namespace Boondocks.Cli.Commands
 {
-    [Verb("device-set-app-version")]
+    [Verb("device-set-app-version", HelpText = "Sets the current application version for a given device.")]
     public class DeviceSetAppVersion : CommandBase
     {
         [Option('d', "device-id", Required = true, HelpText = "The device id to update.")]
@@ -14,7 +14,7 @@ namespace Boondocks.Cli.Commands
         [Option('v', "app-version-id", Required = true, HelpText = "The id of the application version to use.")]
         public string ApplicationVersionId { get; set; }
 
-        public override async Task<int> ExecuteAsync(ExecutionContext context)
+        protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
             Guid? deviceId = DeviceId.TryParseGuid();
             Guid? applicationVersionId = ApplicationVersionId.TryParseGuid();

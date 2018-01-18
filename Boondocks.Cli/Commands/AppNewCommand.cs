@@ -15,7 +15,7 @@ namespace Boondocks.Cli.Commands
         [Option('n', "Name", Required = true, HelpText = "The name of the application.")]
         public string Name { get; set; }
 
-        public override async Task<int> ExecuteAsync(ExecutionContext context)
+        protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
             Guid? deviceTypeId = DeviceTypeId.TryParseGuid();
 

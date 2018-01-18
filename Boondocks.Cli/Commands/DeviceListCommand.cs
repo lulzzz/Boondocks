@@ -12,7 +12,7 @@ namespace Boondocks.Cli.Commands
         [Option('a', "app-id", HelpText = "The id of the application to filter on.")]
         public string ApplicationId { get; set; }
 
-        public override async Task<int> ExecuteAsync(ExecutionContext context)
+        protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
             var request = new GetDevicesRequest
             {

@@ -6,13 +6,13 @@ using CommandLine;
 
 namespace Boondocks.Cli.Commands
 {
-    [Verb("app-version-list")]
+    [Verb("app-version-list", HelpText = "Lists the available application versions.")]
     public class AppVersionListCommand : CommandBase
     {
-        [Option('a', "app-id", HelpText = "The id of the application to filter on.")]
+        [Option('a', "app-id", Required = true, HelpText = "The id of the application to filter on.")]
         public string ApplicationId { get; set; }
 
-        public override async Task<int> ExecuteAsync(ExecutionContext context)
+        protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
 
             var request = new GetApplicationVersionsRequest

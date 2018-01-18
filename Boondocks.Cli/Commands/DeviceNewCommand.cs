@@ -21,7 +21,7 @@ namespace Boondocks.Cli.Commands
         [Option('k', "dev-key", HelpText = "Specify a device key for this device.")]
         public string DeviceKey { get; set; }
 
-        public override async Task<int> ExecuteAsync(ExecutionContext context)
+        protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
             Guid? applicationId = ApplicationId.TryParseGuid();
             Guid? deviceKey = DeviceKey.TryParseGuid();

@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using Boondocks.Agent.Interfaces;
 
 namespace Boondocks.Agent
 {
@@ -15,7 +16,7 @@ namespace Boondocks.Agent
             using (var container = ContainerFactory.Create())
             {
                 //Get the supervisor host
-                var host = container.Resolve<SupervisorHost>();
+                var host = container.Resolve<IAgentHost>();
 
                 CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 

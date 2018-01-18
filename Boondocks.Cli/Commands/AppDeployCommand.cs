@@ -23,7 +23,7 @@ namespace Boondocks.Cli.Commands
         [Option('n', "name", Required = true, HelpText = "The name of this version.")]
         public string Name { get; set; }
 
-        public override async Task<int> ExecuteAsync(ExecutionContext context)
+        protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
             Guid? applicationId = ApplicationId.TryParseGuid();
 

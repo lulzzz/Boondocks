@@ -1,8 +1,10 @@
 ﻿using System;
+using System.IO;
 using Autofac;
 using Boondocks.Agent.Interfaces;
 using Boondocks.Agent.Model;
 using Boondocks.Services.Contracts;
+using Newtonsoft.Json;
 
 namespace Boondocks.Agent
 {
@@ -12,23 +14,23 @@ namespace Boondocks.Agent
         {
             var builder = new ContainerBuilder();
 
-            builder.RegisterInstance(new DeviceConfiguration
-            {
-                DeviceId = new Guid("7A6B6940-C7C1-482C-B382-0AC2FE2A96B0"),
-                DeviceKey = new Guid("208F075A-59CE-486B-B98E-1436D62224EA"),
-                DeviceApiUrl = "http://localhost:54983/",
-                DockerEndpoint = "http://10.0.4.72:2375",
-                PollSeconds = 10
-            }).As<IDeviceConfiguration>();
-
             builder.RegisterInstance(new DeviceStateProvider()
             {
                 State = DeviceState.Idle
             });
 
-            builder.RegisterType<UptimeProvider>().SingleInstance();
-            builder.RegisterType<SupervisorHost>().SingleInstance();
-            builder.RegisterType<ApplicationContainerFactory>().SingleInstance();
+            builder.RegisterType<DeviceConfigurationProvider>().As<IDeviceConfigurationProvider>();
+
+            builder.Register<IDeviceConfiguration>(context =>
+            {
+                var provider = context.Resolve<IDeviceConfigurationProvider>();
+
+                return provider.GetDeviceConfiguration();
+            });
+
+            builder.RegisterType<UptimeProvider>().As<IUptimeProvider>().SingleInstance();
+            builder.RegisterType<AgentHost>().As<IAgentHost>().SingleInstance();
+            builder.RegisterType<ApplicationDockerContainerFactory>().SingleInstance();
             builder.RegisterType<PathFactory>().SingleInstance();
             builder.RegisterType<OperationalStateProvider>().SingleInstance();
             builder.RegisterType<PlatformDetector>().As<IPlatformDetector>().SingleInstance();

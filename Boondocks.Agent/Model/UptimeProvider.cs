@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using Boondocks.Agent.Interfaces;
 
 namespace Boondocks.Agent.Model
 {
-    public class UptimeProvider
+    public class UptimeProvider : IUptimeProvider
     {
         private readonly Stopwatch _stopwatch;
 

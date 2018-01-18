@@ -13,7 +13,7 @@ namespace Boondocks.Cli.Commands
         [Option('t', "device-type", HelpText = "The device type to filter on.")]
         public string DeviceTypeId { get; set; }
 
-        public override async Task<int> ExecuteAsync(ExecutionContext context)
+        protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
             Guid? deviceTypeId = DeviceTypeId.TryParseGuid();
 
