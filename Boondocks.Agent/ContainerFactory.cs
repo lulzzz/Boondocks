@@ -1,10 +1,6 @@
-﻿using System;
-using System.IO;
-using Autofac;
+﻿using Autofac;
 using Boondocks.Agent.Interfaces;
 using Boondocks.Agent.Model;
-using Boondocks.Services.Contracts;
-using Newtonsoft.Json;
 
 namespace Boondocks.Agent
 {
@@ -14,13 +10,6 @@ namespace Boondocks.Agent
         {
             var builder = new ContainerBuilder();
 
-            builder.RegisterInstance(new DeviceStateProvider()
-            {
-                State = DeviceState.Idle
-            });
-
-            builder.RegisterType<DeviceConfigurationProvider>().As<IDeviceConfigurationProvider>();
-
             builder.Register<IDeviceConfiguration>(context =>
             {
                 var provider = context.Resolve<IDeviceConfigurationProvider>();
@@ -28,6 +17,8 @@ namespace Boondocks.Agent
                 return provider.GetDeviceConfiguration();
             });
 
+            builder.RegisterType<DeviceStateProvider>().SingleInstance();
+            builder.RegisterType<DeviceConfigurationProvider>().As<IDeviceConfigurationProvider>();
             builder.RegisterType<UptimeProvider>().As<IUptimeProvider>().SingleInstance();
             builder.RegisterType<AgentHost>().As<IAgentHost>().SingleInstance();
             builder.RegisterType<ApplicationDockerContainerFactory>().SingleInstance();

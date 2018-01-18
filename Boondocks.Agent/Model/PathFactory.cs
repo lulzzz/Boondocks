@@ -4,25 +4,16 @@ using Boondocks.Agent.Interfaces;
 
 namespace Boondocks.Agent.Model
 {
-    public class PathFactory
+    internal class PathFactory
     {
-        private readonly string _root;
-
         public PathFactory(IPlatformDetector platformDetector)
         {
             if (platformDetector == null) throw new ArgumentNullException(nameof(platformDetector));
 
-            if (platformDetector.IsLinux)
-            {
-                _root = "/";
-            }
-            else
-            {
-                _root = @"c:\Boondocks\";
-            }
+            Root = platformDetector.IsLinux ? "/" : @"c:\Boondocks\";
         }
 
-        public string Root => _root;
+        public string Root { get; }
 
         public string Boot => Path.Combine(Root, "boot");
 

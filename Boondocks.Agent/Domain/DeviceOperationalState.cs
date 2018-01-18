@@ -1,12 +1,12 @@
 ﻿using System;
 using Boondocks.Services.Device.Contracts;
 
-namespace Boondocks.Agent.Model
+namespace Boondocks.Agent.Domain
 {
     /// <summary>
     /// The operation state of the device.
     /// </summary>
-    public class DeviceOperationalState
+    internal class DeviceOperationalState
     {
         /// <summary>
         /// The current application. This is what we should make sure is running before working about the NextApplicationVersion.

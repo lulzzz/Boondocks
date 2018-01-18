@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.6.2" />
+    <PackageReference Include="BizArk.ConsoleApp" Version="3.1.0.15" />
     <PackageReference Include="Docker.DotNet" Version="3.125.0" />
   </ItemGroup>
 

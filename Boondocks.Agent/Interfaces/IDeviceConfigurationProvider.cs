@@ -1,6 +1,6 @@
 ﻿namespace Boondocks.Agent.Interfaces
 {
-    public interface IDeviceConfigurationProvider
+    internal interface IDeviceConfigurationProvider
     {
         IDeviceConfiguration GetDeviceConfiguration();
     }

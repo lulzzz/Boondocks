@@ -2,7 +2,7 @@
 
 namespace Boondocks.Agent.Interfaces
 {
-    public interface IUptimeProvider
+    internal interface IUptimeProvider
     {
         TimeSpan Ellapsed { get; }
     }

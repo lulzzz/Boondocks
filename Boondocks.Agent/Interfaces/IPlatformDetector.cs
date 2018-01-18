@@ -1,6 +1,6 @@
 ﻿namespace Boondocks.Agent.Interfaces
 {
-    public interface IPlatformDetector
+    internal interface IPlatformDetector
     {
         bool IsLinux { get; }
     }

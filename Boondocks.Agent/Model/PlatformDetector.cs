@@ -3,7 +3,7 @@ using Boondocks.Agent.Interfaces;
 
 namespace Boondocks.Agent.Model
 {
-    public class PlatformDetector : IPlatformDetector
+    internal class PlatformDetector : IPlatformDetector
     {
         public bool IsLinux
         {

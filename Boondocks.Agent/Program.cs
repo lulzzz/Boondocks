@@ -12,28 +12,39 @@ namespace Boondocks.Agent
         {
             Console.WriteLine("Starting supervisor...");
 
-            //Create the container
-            using (var container = ContainerFactory.Create())
+            try
             {
-                //Get the supervisor host
-                var host = container.Resolve<IAgentHost>();
-
-                CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-
-                //We shall cancel on the keypress
-                Console.CancelKeyPress += (sender, eventArgs) => cancellationTokenSource.Cancel();
-
-                try
+                //Create the container
+                using (var container = ContainerFactory.Create())
                 {
-                    await host.RunAsync(cancellationTokenSource.Token);
-                }
-                catch (TaskCanceledException)
-                {
-                }
+                    //Get the supervisor host
+                    var host = container.Resolve<IAgentHost>();
 
+                    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+                    //We shall cancel on the keypress
+                    Console.CancelKeyPress += (sender, eventArgs) => cancellationTokenSource.Cancel();
+
+                    try
+                    {
+                        //Run the host
+                        await host.RunAsync(cancellationTokenSource.Token);
+                    }
+                    catch (TaskCanceledException)
+                    {
+                    }
+                }
             }
-
-            Console.WriteLine("Supervisor exiting.");
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An exception occurred: {ex.Message}");
+                Console.WriteLine(ex.ToString());
+                return 1;
+            }
+            finally
+            {
+                Console.WriteLine("Supervisor exiting.");
+            }
 
             return 0;
         }

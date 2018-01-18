@@ -2,7 +2,7 @@
 
 namespace Boondocks.Agent.Model
 {
-    public class DeviceStateProvider
+    internal class DeviceStateProvider
     {
         /// <summary>
         /// The 

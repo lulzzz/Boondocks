@@ -10,7 +10,7 @@ using Docker.DotNet.Models;
 
 namespace Boondocks.Agent
 {
-    public class AgentHost : IAgentHost
+    internal class AgentHost : IAgentHost
     {
         private readonly OperationalStateProvider _operationalStateProvider;
         private readonly ApplicationDockerContainerFactory _applicationDockerContainerFactory;

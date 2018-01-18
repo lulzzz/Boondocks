@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
+using Boondocks.Agent.Domain;
 using Newtonsoft.Json;
 
 namespace Boondocks.Agent.Model
 {
-    public class OperationalStateProvider
+    internal class OperationalStateProvider
     {
         private readonly PathFactory _pathFactory;
 

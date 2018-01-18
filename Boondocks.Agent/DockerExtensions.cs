@@ -7,7 +7,7 @@ using Docker.DotNet.Models;
 
 namespace Boondocks.Agent
 {
-    public static class DockerExtensions
+    internal static class DockerExtensions
     {
         public static async Task StartAllContainers(this DockerClient client)
         {

@@ -2,7 +2,7 @@
 
 namespace Boondocks.Agent.Interfaces
 {
-    public interface IDeviceConfiguration
+    internal interface IDeviceConfiguration
     {
         string DeviceApiUrl { get; }
 

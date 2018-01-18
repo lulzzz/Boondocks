@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
+using Boondocks.Agent.Domain;
 using Boondocks.Agent.Interfaces;
 using Newtonsoft.Json;
 
 namespace Boondocks.Agent.Model
 {
-    public class DeviceConfigurationProvider : IDeviceConfigurationProvider
+    internal class DeviceConfigurationProvider : IDeviceConfigurationProvider
     {
         private readonly PathFactory _pathFactory;
 

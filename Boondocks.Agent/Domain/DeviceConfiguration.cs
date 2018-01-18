@@ -2,12 +2,12 @@
 using Boondocks.Agent.Interfaces;
 using Newtonsoft.Json;
 
-namespace Boondocks.Agent.Model
+namespace Boondocks.Agent.Domain
 {
     /// <summary>
     /// The configuration for a device.
     /// </summary>
-    public class DeviceConfiguration : IDeviceConfiguration
+    internal class DeviceConfiguration : IDeviceConfiguration
     {
         /// <summary>
         /// The unique ID of this device.
