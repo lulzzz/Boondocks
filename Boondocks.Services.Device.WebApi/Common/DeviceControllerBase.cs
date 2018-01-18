@@ -13,7 +13,7 @@ namespace Boondocks.Services.Device.WebApi.Common
         {
             get
             {
-                Guid? deviceId = HttpContext.User.Identity.Name.ParseGuid();
+                Guid? deviceId = HttpContext.User.Identity.Name.TryParseGuid();
 
                 if (deviceId == null)
                     throw new InvalidOperationException("Unable to find deviceId.");

@@ -95,7 +95,7 @@ namespace Boondocks.Services.Device.WebApi.Authentication
             //Get the device id
             Guid? deviceId = parsed.Claims
                 .FirstOrDefault(c => c.Type == TokenConstants.DeviceIdClaimName)?.Value?
-                .ParseGuid();
+                .TryParseGuid();
 
             //Check to see if we got a deviceId.
             if (deviceId == null)

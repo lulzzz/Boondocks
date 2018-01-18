@@ -45,7 +45,7 @@ namespace Boondocks.Services.DataAccess
         /// <returns>Returns true if the condition was added, false otherwise.</returns>
         public bool TryAddGuidParameter(string queryStringName, string columnName)
         {
-            Guid? value = ((string) _query[queryStringName]).ParseGuid();
+            Guid? value = ((string) _query[queryStringName]).TryParseGuid();
 
             if (value == null)
                 return false;
@@ -63,7 +63,7 @@ namespace Boondocks.Services.DataAccess
         /// <returns>Returns true if the condition was added, false otherwise.</returns>
         public bool TryAddBitParameter(string queryStringName, string columnName)
         {
-            bool? value = ((string)_query[queryStringName]).ParseBool();
+            bool? value = ((string)_query[queryStringName]).TryParseBool();
 
             if (value == null)
                 return false;
@@ -81,7 +81,7 @@ namespace Boondocks.Services.DataAccess
         /// <returns>Returns true if the condition was added, false otherwise.</returns>
         public bool TryAddIntParameter(string queryStringName, string columnName)
         {
-            int? value = ((string)_query[queryStringName]).ParseInt();
+            int? value = ((string)_query[queryStringName]).TryParseInt();
 
             if (value == null)
                 return false;

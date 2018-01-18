@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{1CBA6859-2A56-4F66-AEC1-2A3893D1B365}"
 EndProject
@@ -13,13 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Services.Manageme
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Services.Device.Contracts", "Boondocks.Services.Device.Contracts\Boondocks.Services.Device.Contracts.csproj", "{01613A59-2132-4831-8C1E-B1D3D478B1F5}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Supervisor", "Supervisor", "{EAED4170-1E29-4BA3-B2B4-1DEBD136C61F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Supervisor.Contracts", "Boondocks.Supervisor.Contracts\Boondocks.Supervisor.Contracts.csproj", "{D13757F5-C0B7-4C0A-B9A8-05C998AE52F7}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Agent", "Agent", "{EAED4170-1E29-4BA3-B2B4-1DEBD136C61F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Services.DataAccess", "Boondocks.Services.DataAccess\Boondocks.Services.DataAccess.csproj", "{808D0D2B-D1A7-4026-9344-78DD7EE7FA7A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Supervisor", "Boondocks.Supervisor\Boondocks.Supervisor.csproj", "{A73F3FDD-1D59-4489-A284-21B4D5380B14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Agent", "Boondocks.Agent\Boondocks.Agent.csproj", "{A73F3FDD-1D59-4489-A284-21B4D5380B14}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Services.Contracts", "Boondocks.Services.Contracts\Boondocks.Services.Contracts.csproj", "{6BAFA661-7AC3-4773-9E2C-4DA7627182D7}"
 EndProject
@@ -29,11 +27,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Services.DataAcce
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Services.Base", "Boondocks.Services.Base\Boondocks.Services.Base.csproj", "{8A23AB67-1BC1-4C55-B0EB-C1CBEB90883F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boondocks.Services.Management.WebApiClient", "Boondocks.Services.Management.WebApiClient\Boondocks.Services.Management.WebApiClient.csproj", "{FE3E2056-8FFA-4471-B658-DF0877D5F41C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Services.Management.WebApiClient", "Boondocks.Services.Management.WebApiClient\Boondocks.Services.Management.WebApiClient.csproj", "{FE3E2056-8FFA-4471-B658-DF0877D5F41C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommandLine", "CommandLine", "{BCA8ABDF-965C-4468-9614-D62B84DA94F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoondocksCli", "BoondocksCli\BoondocksCli.csproj", "{BC1C253C-A902-4ED4-98A5-5FBCDCB5F7E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Cli", "Boondocks.Cli\Boondocks.Cli.csproj", "{BC1C253C-A902-4ED4-98A5-5FBCDCB5F7E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,10 +55,6 @@ Global
 		{01613A59-2132-4831-8C1E-B1D3D478B1F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01613A59-2132-4831-8C1E-B1D3D478B1F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01613A59-2132-4831-8C1E-B1D3D478B1F5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D13757F5-C0B7-4C0A-B9A8-05C998AE52F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D13757F5-C0B7-4C0A-B9A8-05C998AE52F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D13757F5-C0B7-4C0A-B9A8-05C998AE52F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D13757F5-C0B7-4C0A-B9A8-05C998AE52F7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{808D0D2B-D1A7-4026-9344-78DD7EE7FA7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{808D0D2B-D1A7-4026-9344-78DD7EE7FA7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{808D0D2B-D1A7-4026-9344-78DD7EE7FA7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -102,7 +96,6 @@ Global
 		{DD1431D5-AED6-44BE-97F1-9293AADE3AD5} = {1CBA6859-2A56-4F66-AEC1-2A3893D1B365}
 		{A217B8D8-99ED-4A47-86DC-A70C68B1B359} = {1CBA6859-2A56-4F66-AEC1-2A3893D1B365}
 		{01613A59-2132-4831-8C1E-B1D3D478B1F5} = {1CBA6859-2A56-4F66-AEC1-2A3893D1B365}
-		{D13757F5-C0B7-4C0A-B9A8-05C998AE52F7} = {EAED4170-1E29-4BA3-B2B4-1DEBD136C61F}
 		{808D0D2B-D1A7-4026-9344-78DD7EE7FA7A} = {1CBA6859-2A56-4F66-AEC1-2A3893D1B365}
 		{A73F3FDD-1D59-4489-A284-21B4D5380B14} = {EAED4170-1E29-4BA3-B2B4-1DEBD136C61F}
 		{6BAFA661-7AC3-4773-9E2C-4DA7627182D7} = {1CBA6859-2A56-4F66-AEC1-2A3893D1B365}
