@@ -1,7 +1,6 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace Boondocks.Services.Base
+namespace Boondocks.Base
 {
     public static class ObjectExtensions
     {

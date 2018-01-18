@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Boondocks.Services.Base;
-using Boondocks.Services.Contracts;
+using Boondocks.Base;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 

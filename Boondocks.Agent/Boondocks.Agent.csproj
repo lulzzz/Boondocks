@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Boondocks.Base\Boondocks.Base.csproj" />
     <ProjectReference Include="..\Boondocks.Services.Contracts\Boondocks.Services.Contracts.csproj" />
     <ProjectReference Include="..\Boondocks.Services.Device.Contracts\Boondocks.Services.Device.Contracts.csproj" />
     <ProjectReference Include="..\Boondocks.Services.Device.WebApiClient\Boondocks.Services.Device.WebApiClient.csproj" />

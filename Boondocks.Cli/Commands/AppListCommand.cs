@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Boondocks.Base;
 using Boondocks.Cli.ExtensionMethods;
-using Boondocks.Services.Base;
 using Boondocks.Services.Management.WebApiClient;
 using CommandLine;
 

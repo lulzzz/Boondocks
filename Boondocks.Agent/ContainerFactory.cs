@@ -6,9 +6,11 @@ namespace Boondocks.Agent
 {
     internal static class ContainerFactory
     {
-        public static IContainer Create()
+        public static IContainer Create(IDeviceConfigurationOverride deviceConfigurationOverride)
         {
             var builder = new ContainerBuilder();
+
+            builder.RegisterInstance(deviceConfigurationOverride);
 
             builder.Register<IDeviceConfiguration>(context =>
             {

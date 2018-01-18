@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Boondocks.Services.Base\Boondocks.Services.Base.csproj" />
+    <ProjectReference Include="..\Boondocks.Base\Boondocks.Base.csproj" />
     <ProjectReference Include="..\Boondocks.Services.Contracts\Boondocks.Services.Contracts.csproj" />
     <ProjectReference Include="..\Boondocks.Services.DataAccess\Boondocks.Services.DataAccess.csproj" />
     <ProjectReference Include="..\Boondocks.Services.Device.Contracts\Boondocks.Services.Device.Contracts.csproj" />

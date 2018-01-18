@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Boondocks.Services.Base;
+using Boondocks.Base;
 using CommandLine;
 using Docker.DotNet;
 using Docker.DotNet.Models;

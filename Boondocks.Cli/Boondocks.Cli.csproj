@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Boondocks.Services.Base\Boondocks.Services.Base.csproj" />
+    <ProjectReference Include="..\Boondocks.Base\Boondocks.Base.csproj" />
     <ProjectReference Include="..\Boondocks.Services.Contracts\Boondocks.Services.Contracts.csproj" />
     <ProjectReference Include="..\Boondocks.Services.Management.Contracts\Boondocks.Services.Management.Contracts.csproj" />
     <ProjectReference Include="..\Boondocks.Services.Management.WebApiClient\Boondocks.Services.Management.WebApiClient.csproj" />

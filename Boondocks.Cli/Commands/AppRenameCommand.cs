@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Boondocks.Services.Base;
+using Boondocks.Base;
 using CommandLine;
 
 namespace Boondocks.Cli.Commands

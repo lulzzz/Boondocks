@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
-using Boondocks.Services.Base;
 using Boondocks.Services.Contracts;
 using Boondocks.Services.DataAccess;
 using Boondocks.Services.DataAccess.Interfaces;

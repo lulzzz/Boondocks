@@ -5,7 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Boondocks.Services.Base;
+using Boondocks.Base;
 using Boondocks.Services.Contracts;
 using Boondocks.Services.DataAccess;
 using Boondocks.Services.DataAccess.Interfaces;

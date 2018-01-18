@@ -1,5 +1,5 @@
 ﻿using System;
-using Boondocks.Services.Base;
+using Boondocks.Base;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Boondocks.Services.Device.WebApi.Common
