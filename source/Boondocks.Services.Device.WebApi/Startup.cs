@@ -34,7 +34,13 @@ namespace Boondocks.Services.Device.WebApi
 
             services.AddLogging(loggingBuilder =>
             {
-                loggingBuilder.AddSeq();
+                //loggingBuilder.AddSeq();
+                loggingBuilder.AddConsole(options =>
+                {
+                    options.IncludeScopes = true;
+                });
+
+                loggingBuilder.AddDebug();
             });
 
             services.AddMvc(o =>
@@ -59,6 +65,7 @@ namespace Boondocks.Services.Device.WebApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseExceptionHandler();
             }
             else
             {

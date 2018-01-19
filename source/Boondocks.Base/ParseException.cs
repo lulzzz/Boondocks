@@ -3,6 +3,9 @@ using System.Runtime.Serialization;
 
 namespace Boondocks.Base
 {
+    /// <summary>
+    /// Thrown when an error occurrs while parsing.
+    /// </summary>
     public class ParseException : Exception
     {
         public ParseException()
