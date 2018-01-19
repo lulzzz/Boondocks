@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Boondocks.sln"
+                "${workspaceFolder}/source/Boondocks.sln"
             ],
             "problemMatcher": "$msCompile"
         }

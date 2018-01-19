@@ -1,10 +1,16 @@
 #===========================================================
 # We'll use this to build the .NET Core code.
 #===========================================================
-FROM microsoft/dotnet AS corebuildstep
+FROM microsoft/dotnet:sdk AS core-build-step
 
 #copy the code to the image
-COPY ../source/* ./build
+COPY ./source/ /build/
+
+#move to the build directory
+WORKDIR /build/
+
+#restore
+RUN dotnet restore -s http://proget.captiveaire.com/nuget/CaptiveAire/ -s https://api.nuget.org/v3/index.json
 
 #publish the bloody agent
 RUN dotnet publish -r linux-arm -f netcoreapp2.0 /build/Boondocks.Agent/Boondocks.Agent.csproj
@@ -15,6 +21,9 @@ RUN dotnet publish -r linux-arm -f netcoreapp2.0 /build/Boondocks.Agent/Boondock
 FROM resin/raspberrypi3-debian
 
 RUN [ "cross-build-start" ]
+
+#update it!
+RUN apt-get update
 
 # Install the packages necessary for .NET Core
 RUN apt-get -y install libunwind8 gettext wget
@@ -32,7 +41,7 @@ RUN tar -xvf dotnet-runtime-latest-linux-arm.tar.gz -C /opt/dotnet
 RUN ln -s /opt/dotnet/dotnet /usr/local/bin
 
 #copy the built files over to the device.
-COPY --from=corebuildstep /build/Boondocks.Agent/bin/linux-arm/Release* /opt/boondocks/
+COPY --from=core-build-step /build/Boondocks.Agent/bin/Debug/netcoreapp2.0/linux-arm/publish/ /opt/boondocks/
 
 #start up the application
 CMD ["dotnet", "/opt/boondocks/Boondocks.Agent.dll"]

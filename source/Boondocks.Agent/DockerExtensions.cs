@@ -91,7 +91,7 @@ namespace Boondocks.Agent
         /// <param name="imageId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>The number of containers removed.</returns>
-        public static async Task<int> RemoveContainersByImageIdAsync<T>(this DockerClient client, string imageId, CancellationToken cancellationToken)
+        public static async Task<int> RemoveContainersByImageIdAsync(this DockerClient client, string imageId, CancellationToken cancellationToken)
         {
             int containersRemovedCount = 0;
 
