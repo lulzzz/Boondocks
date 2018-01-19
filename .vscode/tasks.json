@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Boondocks.Services.Device.WebApi/Boondocks.Services.Device.WebApi.csproj"
+                "${workspaceFolder}/Boondocks.sln"
             ],
             "problemMatcher": "$msCompile"
         }
