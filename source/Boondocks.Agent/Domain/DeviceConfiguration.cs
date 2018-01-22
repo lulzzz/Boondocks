@@ -38,5 +38,11 @@ namespace Boondocks.Agent.Domain
         /// </summary>
         [JsonProperty("pollSeconds")]
         public int PollSeconds { get; set; }
+
+        /// <summary>
+        /// The repository to pull our images from.
+        /// </summary>
+        [JsonProperty("registryEndpoint")]
+        public string RegistryEndpoint { get; set; }
     }
 }
