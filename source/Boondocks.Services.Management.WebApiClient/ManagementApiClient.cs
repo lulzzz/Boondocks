@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace Boondocks.Services.Management.WebApiClient
 {
-    public class ManagementApiClient : CaptiveAire.WebApiClient.WebApiClient
+    public class ManagementApiClient : Services.WebApiClient.WebApiClient
     {
         private static class ResourceUrls
         {
@@ -102,34 +102,25 @@ namespace Boondocks.Services.Management.WebApiClient
                 Name = name,
                 ImageId = imageId
             };
-
-            try
+            
+            // http://stackoverflow.com/a/10744043/232566
+            using (var client = await CreateHttpClientAsync())
             {
-                // http://stackoverflow.com/a/10744043/232566
-                using (var client = await CreateHttpClientAsync())
+                using (var content = new MultipartFormDataContent())
                 {
-                    using (var content = new MultipartFormDataContent())
+                    using (var stringContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"))
+                    using (var fileContent = new StreamContent(stream))
                     {
-                        using (var stringContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"))
-                        using (var fileContent = new StreamContent(stream))
-                        {
-                            //Add the content
-                            content.Add(stringContent, "request");
-                            content.Add(fileContent, "file", $"{request.ImageId.Replace(":", "_")}.image");
+                        //Add the content
+                        content.Add(stringContent, "request");
+                        content.Add(fileContent, "file", $"{request.ImageId.Replace(":", "_")}.image");
 
-                            using (var response = await client.PostAsync(uri, content, cancellationToken))
-                            {
-                                return await ParseResponse<ApplicationVersion>(uri, response);
-                            }
+                        using (var response = await client.PostAsync(uri, content, cancellationToken))
+                        {
+                            return await ParseResponse<ApplicationVersion>(uri, response);
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Unable to Post {Uri}", uri);
-
-                throw;
             }
         }
 

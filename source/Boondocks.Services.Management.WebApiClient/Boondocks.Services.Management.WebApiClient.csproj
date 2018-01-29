@@ -5,12 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CaptiveAire.WebApiClient" Version="1.0.7" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Boondocks.Services.Contracts\Boondocks.Services.Contracts.csproj" />
     <ProjectReference Include="..\Boondocks.Services.Management.Contracts\Boondocks.Services.Management.Contracts.csproj" />
+    <ProjectReference Include="..\Boondocks.Services.WebApiClient\Boondocks.Services.WebApiClient.csproj" />
   </ItemGroup>
 
 </Project>

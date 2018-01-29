@@ -11,7 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Boondocks.Services.Device.WebApiClient
 {
-    public class DeviceApiClient : CaptiveAire.WebApiClient.WebApiClient
+    public class DeviceApiClient : Services.WebApiClient.WebApiClient
     {
         private readonly ClaimsIdentity _claimsIdentity;
         private readonly SigningCredentials _signingCredentials;
