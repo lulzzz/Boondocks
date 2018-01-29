@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CaptiveAire.WebApiClient" Version="1.0.7" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.1.5" />			
   </ItemGroup>
 
