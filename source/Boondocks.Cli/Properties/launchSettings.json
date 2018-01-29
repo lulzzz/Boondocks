@@ -1,7 +1,8 @@
 {
   "profiles": {
     "BoondocksCli": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "deploy -i 6d89109e5393  -d http://10.0.4.44:2375 -r http://10.0.4.44:5000/"
     }
   }
 }

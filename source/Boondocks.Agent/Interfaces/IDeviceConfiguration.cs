@@ -14,6 +14,6 @@ namespace Boondocks.Agent.Interfaces
 
         int PollSeconds { get; }
 
-        string DockerRepositoryUrl { get; }
+        string RegistryEndpoint { get; }
     }
 }
