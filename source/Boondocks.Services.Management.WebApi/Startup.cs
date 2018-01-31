@@ -2,6 +2,7 @@
 using Autofac;
 using Boondocks.Services.DataAccess;
 using Boondocks.Services.DataAccess.Interfaces;
+using Boondocks.Services.Management.WebApi.Model;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
@@ -70,8 +71,25 @@ namespace Boondocks.Services.Management.WebApi
      
         public void ConfigureContainer(ContainerBuilder builder)
         {
+            var configBuilder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+
+            //Deal with the configuration bits
+            var config = configBuilder.Build();
+
+            builder.RegisterInstance(config);
+
+            string dbConnectionString = config["DbConnectionString"];
+
+            var registryConfig = new RegistryConfig();
+
+            config.GetSection("registry").Bind(registryConfig);
+
+            builder.RegisterInstance(registryConfig);
+                
             // Add things to the Autofac ContainerBuilder.
-            builder.RegisterInstance(new SqlServerDbConnectionFactory(@"Server=localhost\sqlexpress;Database=Boondocks;User Id=boondocks;Password=#Px@S:w_j+V97ngz;"))
+            builder.RegisterInstance(new SqlServerDbConnectionFactory(dbConnectionString))
                 .As<IDbConnectionFactory>()
                 .SingleInstance();
 

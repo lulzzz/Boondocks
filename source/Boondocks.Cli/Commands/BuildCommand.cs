@@ -4,12 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using Boondocks.Base;
 using CommandLine;
-using CommandLine.Text;
 using Docker.DotNet;
 using Docker.DotNet.Models;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Boondocks.Cli.Commands
@@ -20,9 +17,6 @@ namespace Boondocks.Cli.Commands
         [Option('h', "dockeHost", HelpText = "The docker endpoint to use for building.")]
         public string DockerEndpoint { get; set; }
 
-        [Option('t', "tag", HelpText = "Tag.")]
-        public string Tag { get; set; }
-
         [Option('s', "source", Required = true, HelpText = "The source directory to build from.")]
         public string Source { get; set; }
 
@@ -32,8 +26,19 @@ namespace Boondocks.Cli.Commands
         [Option('a', "Application", HelpText = "The application to deploy this build to. Required if deploy=true.")]
         public string Application { get; set; }
 
+        [Option('n', "name", HelpText = "The name to give this version.")]
+        public string Name { get; set; }
+
         protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                Console.WriteLine("No name was specified.");
+                return 1;
+            }
+
+            string tag = Name.Trim().ToLower();
+
             using (var temporaryFile = new TemporaryFile())
             {
                 //Create the tar in a temporary place
@@ -50,7 +55,7 @@ namespace Boondocks.Cli.Commands
                     {
                         Tags = new List<string>()
                         {
-                            "supervisor1.0.1",
+                            tag
                         }
                     };
 
@@ -71,7 +76,7 @@ namespace Boondocks.Cli.Commands
                         //Let us deploy
                         if (Deploy)
                         {
-                            return await DeployAsync(dockerClient, result);
+                            return await DeployAsync(context, dockerClient, result, tag);
                         }
 
                         return 0;
@@ -80,13 +85,7 @@ namespace Boondocks.Cli.Commands
             }
         }
 
-        /// <summary>
-        /// Tag and deploy this mammer jammer
-        /// </summary>
-        /// <param name="dockerClient"></param>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        private async Task<int> DeployAsync(DockerClient dockerClient, BuildResult result)
+        private async Task<int> DeployAsync(ExecutionContext context, DockerClient dockerClient, BuildResult result, string tag)
         {
             //Get the last id
             var imageId = result.Ids.LastOrDefault();
@@ -105,34 +104,44 @@ namespace Boondocks.Cli.Commands
                 return 1;
             }
 
-            Console.WriteLine($"Deploing with imageid '{imageId}'...");
+            var application =  await context.Client.GetApplicationAsync(Application);
 
-            //TODO: Grab the application / access token from the server. The server should tell us which repository to put this in.
+            if (application == null)
+            {
+                Console.WriteLine($"Unable to find application '{Application}'.");
+                return 1;
+            }
+
+            var applicationUploadInfo = await context.Client.GetApplicationUploadInfo(application.Id);
+
+            Console.WriteLine($"Deploying with imageid '{imageId}'...");
+
             var parameters = new ImagePushParameters()
             {
                 ImageID = imageId,
-                Tag = Tag,
+                Tag = tag,
             };
 
-            string registryName = "supervisor";
-            string registryHost = "10.0.4.44:5000";
-            string target = $"{registryHost}/{registryName}";
+            string target = $"{applicationUploadInfo.RegistryHost}/{applicationUploadInfo.Repository}";
 
             //Tag it!
             await dockerClient.Images.TagImageAsync(imageId, new ImageTagParameters()
             {
                 RepositoryName = target,
-                Tag = "1.0.1"
+                Tag = tag
             });
 
             //Auth config (will have to include the token)
             var authConfig = new AuthConfig()
             {
-                ServerAddress = registryHost,
+                ServerAddress = applicationUploadInfo.RegistryHost,
             };
 
             //Push it!
-            await dockerClient.Images.PushImageAsync(target, parameters, authConfig, new Progress<JSONMessage>(p => Console.WriteLine(p.Status)));
+            await dockerClient.Images.PushImageAsync(target, parameters, authConfig, new Progress<JSONMessage>(p => { }));
+
+            //TODO: Upload the version information
+            
 
             return 0;
         }

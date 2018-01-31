@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Dynamic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -16,6 +17,7 @@ namespace Boondocks.Services.Management.WebApiClient
         private static class ResourceUrls
         {
             public const string Applications = "v1/applications";
+            public const string ApplicationUploadInfo = "v1/applicationUploadInfo";
             public const string Devices = "v1/devices";
             public const string ApplicationVersions = "v1/applicationVersions";
             public const string DeviceTypes = "v1/deviceTypes";
@@ -84,6 +86,16 @@ namespace Boondocks.Services.Management.WebApiClient
             return GetAsync<Application>(ResourceUrls.Applications, new {id}, cancellationToken);
         }
 
+        public async Task<Application> GetApplicationAsync(string name,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            //TODO: Add a bloody api call that does this.
+
+            var applications = await GetApplicationsAsync(null, cancellationToken);
+
+            return applications.FirstOrDefault(a => a.Name == name);
+        }
+
         public Task UpdateApplicationAsync(Application application, CancellationToken cancellationToken = new CancellationToken())
         {
             return PutAsync(ResourceUrls.Applications, application, null, cancellationToken);
@@ -122,6 +134,11 @@ namespace Boondocks.Services.Management.WebApiClient
                     }
                 }
             }
+        }
+
+        public Task<ApplicationUploadInfo> GetApplicationUploadInfo(Guid applicationId, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return GetAsync<ApplicationUploadInfo>(ResourceUrls.ApplicationUploadInfo , new { id = applicationId}, cancellationToken);
         }
 
         public Task<Device> CreateDeviceAsync(Guid applicationId, string name, Guid? applicationVersionId = null, Guid? deviceKey = null, CancellationToken cancellationToken = new CancellationToken())
