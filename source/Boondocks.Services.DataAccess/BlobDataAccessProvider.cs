@@ -1,10 +1,10 @@
-﻿using System;
-using Boondocks.Services.DataAccess.Interfaces;
-using MongoDB.Driver;
-using MongoDB.Driver.GridFS;
-
-namespace Boondocks.Services.DataAccess
+﻿namespace Boondocks.Services.DataAccess
 {
+    using System;
+    using Interfaces;
+    using MongoDB.Driver;
+    using MongoDB.Driver.GridFS;
+
     public class BlobDataAccessProvider : IBlobDataAccessProvider
     {
         public BlobDataAccessProvider(IBlobDataAccesConfiguration configuration)

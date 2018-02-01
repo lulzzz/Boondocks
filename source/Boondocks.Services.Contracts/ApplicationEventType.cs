@@ -10,6 +10,6 @@
 
         EnvironmentVariableRemoved = 6,
 
-        EnvironmentVariableUpdated = 7,
+        EnvironmentVariableUpdated = 7
     }
 }

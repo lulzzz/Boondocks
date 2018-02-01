@@ -1,9 +1,9 @@
-﻿using System;
-using Boondocks.Services.Device.WebApiClient.Endpoints;
-using Boondocks.Services.WebApiClient;
-
-namespace Boondocks.Services.Device.WebApiClient
+﻿namespace Boondocks.Services.Device.WebApiClient
 {
+    using System;
+    using Endpoints;
+    using Services.WebApiClient;
+
     public class DeviceApiClient
     {
         public DeviceApiClient(Guid deviceId, Guid deviceKey, string baseUri)

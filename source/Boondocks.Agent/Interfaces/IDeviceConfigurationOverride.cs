@@ -1,9 +1,9 @@
-﻿using System;
-
-namespace Boondocks.Agent.Interfaces
+﻿namespace Boondocks.Agent.Interfaces
 {
+    using System;
+
     /// <summary>
-    /// Intended to provide a means to override the device configuration with command line options.
+    ///     Intended to provide a means to override the device configuration with command line options.
     /// </summary>
     public interface IDeviceConfigurationOverride
     {

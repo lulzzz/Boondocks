@@ -1,10 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using Boondocks.Base;
-using CommandLine;
-
-namespace Boondocks.Cli.Commands
+﻿namespace Boondocks.Cli.Commands
 {
+    using System;
+    using System.Threading.Tasks;
+    using Base;
+    using CommandLine;
+
     [Verb("device-set-app-version", HelpText = "Sets the current application version for a given device.")]
     public class DeviceSetAppVersion : CommandBase
     {
@@ -16,8 +16,8 @@ namespace Boondocks.Cli.Commands
 
         protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
-            Guid? deviceId = DeviceId.TryParseGuid();
-            Guid? applicationVersionId = ApplicationVersionId.TryParseGuid();
+            var deviceId = DeviceId.TryParseGuid();
+            var applicationVersionId = ApplicationVersionId.TryParseGuid();
 
             if (deviceId == null)
             {

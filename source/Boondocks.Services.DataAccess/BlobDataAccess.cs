@@ -1,14 +1,14 @@
-﻿using System;
-using System.IO;
-using Boondocks.Services.DataAccess.Interfaces;
-using MongoDB.Driver.GridFS;
-
-namespace Boondocks.Services.DataAccess
+﻿namespace Boondocks.Services.DataAccess
 {
+    using System;
+    using System.IO;
+    using Interfaces;
+    using MongoDB.Driver.GridFS;
+
     public class BlobDataAccess : IBlobDataAccess
     {
-        private readonly Func<Guid, string> _filenameFactory;
         private readonly IGridFSBucket _bucket;
+        private readonly Func<Guid, string> _filenameFactory;
 
         public BlobDataAccess(IGridFSBucket bucket, Func<Guid, string> filenameFactory)
         {
@@ -18,21 +18,21 @@ namespace Boondocks.Services.DataAccess
 
         public void UploadFromStream(Guid id, Stream sourceStream)
         {
-            string filename = GetFilename(id);
+            var filename = GetFilename(id);
 
             _bucket.UploadFromStream(filename, sourceStream);
         }
 
         public void DownloadToStream(Guid id, Stream targetStream)
         {
-            string filename = GetFilename(id);
+            var filename = GetFilename(id);
 
             _bucket.DownloadToStreamByName(filename, targetStream);
         }
 
         public Stream GetDownloadStream(Guid id)
         {
-            string filename = GetFilename(id);
+            var filename = GetFilename(id);
 
             return _bucket.OpenDownloadStreamByName(filename);
         }

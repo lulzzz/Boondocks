@@ -1,14 +1,12 @@
-﻿using System;
-using Newtonsoft.Json;
-
-namespace Boondocks.Services.Management.Contracts
+﻿namespace Boondocks.Services.Management.Contracts
 {
+    using System;
+    using Newtonsoft.Json;
+
     public class CreateDeviceResponse
     {
-        [JsonProperty("id")]
-        public Guid Id { get; set; }
+        [JsonProperty("id")] public Guid Id { get; set; }
 
-        [JsonProperty("deviceKey")]
-        public Guid DeviceKey { get; set; }
+        [JsonProperty("deviceKey")] public Guid DeviceKey { get; set; }
     }
 }

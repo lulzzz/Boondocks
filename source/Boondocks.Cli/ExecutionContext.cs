@@ -1,8 +1,8 @@
-﻿using System;
-using Boondocks.Services.Management.WebApiClient;
-
-namespace Boondocks.Cli
+﻿namespace Boondocks.Cli
 {
+    using System;
+    using Services.Management.WebApiClient;
+
     public class ExecutionContext
     {
         private readonly Lazy<ManagementApiClient> _client;

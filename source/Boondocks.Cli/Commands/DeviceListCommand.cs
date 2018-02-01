@@ -1,11 +1,11 @@
-﻿using System.Threading.Tasks;
-using Boondocks.Base;
-using Boondocks.Cli.ExtensionMethods;
-using Boondocks.Services.Management.WebApiClient;
-using CommandLine;
-
-namespace Boondocks.Cli.Commands
+﻿namespace Boondocks.Cli.Commands
 {
+    using System.Threading.Tasks;
+    using Base;
+    using CommandLine;
+    using ExtensionMethods;
+    using Services.Management.WebApiClient;
+
     [Verb("device-list", HelpText = "List devices.")]
     public class DeviceListCommand : CommandBase
     {

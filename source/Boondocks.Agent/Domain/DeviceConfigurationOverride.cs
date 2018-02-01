@@ -1,8 +1,8 @@
-﻿using System;
-using Boondocks.Agent.Interfaces;
-
-namespace Boondocks.Agent.Domain
+﻿namespace Boondocks.Agent.Domain
 {
+    using System;
+    using Interfaces;
+
     public class DeviceConfigurationOverride : IDeviceConfigurationOverride
     {
         public string DeviceApiUrl { get; set; }

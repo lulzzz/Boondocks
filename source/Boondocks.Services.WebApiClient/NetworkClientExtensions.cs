@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-
-namespace Boondocks.Services.WebApiClient
+﻿namespace Boondocks.Services.WebApiClient
 {
+    using System.Collections.Generic;
+    using System.Net.Http;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Newtonsoft.Json;
+
     public static class NetworkClientExtensions
     {
         public static async Task<TResult> MakeJsonRequestAsync<TResult>(this ApiClient client, 

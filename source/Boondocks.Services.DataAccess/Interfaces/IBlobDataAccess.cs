@@ -1,8 +1,8 @@
-﻿using System;
-using System.IO;
-
-namespace Boondocks.Services.DataAccess.Interfaces
+﻿namespace Boondocks.Services.DataAccess.Interfaces
 {
+    using System;
+    using System.IO;
+
     public interface IBlobDataAccess
     {
         void UploadFromStream(Guid id, Stream sourceStream);

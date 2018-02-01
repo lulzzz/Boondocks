@@ -1,11 +1,11 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Boondocks.Services.Contracts;
-using Microsoft.IdentityModel.Tokens;
-
-namespace Boondocks.Services.Device.WebApiClient
+﻿namespace Boondocks.Services.Device.WebApiClient
 {
+    using System;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Security.Claims;
+    using Microsoft.IdentityModel.Tokens;
+    using Services.Contracts;
+
     internal class TokenFactory
     {
         private readonly ClaimsIdentity _claimsIdentity;
@@ -15,7 +15,7 @@ namespace Boondocks.Services.Device.WebApiClient
         public TokenFactory(Guid deviceId, Guid deviceKey)
         {
             //Create the claims
-            var claims = new Claim[]
+            var claims = new[]
             {
                 new Claim(TokenConstants.DeviceIdClaimName, deviceId.ToString("D"))
             };
@@ -44,7 +44,7 @@ namespace Boondocks.Services.Device.WebApiClient
                 SigningCredentials = _signingCredentials
             };
 
-            SecurityToken securityToken = _tokenHandler.CreateToken(tokenDescriptor);
+            var securityToken = _tokenHandler.CreateToken(tokenDescriptor);
 
             return _tokenHandler.WriteToken(securityToken);
         }

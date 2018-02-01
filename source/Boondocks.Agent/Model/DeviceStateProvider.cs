@@ -1,14 +1,12 @@
-﻿using Boondocks.Services.Contracts;
-
-namespace Boondocks.Agent.Model
+﻿namespace Boondocks.Agent.Model
 {
+    using Services.Contracts;
+
     internal class DeviceStateProvider
     {
         /// <summary>
-        /// The 
+        ///     The
         /// </summary>
         public DeviceState State { get; set; }
-
-        
     }
 }

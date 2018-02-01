@@ -1,15 +1,15 @@
-﻿using System;
-using System.ComponentModel;
-using System.Threading;
-using System.Threading.Tasks;
-using Autofac;
-using BizArk.ConsoleApp;
-using Boondocks.Agent.Domain;
-using Boondocks.Agent.Interfaces;
-using Boondocks.Base;
-
-namespace Boondocks.Agent
+﻿namespace Boondocks.Agent
 {
+    using System;
+    using System.ComponentModel;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Autofac;
+    using Base;
+    using BizArk.ConsoleApp;
+    using Domain;
+    using Interfaces;
+
     internal class AgentApp : BaseConsoleApp
     {
         [Description("A custom device api url.")]
@@ -54,7 +54,7 @@ namespace Boondocks.Agent
                     //Get the supervisor host
                     var host = container.Resolve<IAgentHost>();
 
-                    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+                    var cancellationTokenSource = new CancellationTokenSource();
 
                     //We shall cancel on the keypress
                     Console.CancelKeyPress += (sender, eventArgs) => cancellationTokenSource.Cancel();
@@ -81,8 +81,6 @@ namespace Boondocks.Agent
             }
 
             return 0;
-
-
         }
     }
 }

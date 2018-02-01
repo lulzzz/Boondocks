@@ -1,9 +1,9 @@
-﻿using System.Data;
-using System.Data.SqlClient;
-using Boondocks.Services.DataAccess.Interfaces;
-
-namespace Boondocks.Services.DataAccess
+﻿namespace Boondocks.Services.DataAccess
 {
+    using System.Data;
+    using System.Data.SqlClient;
+    using Interfaces;
+
     //Temporary workaround. Need to implement a provider lookup:
     // https://weblog.west-wind.com/posts/2017/Nov/27/Working-around-the-lack-of-dynamic-DbProviderFactory-loading-in-NET-Core
 

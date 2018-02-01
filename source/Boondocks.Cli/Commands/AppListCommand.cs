@@ -1,23 +1,22 @@
-﻿using System;
-using System.Threading.Tasks;
-using Boondocks.Base;
-using Boondocks.Cli.ExtensionMethods;
-using Boondocks.Services.Management.WebApiClient;
-using CommandLine;
-
-namespace Boondocks.Cli.Commands
+﻿namespace Boondocks.Cli.Commands
 {
+    using System.Threading.Tasks;
+    using Base;
+    using CommandLine;
+    using ExtensionMethods;
+    using Services.Management.WebApiClient;
+
     [Verb("app-list", HelpText = "List the applications.")]
-    public class AppListCommand :  CommandBase
+    public class AppListCommand : CommandBase
     {
         [Option('t', "device-type", HelpText = "The device type to filter on.")]
         public string DeviceTypeId { get; set; }
 
         protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
-            Guid? deviceTypeId = DeviceTypeId.TryParseGuid();
+            var deviceTypeId = DeviceTypeId.TryParseGuid();
 
-            var request = new GetApplicationsRequest()
+            var request = new GetApplicationsRequest
             {
                 DeviceTypeId = deviceTypeId
             };

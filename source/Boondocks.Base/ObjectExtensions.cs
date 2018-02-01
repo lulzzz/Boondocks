@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
-
-namespace Boondocks.Base
+﻿namespace Boondocks.Base
 {
+    using Newtonsoft.Json;
+
     public static class ObjectExtensions
     {
         /// <summary>
-        /// Performs a deep clone via serialization / deserialization.
+        ///     Performs a deep clone via serialization / deserialization.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="source"></param>
@@ -15,13 +15,13 @@ namespace Boondocks.Base
             if (source == null)
                 return default(T);
 
-            JsonSerializerSettings settings = new JsonSerializerSettings
+            var settings = new JsonSerializerSettings
             {
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                 TypeNameHandling = TypeNameHandling.Auto
             };
 
-            string json = JsonConvert.SerializeObject(source, settings);
+            var json = JsonConvert.SerializeObject(source, settings);
 
             return JsonConvert.DeserializeObject<T>(json, settings);
         }

@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web;
-using Microsoft.AspNetCore.WebUtilities;
-using Newtonsoft.Json;
-
-namespace Boondocks.Services.WebApiClient
+﻿namespace Boondocks.Services.WebApiClient
 {
+    using Microsoft.AspNetCore.WebUtilities;
+    using Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Threading;
+    using System.Threading.Tasks;
+
     public class ApiClient : IDisposable
     {
         private readonly Uri _baseUri;

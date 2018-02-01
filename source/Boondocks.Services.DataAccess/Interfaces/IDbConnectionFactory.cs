@@ -1,7 +1,7 @@
-﻿using System.Data;
-
-namespace Boondocks.Services.DataAccess.Interfaces
+﻿namespace Boondocks.Services.DataAccess.Interfaces
 {
+    using System.Data;
+
     public interface IDbConnectionFactory
     {
         IDbConnection Create();

@@ -1,10 +1,10 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace Boondocks.Agent.Interfaces
+﻿namespace Boondocks.Agent.Interfaces
 {
+    using System.Threading;
+    using System.Threading.Tasks;
+
     /// <summary>
-    /// The core code for the agent.
+    ///     The core code for the agent.
     /// </summary>
     internal interface IAgentHost
     {

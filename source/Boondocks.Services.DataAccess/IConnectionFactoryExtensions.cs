@@ -1,12 +1,12 @@
-﻿using System.Data;
-using Boondocks.Services.DataAccess.Interfaces;
-
-namespace Boondocks.Services.DataAccess
+﻿namespace Boondocks.Services.DataAccess
 {
+    using System.Data;
+    using Interfaces;
+
     public static class IConnectionFactoryExtensions
     {
         /// <summary>
-        /// Creates and opens a connection.
+        ///     Creates and opens a connection.
         /// </summary>
         /// <param name="factory"></param>
         /// <returns></returns>
@@ -22,6 +22,4 @@ namespace Boondocks.Services.DataAccess
             return connection;
         }
     }
-
-   
 }

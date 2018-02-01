@@ -1,13 +1,13 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Boondocks.Services.Device.Contracts;
-using Boondocks.Services.WebApiClient;
-using Newtonsoft.Json;
-
-namespace Boondocks.Services.Device.WebApiClient.Endpoints
+﻿namespace Boondocks.Services.Device.WebApiClient.Endpoints
 {
+    using System;
+    using System.Net.Http;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Contracts;
+    using Newtonsoft.Json;
+    using Services.WebApiClient;
+
     public class ConfigurationOperations
     {
         private readonly ApiClient _client;
@@ -20,13 +20,15 @@ namespace Boondocks.Services.Device.WebApiClient.Endpoints
         }
 
         /// <summary>
-        /// Gets the configuration for the device.
+        ///     Gets the configuration for the device.
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<GetDeviceConfigurationResponse> GetConfigurationAsync(CancellationToken cancellationToken = new CancellationToken())
+        public async Task<GetDeviceConfigurationResponse> GetConfigurationAsync(
+            CancellationToken cancellationToken = new CancellationToken())
         {
-            var response = await _client.MakeRequestAsync(cancellationToken, HttpMethod.Get, ResourceUris.DeviceConfiguration, headers: _tokenFactory.CreateRequestHeaders());
+            var response = await _client.MakeRequestAsync(cancellationToken, HttpMethod.Get,
+                ResourceUris.DeviceConfiguration, headers: _tokenFactory.CreateRequestHeaders());
 
             return JsonConvert.DeserializeObject<GetDeviceConfigurationResponse>(response.Body);
         }

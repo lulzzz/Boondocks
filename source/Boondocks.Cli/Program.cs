@@ -1,15 +1,14 @@
-﻿using System;
-using System.Linq;
-using CommandLine;
-
-namespace Boondocks.Cli
+﻿namespace Boondocks.Cli
 {
-    class Program
+    using System.Linq;
+    using CommandLine;
+
+    internal class Program
     {
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             //All commands are based off of this type.
-            Type baseType = typeof(CommandBase);
+            var baseType = typeof(CommandBase);
 
             //Get the command types via reflection.
             var commandTypes = baseType.Assembly.GetTypes()

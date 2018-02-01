@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Boondocks.Agent.Domain;
-using Boondocks.Services.Device.Contracts;
-using Newtonsoft.Json;
-
-namespace Boondocks.Agent.Model
+﻿namespace Boondocks.Agent.Model
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using Domain;
+    using Newtonsoft.Json;
+    using Services.Device.Contracts;
+
     internal class OperationalStateProvider
     {
         private readonly PathFactory _pathFactory;
@@ -20,7 +20,7 @@ namespace Boondocks.Agent.Model
                 if (File.Exists(pathFactory.OperationStatePath))
                 {
                     //Grab the json from disk
-                    string json = File.ReadAllText(pathFactory.OperationStatePath);
+                    var json = File.ReadAllText(pathFactory.OperationStatePath);
 
                     //Deserialize it.
                     State = JsonConvert.DeserializeObject<DeviceOperationalState>(json);
@@ -31,18 +31,13 @@ namespace Boondocks.Agent.Model
                 //TODO: Log this
             }
 
-            if (State == null)
-            {
-                //Create a default state.
-                State = new DeviceOperationalState();
-            }
+            if (State == null) State = new DeviceOperationalState();
 
             //Ensure we have a value here.
-            if (State.ApplicationsToRemove == null)
-            {
-                State.ApplicationsToRemove = new List<VersionReference>();
-            }
+            if (State.ApplicationsToRemove == null) State.ApplicationsToRemove = new List<VersionReference>();
         }
+
+        public DeviceOperationalState State { get; }
 
         public void Save()
         {
@@ -55,7 +50,5 @@ namespace Boondocks.Agent.Model
             //Write it out
             File.WriteAllText(_pathFactory.OperationStatePath, json);
         }
-
-        public DeviceOperationalState State { get; }
     }
 }

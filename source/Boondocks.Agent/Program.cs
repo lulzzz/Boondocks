@@ -1,8 +1,8 @@
-﻿using BizArk.ConsoleApp;
-
-namespace Boondocks.Agent
+﻿namespace Boondocks.Agent
 {
-    class Program
+    using BizArk.ConsoleApp;
+
+    internal class Program
     {
         private static void Main(string[] args)
         {

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Runtime.Serialization;
-
-namespace Boondocks.Base
+﻿namespace Boondocks.Base
 {
+    using System;
+    using System.Runtime.Serialization;
+
     /// <summary>
-    /// Thrown when an error occurrs while parsing.
+    ///     Thrown when an error occurrs while parsing.
     /// </summary>
     public class ParseException : Exception
     {

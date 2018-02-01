@@ -1,9 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using Boondocks.Agent.Interfaces;
-
-namespace Boondocks.Agent.Model
+﻿namespace Boondocks.Agent.Model
 {
+    using System;
+    using System.Diagnostics;
+    using Interfaces;
+
     internal class UptimeProvider : IUptimeProvider
     {
         private readonly Stopwatch _stopwatch;

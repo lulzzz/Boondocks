@@ -1,30 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using Boondocks.Base;
-using Dapper;
-using Microsoft.AspNetCore.Http;
-
-namespace Boondocks.Services.DataAccess
+﻿namespace Boondocks.Services.DataAccess
 {
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+    using Base;
+    using Dapper;
+    using Microsoft.AspNetCore.Http;
+
     /// <summary>
-    /// Dynamically builds a sql query. 
+    ///     Dynamically builds a sql query.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class SelectQueryBuilder<T>
     {
-        private readonly string _select;
-        private readonly IQueryCollection _query;
-        private readonly SortableColumn[] _sortableColumns;
-        private int _parameterIndex = 0;
-
         private readonly DynamicParameters _parameters = new DynamicParameters();
+        private readonly IQueryCollection _query;
+        private readonly string _select;
+        private readonly SortableColumn[] _sortableColumns;
 
         private readonly List<string> _whereElements = new List<string>();
+        private int _parameterIndex;
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="select">(e.g. "select * from Devices")</param>
         /// <param name="query"></param>
@@ -33,36 +30,36 @@ namespace Boondocks.Services.DataAccess
         {
             _select = select;
             _query = query;
-            _sortableColumns = sortableColumns ?? new SortableColumn[]{};
+            _sortableColumns = sortableColumns ?? new SortableColumn[] { };
         }
 
         /// <summary>
-        /// Attempts to add a guid parameter
+        ///     Attempts to add a guid parameter
         /// </summary>
         /// <param name="queryStringName">the name of the parameter as it would appear in the query string.</param>
         /// <param name="columnName">The name of the column to be filtered.</param>
         /// <returns>Returns true if the condition was added, false otherwise.</returns>
         public bool TryAddGuidParameter(string queryStringName, string columnName)
         {
-            Guid? value = ((string) _query[queryStringName]).TryParseGuid();
+            var value = ((string) _query[queryStringName]).TryParseGuid();
 
             if (value == null)
                 return false;
-            
+
             AddCondition(columnName, value);
 
             return true;
         }
 
         /// <summary>
-        /// Attempts to add a boolean parameter
+        ///     Attempts to add a boolean parameter
         /// </summary>
         /// <param name="queryStringName">the name of the parameter as it would appear in the query string.</param>
         /// <param name="columnName">The name of the column to be filtered.</param>
         /// <returns>Returns true if the condition was added, false otherwise.</returns>
         public bool TryAddBitParameter(string queryStringName, string columnName)
         {
-            bool? value = ((string)_query[queryStringName]).TryParseBool();
+            var value = ((string) _query[queryStringName]).TryParseBool();
 
             if (value == null)
                 return false;
@@ -73,14 +70,14 @@ namespace Boondocks.Services.DataAccess
         }
 
         /// <summary>
-        /// Attempts to add an integer parameter
+        ///     Attempts to add an integer parameter
         /// </summary>
         /// <param name="queryStringName">the name of the parameter as it would appear in the query string.</param>
         /// <param name="columnName">The name of the column to be filtered.</param>
         /// <returns>Returns true if the condition was added, false otherwise.</returns>
         public bool TryAddIntParameter(string queryStringName, string columnName)
         {
-            int? value = ((string)_query[queryStringName]).TryParseInt();
+            var value = ((string) _query[queryStringName]).TryParseInt();
 
             if (value == null)
                 return false;
@@ -91,13 +88,13 @@ namespace Boondocks.Services.DataAccess
         }
 
         /// <summary>
-        /// Adds a condition to the query
+        ///     Adds a condition to the query
         /// </summary>
         /// <param name="columnName"></param>
         /// <param name="value"></param>
         public void AddCondition(string columnName, object value)
         {
-            string parameterName = $"P{_parameterIndex}";
+            var parameterName = $"P{_parameterIndex}";
 
             _parameters.Add(parameterName, value);
 
@@ -111,7 +108,7 @@ namespace Boondocks.Services.DataAccess
             if (_sortableColumns == null)
                 return null;
 
-            string queryStringKey = $"orderby{index}";
+            var queryStringKey = $"orderby{index}";
 
             string queryStringValue = _query[queryStringKey];
 
@@ -119,21 +116,20 @@ namespace Boondocks.Services.DataAccess
                 return null;
 
             //See if this is actually a sortable column
-            SortableColumn sortableAscendingColumn = _sortableColumns
+            var sortableAscendingColumn = _sortableColumns
                 .FirstOrDefault(c => c.QueryStringName == queryStringValue);
 
             if (sortableAscendingColumn != null)
                 return new SortedColumn(sortableAscendingColumn.ColumnName, SortDirection.Ascending);
 
             //See if this is a descending sortable column
-            SortableColumn sortableDescendingColumn = _sortableColumns
-                .FirstOrDefault(c => c.QueryStringName + "_desc" == queryStringValue );
+            var sortableDescendingColumn = _sortableColumns
+                .FirstOrDefault(c => c.QueryStringName + "_desc" == queryStringValue);
 
             if (sortableDescendingColumn != null)
                 return new SortedColumn(sortableDescendingColumn.ColumnName, SortDirection.Descending);
 
             return null;
-
         }
 
         private SortedColumn[] GetDefaultSortedColumns()
@@ -145,7 +141,7 @@ namespace Boondocks.Services.DataAccess
         }
 
         /// <summary>
-        /// Gets the effective sorted columns for this query.
+        ///     Gets the effective sorted columns for this query.
         /// </summary>
         /// <returns></returns>
         private SortedColumn[] GetSortedColumns()
@@ -153,10 +149,10 @@ namespace Boondocks.Services.DataAccess
             var sortedColumns = new List<SortedColumn>(_sortableColumns.Length);
 
             //Check for sortable columns
-            for (int index = 0; index < 50; index++)
+            for (var index = 0; index < 50; index++)
             {
                 //Attempt to get this column
-                SortedColumn sortedColumn = TryGetSortedColumn(index);
+                var sortedColumn = TryGetSortedColumn(index);
 
                 if (sortedColumn == null)
                     break;
@@ -174,41 +170,38 @@ namespace Boondocks.Services.DataAccess
         }
 
         /// <summary>
-        /// Gets the where clause.
+        ///     Gets the where clause.
         /// </summary>
         /// <returns></returns>
         private string GetWhereClause()
         {
-            if (_parameterIndex == 0)
-            {
-                return null;
-            }
-           
+            if (_parameterIndex == 0) return null;
+
             //Format the where bits
-            string wheres = string.Join(" and ", _whereElements);
+            var wheres = string.Join(" and ", _whereElements);
 
             //where 
             return $" where {wheres}";
         }
 
         /// <summary>
-        /// gets the "order by " clause.
+        ///     gets the "order by " clause.
         /// </summary>
         /// <returns></returns>
         private string GetOrderByClause()
         {
             //Get the sorted coumns
-            SortedColumn[] sortedColumns = GetSortedColumns();
+            var sortedColumns = GetSortedColumns();
 
             if (sortedColumns == null || sortedColumns.Length == 0)
                 return null;
 
             //Check to see if we got any
-            return $" order by {string.Join(", ", sortedColumns.Select(c => c.ToSql()))}";            
+            return $" order by {string.Join(", ", sortedColumns.Select(c => c.ToSql()))}";
         }
 
         /// <summary>
-        /// Executes the query.
+        ///     Executes the query.
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="transaction">Optional.</param>
@@ -216,13 +209,13 @@ namespace Boondocks.Services.DataAccess
         public IEnumerable<T> Execute(IDbConnection connection, IDbTransaction transaction = null)
         {
             //Get the where clause
-            string whereClause = GetWhereClause();
+            var whereClause = GetWhereClause();
 
             //Get the order by clause
-            string orderByClause = GetOrderByClause();
+            var orderByClause = GetOrderByClause();
 
             //Put the whole sql statement together.
-            string sql = $"{_select} {whereClause} {orderByClause}";
+            var sql = $"{_select} {whereClause} {orderByClause}";
 
             //Do it!  Do it now!
             return connection
@@ -231,7 +224,7 @@ namespace Boondocks.Services.DataAccess
         }
 
         /// <summary>
-        /// Represents a column that is to be sorted upon.
+        ///     Represents a column that is to be sorted upon.
         /// </summary>
         private class SortedColumn
         {
@@ -247,12 +240,9 @@ namespace Boondocks.Services.DataAccess
 
             public string ToSql()
             {
-                string sql = $" [{ColumnName}] ";
+                var sql = $" [{ColumnName}] ";
 
-                if (Direction == SortDirection.Descending)
-                {
-                    sql += " desc ";
-                }
+                if (Direction == SortDirection.Descending) sql += " desc ";
 
                 return sql;
             }
@@ -260,11 +250,11 @@ namespace Boondocks.Services.DataAccess
     }
 
     public class SortableColumn
-    {        
+    {
         public SortableColumn(
-            string queryStringName, 
-            string columnName, 
-            bool isDefault = false, 
+            string queryStringName,
+            string columnName,
+            bool isDefault = false,
             SortDirection defaultSortDirection = SortDirection.Ascending)
         {
             QueryStringName = queryStringName;

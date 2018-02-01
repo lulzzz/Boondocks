@@ -1,10 +1,9 @@
-﻿using Newtonsoft.Json;
-
-namespace Boondocks.Services.Contracts
+﻿namespace Boondocks.Services.Contracts
 {
+    using Newtonsoft.Json;
+
     public class DeviceType : EntityBase
     {
-        [JsonProperty("name")]
-        public string Name { get; set; }
+        [JsonProperty("name")] public string Name { get; set; }
     }
 }

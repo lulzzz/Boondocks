@@ -1,10 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using Boondocks.Services.Management.Contracts;
-using CommandLine;
-
-namespace Boondocks.Cli.Commands
+﻿namespace Boondocks.Cli.Commands
 {
+    using System;
+    using System.Threading.Tasks;
+    using CommandLine;
+    using Services.Management.Contracts;
+
     [Verb("device-type-new", HelpText = "Create a new device type.")]
     public class DeviceTypeNewCommand : CommandBase
     {

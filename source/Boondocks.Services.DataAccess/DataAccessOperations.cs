@@ -1,12 +1,12 @@
-﻿using System;
-using System.Data;
-using System.Linq;
-using Boondocks.Services.Contracts;
-using Dapper;
-using Dapper.Contrib.Extensions;
-
-namespace Boondocks.Services.DataAccess
+﻿namespace Boondocks.Services.DataAccess
 {
+    using System;
+    using System.Data;
+    using System.Linq;
+    using Contracts;
+    using Dapper;
+    using Dapper.Contrib.Extensions;
+
     public static class DataAccessOperations
     {
         public static DeviceEvent InsertDeviceEvent(
@@ -52,7 +52,7 @@ namespace Boondocks.Services.DataAccess
         }
 
         /// <summary>
-        /// Inserts a device (and corresponding DeviceStatus) into the database.
+        ///     Inserts a device (and corresponding DeviceStatus) into the database.
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="name"></param>
@@ -63,13 +63,13 @@ namespace Boondocks.Services.DataAccess
         public static Device InsertDevice(
             this IDbConnection connection,
             IDbTransaction transaction,
-            string name, 
+            string name,
             Guid applicationId,
             Guid? deviceKey)
         {
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
-            var device = new Device()
+            var device = new Device
             {
                 Name = name,
                 ApplicationId = applicationId,
@@ -77,7 +77,7 @@ namespace Boondocks.Services.DataAccess
                 ConfigurationVersion = Guid.NewGuid()
             }.SetNew();
 
-            var deviceStatus = new DeviceStatus()
+            var deviceStatus = new DeviceStatus
             {
                 DeviceId = device.Id,
                 State = DeviceState.New
@@ -91,7 +91,7 @@ namespace Boondocks.Services.DataAccess
         }
 
         /// <summary>
-        /// Setting the Id and CreatedUtc properties for a new entity.
+        ///     Setting the Id and CreatedUtc properties for a new entity.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="entity"></param>
@@ -99,10 +99,7 @@ namespace Boondocks.Services.DataAccess
         public static T SetNew<T>(this T entity) where T : EntityBase
         {
             //Allow callers to specify their own id
-            if (entity.Id == Guid.Empty)
-            {
-                entity.Id = Guid.NewGuid();
-            }
+            if (entity.Id == Guid.Empty) entity.Id = Guid.NewGuid();
 
             //Always set a fresh created date.
             entity.CreatedUtc = DateTime.UtcNow;
@@ -112,7 +109,7 @@ namespace Boondocks.Services.DataAccess
         }
 
         /// <summary>
-        /// Gets a device key given a device id.
+        ///     Gets a device key given a device id.
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="deviceId"></param>
@@ -122,22 +119,17 @@ namespace Boondocks.Services.DataAccess
             const string sql = "select DeviceKey from Devices where Id = @DeviceId";
 
             return connection
-                .QueryFirstOrDefault<DeviceKeyFromDatabase>(sql, new { DeviceId = deviceId })?.DeviceKey;
-        }
-
-        private class DeviceKeyFromDatabase
-        {
-            public Guid DeviceKey { get; set; }
+                .QueryFirstOrDefault<DeviceKeyFromDatabase>(sql, new {DeviceId = deviceId})?.DeviceKey;
         }
 
         public static DeviceEnvironmentVariable InsertDeviceEnvironmentVariable(
-            this IDbConnection connection, 
-            IDbTransaction transaction, 
-            Guid deviceId, 
-            string name, 
+            this IDbConnection connection,
+            IDbTransaction transaction,
+            Guid deviceId,
+            string name,
             string value)
         {
-            DeviceEnvironmentVariable variable = new DeviceEnvironmentVariable()
+            var variable = new DeviceEnvironmentVariable
             {
                 DeviceId = deviceId,
                 Name = name,
@@ -156,7 +148,7 @@ namespace Boondocks.Services.DataAccess
             string name,
             string value)
         {
-            ApplicationEnvironmentVariable variable = new ApplicationEnvironmentVariable()
+            var variable = new ApplicationEnvironmentVariable
             {
                 ApplicationId = applicationID,
                 Name = name,
@@ -169,8 +161,8 @@ namespace Boondocks.Services.DataAccess
         }
 
         /// <summary>
-        /// Sets a new device configuration for a single device. This is done to notify the the device that it needs to 
-        /// download a new configuration.
+        ///     Sets a new device configuration for a single device. This is done to notify the the device that it needs to
+        ///     download a new configuration.
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="transaction"></param>
@@ -197,8 +189,9 @@ namespace Boondocks.Services.DataAccess
         }
 
         /// <summary>
-        /// Sets a new device configuration all of the devices in a given application. This is done to notify the the device that it needs to 
-        /// download a new configuration.
+        ///     Sets a new device configuration all of the devices in a given application. This is done to notify the the device
+        ///     that it needs to
+        ///     download a new configuration.
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="transaction"></param>
@@ -224,22 +217,51 @@ namespace Boondocks.Services.DataAccess
             connection.Execute(sql, parameters, transaction);
         }
 
-        public static DeviceEnvironmentVariable[] GetDeviceEnvironmentVariables(this IDbConnection connection, Guid deviceId)
+        public static DeviceEnvironmentVariable[] GetDeviceEnvironmentVariables(this IDbConnection connection,
+            Guid deviceId)
         {
             const string sql = "select * from DeviceEnvironmentVariables where DeviceId = @deviceId";
 
             return connection
-                .Query<DeviceEnvironmentVariable>(sql, new { deviceId})
+                .Query<DeviceEnvironmentVariable>(sql, new {deviceId})
                 .ToArray();
         }
 
-        public static ApplicationEnvironmentVariable[] GetApplicationEnvironmentVariables(this IDbConnection connection, Guid applicationId)
+        public static ApplicationEnvironmentVariable[] GetApplicationEnvironmentVariables(this IDbConnection connection,
+            Guid applicationId)
         {
             const string sql = "select * from ApplicationEnvironmentVariables where ApplicationId = @applicationId";
 
             return connection
-                .Query<ApplicationEnvironmentVariable>(sql, new { applicationId })
+                .Query<ApplicationEnvironmentVariable>(sql, new {applicationId})
                 .ToArray();
+        }
+
+
+        public static bool IsApplicationVersionNameInUse(this IDbConnection connection, Guid applicationId, string name)
+        {
+            //https://stackoverflow.com/a/39023427/232566
+
+            const string sql =
+                "select count(1) from ApplicationVersions where ApplicationId = @applicationId and Name = @name";
+
+            return connection.ExecuteScalar<bool>(sql, new {applicationId, name});
+        }
+
+        public static bool IsApplicationVersionImageIdInUse(this IDbConnection connection, Guid applicationId,
+            string imageId)
+        {
+            //https://stackoverflow.com/a/39023427/232566
+
+            const string sql =
+                "select count(1) from ApplicationVersions where ApplicationId = @applicationId and ImageId = @imageId";
+
+            return connection.ExecuteScalar<bool>(sql, new {applicationId, imageId});
+        }
+
+        private class DeviceKeyFromDatabase
+        {
+            public Guid DeviceKey { get; set; }
         }
     }
 }

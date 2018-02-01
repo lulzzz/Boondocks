@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using Boondocks.Services.Device.Contracts;
-
-namespace Boondocks.Agent
+﻿namespace Boondocks.Agent
 {
+    using System.Collections.Generic;
+    using Services.Device.Contracts;
+
     internal static class HashSetExtensions
     {
         public static bool TryAdd<T>(this HashSet<T> hashSet, T value)

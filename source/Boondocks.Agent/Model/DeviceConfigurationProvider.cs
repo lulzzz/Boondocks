@@ -1,17 +1,18 @@
-﻿using System;
-using System.IO;
-using Boondocks.Agent.Domain;
-using Boondocks.Agent.Interfaces;
-using Newtonsoft.Json;
-
-namespace Boondocks.Agent.Model
+﻿namespace Boondocks.Agent.Model
 {
+    using System;
+    using System.IO;
+    using Domain;
+    using Interfaces;
+    using Newtonsoft.Json;
+
     internal class DeviceConfigurationProvider : IDeviceConfigurationProvider
     {
         private readonly IDeviceConfigurationOverride _deviceConfigurationOverride;
         private readonly PathFactory _pathFactory;
 
-        public DeviceConfigurationProvider(PathFactory pathFactory, IDeviceConfigurationOverride deviceConfigurationOverride)
+        public DeviceConfigurationProvider(PathFactory pathFactory,
+            IDeviceConfigurationOverride deviceConfigurationOverride)
         {
             _deviceConfigurationOverride = deviceConfigurationOverride;
             _pathFactory = pathFactory ?? throw new ArgumentNullException(nameof(pathFactory));
@@ -20,7 +21,7 @@ namespace Boondocks.Agent.Model
         public IDeviceConfiguration GetDeviceConfiguration()
         {
             //Get the json
-            string json = File.ReadAllText(_pathFactory.DeviceConfigFile);
+            var json = File.ReadAllText(_pathFactory.DeviceConfigFile);
 
             //Deserialize it
             var configuration = JsonConvert.DeserializeObject<DeviceConfiguration>(json);

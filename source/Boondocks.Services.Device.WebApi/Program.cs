@@ -1,9 +1,9 @@
-﻿using Autofac.Extensions.DependencyInjection;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-
-namespace Boondocks.Services.Device.WebApi
+﻿namespace Boondocks.Services.Device.WebApi
 {
+    using Autofac.Extensions.DependencyInjection;
+    using Microsoft.AspNetCore;
+    using Microsoft.AspNetCore.Hosting;
+
     public class Program
     {
         public static void Main(string[] args)
@@ -11,10 +11,12 @@ namespace Boondocks.Services.Device.WebApi
             BuildWebHost(args).Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IWebHost BuildWebHost(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args)
                 .ConfigureServices(services => services.AddAutofac())
                 .UseStartup<Startup>()
                 .Build();
+        }
     }
 }

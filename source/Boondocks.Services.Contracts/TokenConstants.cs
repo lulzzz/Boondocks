@@ -1,7 +1,7 @@
 ﻿namespace Boondocks.Services.Contracts
 {
     /// <summary>
-    /// Various 
+    ///     Various
     /// </summary>
     public static class TokenConstants
     {

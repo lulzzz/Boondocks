@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Boondocks.Services.Management.WebApiClient
+﻿namespace Boondocks.Services.Management.WebApiClient
 {
+    using System;
+
     public class GetDevicesRequest
     {
         public Guid? ApplicationId { get; set; }

@@ -1,21 +1,19 @@
-﻿using System;
-
-namespace Boondocks.Base
+﻿namespace Boondocks.Base
 {
+    using System;
+
     /// <summary>
-    /// Methods for parsing values from strings.
+    ///     Methods for parsing values from strings.
     /// </summary>
     public static class ParseExtensions
     {
-        private delegate bool TryParseDelegate<T>(string value, out T result) where T : struct;
-
         private static T? TryParse<T>(string value, TryParseDelegate<T> tryParse, bool throwExceptionOnInvalid)
             where T : struct
         {
             if (string.IsNullOrWhiteSpace(value))
                 return null;
 
-            if (tryParse(value, out T parsed))
+            if (tryParse(value, out var parsed))
                 return parsed;
 
             if (throwExceptionOnInvalid)
@@ -30,14 +28,14 @@ namespace Boondocks.Base
             if (string.IsNullOrWhiteSpace(value))
                 throw new ParseException("No value was provided.");
 
-            if (tryParse(value, out T parsed))
+            if (tryParse(value, out var parsed))
                 return parsed;
 
             throw new ParseException($"Unable to parse value '{value}' as '{typeof(T).Name}'.");
         }
 
         /// <summary>
-        /// Attempts to parse a Guid from a string.
+        ///     Attempts to parse a Guid from a string.
         /// </summary>
         /// <param name="value"></param>
         /// <param name="throwExceptionOnInvalid">If a value is provided, but is unparseable, throw a ParseException.</param>
@@ -48,7 +46,7 @@ namespace Boondocks.Base
         }
 
         /// <summary>
-        /// Parses a Guid.
+        ///     Parses a Guid.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -58,7 +56,7 @@ namespace Boondocks.Base
         }
 
         /// <summary>
-        /// Attempts to parse a bool from a string.
+        ///     Attempts to parse a bool from a string.
         /// </summary>
         /// <param name="value"></param>
         /// <param name="throwExceptionOnInvalid">If a value is provided, but is unparseable, throw a ParseException.</param>
@@ -69,7 +67,7 @@ namespace Boondocks.Base
         }
 
         /// <summary>
-        /// Parses a bool.
+        ///     Parses a bool.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -79,7 +77,7 @@ namespace Boondocks.Base
         }
 
         /// <summary>
-        /// Attempts to parse an int from a string.
+        ///     Attempts to parse an int from a string.
         /// </summary>
         /// <param name="value"></param>
         /// <param name="throwExceptionOnInvalid">If a value is provided, but is unparseable, throw a ParseException.</param>
@@ -90,7 +88,7 @@ namespace Boondocks.Base
         }
 
         /// <summary>
-        /// Parses an int.
+        ///     Parses an int.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -98,5 +96,7 @@ namespace Boondocks.Base
         {
             return Parse<int>(value, int.TryParse);
         }
+
+        private delegate bool TryParseDelegate<T>(string value, out T result) where T : struct;
     }
 }

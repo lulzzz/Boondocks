@@ -1,8 +1,8 @@
-﻿using System.Net;
-using System.Net.Http.Headers;
-
-namespace Boondocks.Services.WebApiClient
+﻿namespace Boondocks.Services.WebApiClient
 {
+    using System.Net;
+    using System.Net.Http.Headers;
+
     public class ApiResponse<TBody> : ApiResponse
     {
         internal ApiResponse(HttpStatusCode statusCode, TBody body, HttpResponseHeaders headers) : base(statusCode, headers)

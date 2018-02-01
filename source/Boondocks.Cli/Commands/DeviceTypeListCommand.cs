@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
-using Boondocks.Cli.ExtensionMethods;
-using CommandLine;
-
-namespace Boondocks.Cli.Commands
+﻿namespace Boondocks.Cli.Commands
 {
+    using System.Threading.Tasks;
+    using CommandLine;
+    using ExtensionMethods;
+
     [Verb("device-type-list", HelpText = "List device types.")]
     public class DeviceTypeListCommand : CommandBase
     {

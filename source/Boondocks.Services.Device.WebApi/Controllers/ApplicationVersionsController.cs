@@ -1,10 +1,10 @@
-﻿using System;
-using Boondocks.Services.DataAccess.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace Boondocks.Services.Device.WebApi.Controllers
+﻿namespace Boondocks.Services.Device.WebApi.Controllers
 {
+    using System;
+    using DataAccess.Interfaces;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+
     [Produces("application/json")]
     [Route("v1/applicationVersions")]
     [Authorize]
@@ -14,7 +14,8 @@ namespace Boondocks.Services.Device.WebApi.Controllers
 
         public ApplicationVersionsController(IBlobDataAccessProvider blobDataAccessProvider)
         {
-            _blobDataAccessProvider = blobDataAccessProvider ?? throw new ArgumentNullException(nameof(blobDataAccessProvider));
+            _blobDataAccessProvider =
+                blobDataAccessProvider ?? throw new ArgumentNullException(nameof(blobDataAccessProvider));
         }
 
         [HttpGet("{id}")]
@@ -28,7 +29,7 @@ namespace Boondocks.Services.Device.WebApi.Controllers
 
             //https://stackoverflow.com/a/42460443/232566
             return File(
-                stream, 
+                stream,
                 "application/octet-stream",
                 _blobDataAccessProvider.ApplicationVersionImages.GetFilename(id));
         }

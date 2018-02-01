@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Boondocks.Agent.Interfaces
+﻿namespace Boondocks.Agent.Interfaces
 {
+    using System;
+
     internal interface IDeviceConfiguration
     {
         string DeviceApiUrl { get; }

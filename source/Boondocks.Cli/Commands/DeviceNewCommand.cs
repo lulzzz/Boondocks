@@ -1,12 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using Boondocks.Base;
-using Boondocks.Services.Contracts;
-using Boondocks.Services.Management.Contracts;
-using CommandLine;
-
-namespace Boondocks.Cli.Commands
+﻿namespace Boondocks.Cli.Commands
 {
+    using System;
+    using System.Threading.Tasks;
+    using Base;
+    using CommandLine;
+    using Services.Management.Contracts;
+
     [Verb("device-new", HelpText = "Create a new device.")]
     public class DeviceNewCommand : CommandBase
     {
@@ -24,9 +23,9 @@ namespace Boondocks.Cli.Commands
 
         protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
-            Guid? applicationId = ApplicationId.TryParseGuid();
-            Guid? deviceKey = DeviceKey.TryParseGuid();
-            Guid? applicationVersionId = ApplicationVersionId.TryParseGuid();
+            var applicationId = ApplicationId.TryParseGuid();
+            var deviceKey = DeviceKey.TryParseGuid();
+            var applicationVersionId = ApplicationVersionId.TryParseGuid();
 
             if (applicationId == null)
             {
@@ -42,7 +41,7 @@ namespace Boondocks.Cli.Commands
             };
 
             //Create the device
-            Device device = await context.Client.Devices.CreateDeviceAsync(request);
+            var device = await context.Client.Devices.CreateDeviceAsync(request);
 
             //Let the user know what happened.
             Console.WriteLine($"Device {device.Id} created with name '{device.Name}'.");

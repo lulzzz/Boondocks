@@ -1,7 +1,7 @@
-﻿using Boondocks.Services.DataAccess.Interfaces;
-
-namespace Boondocks.Services.DataAccess
+﻿namespace Boondocks.Services.DataAccess
 {
+    using Interfaces;
+
     public class BlobDataAccessConfiguration : IBlobDataAccesConfiguration
     {
         public BlobDataAccessConfiguration(string connectionString, string databaseName)

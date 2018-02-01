@@ -1,13 +1,10 @@
-﻿using System;
-using Boondocks.Agent.Interfaces;
-
-namespace Boondocks.Agent.Model
+﻿namespace Boondocks.Agent.Model
 {
+    using System;
+    using Interfaces;
+
     internal class PlatformDetector : IPlatformDetector
     {
-        public bool IsLinux
-        {
-            get { return Environment.OSVersion.Platform == PlatformID.Unix; }
-        }
+        public bool IsLinux => Environment.OSVersion.Platform == PlatformID.Unix;
     }
 }

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using Boondocks.Base;
-using CommandLine;
-
-namespace Boondocks.Cli.Commands
+﻿namespace Boondocks.Cli.Commands
 {
+    using System;
+    using System.Threading.Tasks;
+    using Base;
+    using CommandLine;
+
     [Verb("app-rename", HelpText = "Rename an application")]
     public class AppRenameCommand : CommandBase
     {
@@ -17,7 +17,7 @@ namespace Boondocks.Cli.Commands
         protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
             //Console.WriteLine($"Deploy app: {ApplicationId} {ImageId}");
-            Guid? applicationId = ApplicationId.TryParseGuid();
+            var applicationId = ApplicationId.TryParseGuid();
 
             if (applicationId == null)
             {

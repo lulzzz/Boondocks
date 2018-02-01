@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
-using Boondocks.Services.Management.Contracts;
-using CommandLine;
-using Docker.DotNet;
-using Docker.DotNet.Models;
-using Newtonsoft.Json.Linq;
-
-namespace Boondocks.Cli.Commands
+﻿namespace Boondocks.Cli.Commands
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Net.Sockets;
+    using System.Text;
+    using System.Threading.Tasks;
+    using CommandLine;
+    using Docker.DotNet;
+    using Docker.DotNet.Models;
+    using Newtonsoft.Json.Linq;
+    using Services.Management.Contracts;
+
     [Verb("build", HelpText = "Builds an application.")]
     public class BuildCommand : CommandBase
     {
@@ -39,7 +39,7 @@ namespace Boondocks.Cli.Commands
                 return 1;
             }
 
-            string tag = Name.Trim().ToLower();
+            var tag = Name.Trim().ToLower();
 
             using (var temporaryFile = new TemporaryFile())
             {
@@ -47,22 +47,23 @@ namespace Boondocks.Cli.Commands
                 TarUtil.CreateTarGZ(temporaryFile.Path, Source);
 
                 //Create the docker client
-                DockerClient dockerClient = new DockerClientConfiguration(new Uri(DockerEndpoint)).CreateClient();
+                var dockerClient = new DockerClientConfiguration(new Uri(DockerEndpoint)).CreateClient();
 
                 //Open up the temp file
                 using (var tarStream = File.OpenRead(temporaryFile.Path))
                 {
                     //Set up the build
-                    var imageBuildParmeters = new ImageBuildParameters()
+                    var imageBuildParmeters = new ImageBuildParameters
                     {
-                        Tags = new List<string>()
+                        Tags = new List<string>
                         {
                             tag
                         }
                     };
 
                     //Build it!!!!!
-                    using (var resultStream = await dockerClient.Images.BuildImageFromDockerfileAsync(tarStream, imageBuildParmeters))
+                    using (var resultStream =
+                        await dockerClient.Images.BuildImageFromDockerfileAsync(tarStream, imageBuildParmeters))
                     {
                         //Deal with the result
                         var result = await ProcessResult(resultStream);
@@ -74,12 +75,9 @@ namespace Boondocks.Cli.Commands
 
                             return 1;
                         }
-                      
+
                         //Let us deploy
-                        if (Deploy)
-                        {
-                            return await DeployAsync(context, dockerClient, result, tag);
-                        }
+                        if (Deploy) return await DeployAsync(context, dockerClient, result, tag);
 
                         return 0;
                     }
@@ -87,7 +85,8 @@ namespace Boondocks.Cli.Commands
             }
         }
 
-        private async Task<int> DeployAsync(ExecutionContext context, DockerClient dockerClient, BuildResult result, string tag)
+        private async Task<int> DeployAsync(ExecutionContext context, DockerClient dockerClient, BuildResult result,
+            string tag)
         {
             //Get the last id
             var imageId = result.Ids.LastOrDefault();
@@ -106,7 +105,7 @@ namespace Boondocks.Cli.Commands
                 return 1;
             }
 
-            var application =  await context.Client.Applications.GetApplicationAsync(Application);
+            var application = await context.Client.Applications.GetApplicationAsync(Application);
 
             if (application == null)
             {
@@ -118,38 +117,39 @@ namespace Boondocks.Cli.Commands
 
             Console.WriteLine($"Deploying with imageid '{imageId}'...");
 
-            var parameters = new ImagePushParameters()
+            var parameters = new ImagePushParameters
             {
                 ImageID = imageId,
-                Tag = tag,
+                Tag = tag
             };
 
-            string target = $"{applicationUploadInfo.RegistryHost}/{applicationUploadInfo.Repository}";
+            var target = $"{applicationUploadInfo.RegistryHost}/{applicationUploadInfo.Repository}";
 
             //Tag it!
-            await dockerClient.Images.TagImageAsync(imageId, new ImageTagParameters()
+            await dockerClient.Images.TagImageAsync(imageId, new ImageTagParameters
             {
                 RepositoryName = target,
                 Tag = tag
             });
 
             //Auth config (will have to include the token)
-            var authConfig = new AuthConfig()
+            var authConfig = new AuthConfig
             {
-                ServerAddress = applicationUploadInfo.RegistryHost,
+                ServerAddress = applicationUploadInfo.RegistryHost
             };
 
             try
             {
                 //Push it!
-                await dockerClient.Images.PushImageAsync(target, parameters, authConfig, new Progress<JSONMessage>(p => { }));
+                await dockerClient.Images.PushImageAsync(target, parameters, authConfig,
+                    new Progress<JSONMessage>(p => { }));
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Temporarily ignoring error from push: {e.Message}");
             }
 
-            var uploadRequest = new CreateApplicationVersionRequest()
+            var uploadRequest = new CreateApplicationVersionRequest
             {
                 ApplicationId = application.Id,
                 Name = tag,
@@ -180,22 +180,18 @@ namespace Boondocks.Cli.Commands
             {
                 using (var streamReader = new StreamReader(responseStream))
                 {
-                    string line = await streamReader.ReadLineAsync();
+                    var line = await streamReader.ReadLineAsync();
 
                     while (!string.IsNullOrEmpty(line))
                     {
                         //Parse the line
-                        JObject parsedLine = JObject.Parse(line);
+                        var parsedLine = JObject.Parse(line);
 
                         //Attempt to handle this line
                         var handler = handlers.FirstOrDefault(h => h(parsedLine, result));
 
                         //Check to see if it was handled.
-                        if (handler == null)
-                        {
-                            //This line wasn't handled.
-                            Console.WriteLine(line);
-                        }
+                        if (handler == null) Console.WriteLine(line);
 
                         //Read the next line
                         line = await streamReader.ReadLineAsync();
@@ -218,7 +214,7 @@ namespace Boondocks.Cli.Commands
 
             if (streamProperty != null)
             {
-                string formatted = $"{streamProperty.Value}";
+                var formatted = $"{streamProperty.Value}";
 
                 Console.Write(formatted);
                 result.Messages.Add(formatted);
@@ -239,7 +235,7 @@ namespace Boondocks.Cli.Commands
 
                 if (idProperty != null)
                 {
-                    string formatted = $"{idProperty.Value}";
+                    var formatted = $"{idProperty.Value}";
 
                     result.Ids.Add(formatted);
 
@@ -262,7 +258,7 @@ namespace Boondocks.Cli.Commands
 
             if (property != null)
             {
-                string formatted = $"{property}";
+                var formatted = $"{property}";
 
                 Console.Write(formatted);
                 result.Errors.Add(formatted);
@@ -283,12 +279,9 @@ namespace Boondocks.Cli.Commands
 
             public override string ToString()
             {
-                StringBuilder output = new StringBuilder();
+                var output = new StringBuilder();
 
-                foreach (var message in Messages)
-                {
-                    output.Append(message);
-                }
+                foreach (var message in Messages) output.Append(message);
 
                 return output.ToString();
             }

@@ -1,11 +1,11 @@
-using System;
-using System.Security.Principal;
-
 namespace Boondocks.Services.Device.WebApi.Authentication
 {
+    using System;
+    using System.Security.Principal;
+
     public class DeviceIdentity : IIdentity
     {
-        public DeviceIdentity(Guid deviceId, bool isAuthenticated) 
+        public DeviceIdentity(Guid deviceId, bool isAuthenticated)
             : this(deviceId.ToString("D"), isAuthenticated)
         {
         }

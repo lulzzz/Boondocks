@@ -1,9 +1,9 @@
-﻿using System;
-using Docker.DotNet.Models;
-
-namespace Boondocks.Agent
+﻿namespace Boondocks.Agent
 {
-    internal class Progress :  IProgress<JSONMessage>
+    using System;
+    using Docker.DotNet.Models;
+
+    internal class Progress : IProgress<JSONMessage>
     {
         public void Report(JSONMessage value)
         {

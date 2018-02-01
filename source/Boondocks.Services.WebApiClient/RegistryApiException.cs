@@ -1,9 +1,9 @@
-﻿using System;
-using System.Net;
-using System.Net.Http.Headers;
-
-namespace Boondocks.Services.WebApiClient
+﻿namespace Boondocks.Services.WebApiClient
 {
+    using System;
+    using System.Net;
+    using System.Net.Http.Headers;
+
     public class RegistryApiException : Exception
     {
         internal RegistryApiException(ApiResponse response)

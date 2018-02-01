@@ -1,24 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Boondocks.Agent.Interfaces;
-using Boondocks.Agent.Model;
-using Boondocks.Services.Device.Contracts;
-using Boondocks.Services.Device.WebApiClient;
-using Docker.DotNet;
-using Docker.DotNet.Models;
-
-namespace Boondocks.Agent
+﻿namespace Boondocks.Agent
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Docker.DotNet;
+    using Docker.DotNet.Models;
+    using Interfaces;
+    using Model;
+    using Services.Device.Contracts;
+    using Services.Device.WebApiClient;
+
     internal class AgentHost : IAgentHost
     {
-        private readonly OperationalStateProvider _operationalStateProvider;
         private readonly ApplicationDockerContainerFactory _applicationDockerContainerFactory;
-        private readonly DeviceStateProvider _deviceStateProvider;
-        private readonly IUptimeProvider _uptimeProvider;
-        private readonly IDeviceConfiguration _deviceConfiguration;
         private readonly DeviceApiClient _deviceApiClient;
+        private readonly IDeviceConfiguration _deviceConfiguration;
+        private readonly DeviceStateProvider _deviceStateProvider;
+        private readonly OperationalStateProvider _operationalStateProvider;
+        private readonly IUptimeProvider _uptimeProvider;
 
         public AgentHost(
             IDeviceConfiguration deviceConfiguration,
@@ -27,8 +27,11 @@ namespace Boondocks.Agent
             ApplicationDockerContainerFactory applicationDockerContainerFactory,
             OperationalStateProvider operationalStateProvider)
         {
-            _operationalStateProvider = operationalStateProvider ?? throw new ArgumentNullException(nameof(operationalStateProvider));
-            _applicationDockerContainerFactory = applicationDockerContainerFactory ?? throw new ArgumentNullException(nameof(applicationDockerContainerFactory));
+            _operationalStateProvider = operationalStateProvider ??
+                                        throw new ArgumentNullException(nameof(operationalStateProvider));
+            _applicationDockerContainerFactory = applicationDockerContainerFactory ??
+                                                 throw new ArgumentNullException(
+                                                     nameof(applicationDockerContainerFactory));
             _deviceStateProvider = deviceStateProvider ?? throw new ArgumentNullException(nameof(deviceStateProvider));
             _uptimeProvider = uptimeProvider ?? throw new ArgumentNullException(nameof(uptimeProvider));
             _deviceConfiguration = deviceConfiguration ?? throw new ArgumentNullException(nameof(deviceConfiguration));
@@ -39,18 +42,10 @@ namespace Boondocks.Agent
                 _deviceConfiguration.DeviceApiUrl);
         }
 
-        private DockerClient CreateDockerClient()
-        {
-            var dockerClientConfiguration =
-                new DockerClientConfiguration(new Uri(_deviceConfiguration.DockerEndpoint));
-
-            return dockerClientConfiguration.CreateClient();
-        }
-
         public async Task RunAsync(CancellationToken cancellationToken)
         {
             //This is how long we'll wait inbetween heartbeats.
-            TimeSpan pollTime = TimeSpan.FromSeconds(_deviceConfiguration.PollSeconds);
+            var pollTime = TimeSpan.FromSeconds(_deviceConfiguration.PollSeconds);
 
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -68,28 +63,35 @@ namespace Boondocks.Agent
             }
         }
 
-        private async Task DownloadApplicationImageAsync(DockerClient dockerClient, string imageId, CancellationToken cancellationToken)
+        private DockerClient CreateDockerClient()
+        {
+            var dockerClientConfiguration =
+                new DockerClientConfiguration(new Uri(_deviceConfiguration.DockerEndpoint));
+
+            return dockerClientConfiguration.CreateClient();
+        }
+
+        private async Task DownloadApplicationImageAsync(DockerClient dockerClient, VersionReference versionReference,
+            CancellationToken cancellationToken)
         {
             //Dowload it!
-            Console.WriteLine($"Downloading application '{imageId}'...");
+            Console.WriteLine($"Downloading application '{versionReference.ImageId}'...");
 
-            //await dockerClient.Images.
+            var imageCreateParameters = new ImagesCreateParameters
+            {
+                Repo = "a repo!",
+                FromImage = versionReference.ImageId
+            };
 
-            //TODO: Figure out how the bloody hell to do a pull.
+            var authConfig = new AuthConfig();
 
-            ////Download the application image
-            //using (var sourceStream =
-            //    await _deviceApiClient.DownloadApplicationVersionImage(id,
-            //        cancellationToken))
-            //{
-            //    //Load it up into docker as we download it
-            //    await dockerClient.Images.LoadImageAsync(new ImageLoadParameters()
-            //        {
-            //            Quiet = false
-            //        }, sourceStream,
-            //        new Progress(),
-            //        cancellationToken);
-            //}
+            //Do the donwload!!!!!
+            await dockerClient.Images.CreateImageAsync(
+                imageCreateParameters,
+                authConfig,
+                new Progress<JSONMessage>(
+                    m => Console.WriteLine($"\tCreatImageProgress: {m.ProgressMessage}")),
+                cancellationToken);
         }
 
         private async Task EnsureCurrentApplicationRunning(CancellationToken cancellationToken)
@@ -106,8 +108,8 @@ namespace Boondocks.Agent
                 else
                 {
                     //Get the number of running containers
-                    int numberOfRunningContainers = await dockerClient.GetNumberOfRunningContainersAsync(
-                        _operationalStateProvider.State.CurrentApplicationVersion.ImageId, 
+                    var numberOfRunningContainers = await dockerClient.GetNumberOfRunningContainersAsync(
+                        _operationalStateProvider.State.CurrentApplicationVersion.ImageId,
                         cancellationToken);
 
                     //Check to see if it's running.
@@ -117,20 +119,20 @@ namespace Boondocks.Agent
                         Console.WriteLine("The current application isn't running.");
 
                         //Check to see if the application exists
-                        if (!await dockerClient.DoesImageExistAsync(_operationalStateProvider.State.CurrentApplicationVersion.ImageId, cancellationToken))
-                        {
-                            //Download the image
-                            await DownloadApplicationImageAsync(dockerClient, _operationalStateProvider.State.CurrentApplicationVersion.ImageId, cancellationToken);
-                        }
+                        if (!await dockerClient.DoesImageExistAsync(
+                            _operationalStateProvider.State.CurrentApplicationVersion.ImageId, cancellationToken))
+                            await DownloadApplicationImageAsync(dockerClient,
+                                _operationalStateProvider.State.CurrentApplicationVersion, cancellationToken);
 
                         //Try to find the container for this image
-                        var container = await dockerClient.GetContainerByImageId(_operationalStateProvider.State.CurrentApplicationVersion.ImageId, cancellationToken);
+                        var container = await dockerClient.GetContainerByImageId(
+                            _operationalStateProvider.State.CurrentApplicationVersion.ImageId, cancellationToken);
 
                         //Check to see if we found it
                         if (container == null)
                         {
                             //Create the container
-                            CreateContainerResponse createContainerResponse
+                            var createContainerResponse
                                 = await _applicationDockerContainerFactory.CreateApplicationContainerAsync(
                                     dockerClient,
                                     _operationalStateProvider.State.CurrentApplicationVersion.ImageId,
@@ -139,7 +141,8 @@ namespace Boondocks.Agent
                             Console.WriteLine($"Container '{createContainerResponse.ID}' created for application.");
 
                             //Get the container
-                            container = await dockerClient.GetContainerByImageId(_operationalStateProvider.State.CurrentApplicationVersion.ImageId, cancellationToken);
+                            container = await dockerClient.GetContainerByImageId(
+                                _operationalStateProvider.State.CurrentApplicationVersion.ImageId, cancellationToken);
                         }
 
                         //This shouldn't happen, but we're paranoid.
@@ -150,19 +153,16 @@ namespace Boondocks.Agent
                         else
                         {
                             //Attempt to start the container
-                            bool started = await dockerClient.Containers.StartContainerAsync(
+                            var started = await dockerClient.Containers.StartContainerAsync(
                                 container.ID,
                                 new ContainerStartParameters(),
                                 cancellationToken);
 
                             if (started)
-                            {
-                                Console.WriteLine($"Application {_operationalStateProvider.State.CurrentApplicationVersion.Id} started.");
-                            }
+                                Console.WriteLine(
+                                    $"Application {_operationalStateProvider.State.CurrentApplicationVersion.Id} started.");
                             else
-                            {
                                 Console.WriteLine("Warning: Application not started.");
-                            }
                         }
                     }
                     else
@@ -170,18 +170,15 @@ namespace Boondocks.Agent
                         Console.WriteLine("The application container is already running.");
                     }
                 }
-
-            
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                
             }
         }
 
         /// <summary>
-        /// Downloads the configuration for this device and saves it.
+        ///     Downloads the configuration for this device and saves it.
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
@@ -202,18 +199,16 @@ namespace Boondocks.Agent
                 else
                 {
                     //Check to see if we're supposed to update the application
-                    if (!Equals(_operationalStateProvider.State.CurrentApplicationVersion, configuration.ApplicationVersion))
-                    {
-                        //This is going to be the next application version
+                    if (!Equals(_operationalStateProvider.State.CurrentApplicationVersion,
+                        configuration.ApplicationVersion))
                         _operationalStateProvider.State.NextApplicationVersion = configuration.ApplicationVersion;
-                    }
                 }
 
                 _operationalStateProvider.Save();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error getting the current configuration: {ex.Message}.");                
+                Console.WriteLine($"Error getting the current configuration: {ex.Message}.");
             }
 
             try
@@ -225,28 +220,24 @@ namespace Boondocks.Agent
                     var dockerClient = CreateDockerClient();
 
                     //It shouldn't already be downloaded, but check anyway.
-                    if (!await dockerClient.DoesImageExistAsync(_operationalStateProvider.State.NextApplicationVersion.ImageId, cancellationToken))
-                    {
-                        //Attempt to download
-                        await DownloadApplicationImageAsync(dockerClient, _operationalStateProvider.State.NextApplicationVersion.ImageId, cancellationToken);
-                    }
+                    if (!await dockerClient.DoesImageExistAsync(
+                        _operationalStateProvider.State.NextApplicationVersion.ImageId, cancellationToken))
+                        await DownloadApplicationImageAsync(dockerClient,
+                            _operationalStateProvider.State.NextApplicationVersion, cancellationToken);
 
                     //Stop the existing application
                     if (_operationalStateProvider.State.CurrentApplicationVersion != null)
-                    {
-                        //Stop the container
                         await dockerClient.StopContainersByImageId(
                             _operationalStateProvider.State.CurrentApplicationVersion.ImageId, cancellationToken);
-                    }
 
                     //Save this in case we need to delete this version.
                     if (_operationalStateProvider.State.PreviousApplicationVersion != null)
-                    {
-                        _operationalStateProvider.State.ApplicationsToRemove.Add(_operationalStateProvider.State.PreviousApplicationVersion);   
-                    }
+                        _operationalStateProvider.State.ApplicationsToRemove.Add(_operationalStateProvider.State
+                            .PreviousApplicationVersion);
 
                     //Update the operational state
-                    _operationalStateProvider.State.CurrentApplicationVersion = _operationalStateProvider.State.NextApplicationVersion;
+                    _operationalStateProvider.State.CurrentApplicationVersion =
+                        _operationalStateProvider.State.NextApplicationVersion;
                     _operationalStateProvider.State.NextApplicationVersion = null;
                     _operationalStateProvider.Save();
 
@@ -260,10 +251,10 @@ namespace Boondocks.Agent
             {
                 Console.WriteLine($"A problem occurred getting the next application version: '{ex.Message}'");
             }
-         }
+        }
 
-       /// <summary>
-        /// Gets image ids that are referenced by current / next / previous applications
+        /// <summary>
+        ///     Gets image ids that are referenced by current / next / previous applications
         /// </summary>
         /// <returns></returns>
         private HashSet<string> GetUsedApplicationImageIds()
@@ -273,12 +264,12 @@ namespace Boondocks.Agent
             images.TryAdd(_operationalStateProvider.State.CurrentApplicationVersion);
             images.TryAdd(_operationalStateProvider.State.PreviousApplicationVersion);
             images.TryAdd(_operationalStateProvider.State.NextApplicationVersion);
-           
+
             return images;
         }
 
         /// <summary>
-        /// Delete previous applications.
+        ///     Delete previous applications.
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
@@ -326,7 +317,7 @@ namespace Boondocks.Agent
             await EnsureCurrentApplicationRunning(cancellationToken);
 
             //Create the request.
-            var request = new HeartbeatRequest()
+            var request = new HeartbeatRequest
             {
                 UptimeSeconds = _uptimeProvider.Ellapsed.TotalSeconds,
                 State = _deviceStateProvider.State
@@ -337,10 +328,7 @@ namespace Boondocks.Agent
 
             //Check to see if we need to update the configuration
             if (_operationalStateProvider.State.ConfigurationVersion != response.ConfigurationVersion)
-            {
-                //Update the configuration
                 await DownloadAndUpdateConfigurationAsync(cancellationToken);
-            }
 
             //Clean up the old applications.
             try

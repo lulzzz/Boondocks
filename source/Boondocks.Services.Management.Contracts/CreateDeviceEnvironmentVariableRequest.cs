@@ -1,12 +1,12 @@
-﻿using System;
-using Newtonsoft.Json;
-
-namespace Boondocks.Services.Management.Contracts
+﻿namespace Boondocks.Services.Management.Contracts
 {
+    using System;
+    using Newtonsoft.Json;
+
     public class CreateDeviceEnvironmentVariableRequest : CreateEnvironmentVariableRequest
     {
         /// <summary>
-        /// Get the device
+        ///     Get the device
         /// </summary>
         [JsonProperty("deviceId")]
         public Guid DeviceId { get; set; }

@@ -11,7 +11,7 @@
         Enabled = 3,
 
         /// <summary>
-        /// Moved to another application.
+        ///     Moved to another application.
         /// </summary>
         Moved = 4,
 
@@ -23,15 +23,13 @@
         EnvironmentVariableUpdated = 7,
 
         /// <summary>
-        /// The device has been logically deleted.
+        ///     The device has been logically deleted.
         /// </summary>
         Deleted = 8,
 
         /// <summary>
-        /// The device has been brought back from the dead (logical deletion).
+        ///     The device has been brought back from the dead (logical deletion).
         /// </summary>
         Resurrected = 9
-
-          
     }
 }

@@ -1,9 +1,9 @@
-﻿using System;
-using Boondocks.Services.Management.WebApiClient.Endpoints;
-using Boondocks.Services.WebApiClient;
-
-namespace Boondocks.Services.Management.WebApiClient
+﻿namespace Boondocks.Services.Management.WebApiClient
 {
+    using System;
+    using Endpoints;
+    using Services.WebApiClient;
+
     public class ManagementApiClient
     {
         public ManagementApiClient(string baseUri, TimeSpan? defaultTimeout = null)

@@ -1,17 +1,15 @@
-﻿using System.IO;
-using ICSharpCode.SharpZipLib.GZip;
-using ICSharpCode.SharpZipLib.Tar;
-
-namespace Boondocks.Cli
+﻿namespace Boondocks.Cli
 {
+    using System.IO;
+    using ICSharpCode.SharpZipLib.Tar;
+
     internal static class TarUtil
     {
         public static void CreateTarGZ(string tgzFilename, string sourceDirectory)
         {
-
             Stream outStream = File.Create(tgzFilename);
             //Stream gzoStream = new GZipOutputStream(outStream);
-            TarArchive tarArchive = TarArchive.CreateOutputTarArchive(outStream);
+            var tarArchive = TarArchive.CreateOutputTarArchive(outStream);
 
             // Note that the RootPath is currently case sensitive and must be forward slashes e.g. "c:/temp"
             // and must not end with a slash, otherwise cuts off first char of filename
@@ -27,17 +25,16 @@ namespace Boondocks.Cli
 
         private static void AddDirectoryFilesToTar(TarArchive tarArchive, string sourceDirectory, bool recurse)
         {
-
             // Optionally, write an entry for the directory itself.
             // Specify false for recursion here if we will add the directory's files individually.
             //
-            TarEntry tarEntry = TarEntry.CreateEntryFromFile(sourceDirectory);
+            var tarEntry = TarEntry.CreateEntryFromFile(sourceDirectory);
             tarArchive.WriteEntry(tarEntry, false);
 
             // Write each file to the tar.
             //
-            string[] filenames = Directory.GetFiles(sourceDirectory);
-            foreach (string filename in filenames)
+            var filenames = Directory.GetFiles(sourceDirectory);
+            foreach (var filename in filenames)
             {
                 tarEntry = TarEntry.CreateEntryFromFile(filename);
                 tarArchive.WriteEntry(tarEntry, true);
@@ -45,8 +42,8 @@ namespace Boondocks.Cli
 
             if (recurse)
             {
-                string[] directories = Directory.GetDirectories(sourceDirectory);
-                foreach (string directory in directories)
+                var directories = Directory.GetDirectories(sourceDirectory);
+                foreach (var directory in directories)
                     AddDirectoryFilesToTar(tarArchive, directory, recurse);
             }
         }

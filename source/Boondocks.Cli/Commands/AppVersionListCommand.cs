@@ -1,11 +1,11 @@
-﻿using System.Threading.Tasks;
-using Boondocks.Base;
-using Boondocks.Cli.ExtensionMethods;
-using Boondocks.Services.Management.WebApiClient;
-using CommandLine;
-
-namespace Boondocks.Cli.Commands
+﻿namespace Boondocks.Cli.Commands
 {
+    using System.Threading.Tasks;
+    using Base;
+    using CommandLine;
+    using ExtensionMethods;
+    using Services.Management.WebApiClient;
+
     [Verb("app-version-list", HelpText = "Lists the available application versions.")]
     public class AppVersionListCommand : CommandBase
     {
@@ -14,7 +14,6 @@ namespace Boondocks.Cli.Commands
 
         protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
-
             var request = new GetApplicationVersionsRequest
             {
                 ApplicationId = ApplicationId.TryParseGuid()

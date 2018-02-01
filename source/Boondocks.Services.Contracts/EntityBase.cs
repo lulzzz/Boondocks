@@ -1,9 +1,9 @@
-﻿using System;
-using Dapper.Contrib.Extensions;
-using Newtonsoft.Json;
-
-namespace Boondocks.Services.Contracts
+﻿namespace Boondocks.Services.Contracts
 {
+    using System;
+    using Dapper.Contrib.Extensions;
+    using Newtonsoft.Json;
+
     public class EntityBase
     {
         [JsonProperty("id", Order = -100)]

@@ -1,17 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Docker.DotNet;
-using Docker.DotNet.Models;
-
-namespace Boondocks.Agent
+﻿namespace Boondocks.Agent
 {
+    using System;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Docker.DotNet;
+    using Docker.DotNet.Models;
+
     internal static class DockerExtensions
     {
         public static async Task StartAllContainers(this DockerClient client)
         {
-            var containers = await client.Containers.ListContainersAsync(new ContainersListParameters()
+            var containers = await client.Containers.ListContainersAsync(new ContainersListParameters
             {
                 All = true
             });
@@ -20,16 +20,13 @@ namespace Boondocks.Agent
             {
                 Console.WriteLine($"Starting container {container.ID}...");
 
-                await client.Containers.StartContainerAsync(container.ID, new ContainerStartParameters()
-                {
-
-                });
+                await client.Containers.StartContainerAsync(container.ID, new ContainerStartParameters());
             }
         }
 
         public static async Task RemoveAllContainersAsync(this DockerClient client)
         {
-            var containers = await client.Containers.ListContainersAsync(new ContainersListParameters()
+            var containers = await client.Containers.ListContainersAsync(new ContainersListParameters
             {
                 All = true
             });
@@ -38,7 +35,7 @@ namespace Boondocks.Agent
             {
                 Console.WriteLine($"Deleting container {container.ID}...");
 
-                await client.Containers.RemoveContainerAsync(container.ID, new ContainerRemoveParameters()
+                await client.Containers.RemoveContainerAsync(container.ID, new ContainerRemoveParameters
                 {
                     Force = true
                 });
@@ -47,7 +44,7 @@ namespace Boondocks.Agent
 
         public static async Task DeleteAllImagesAsync(this DockerClient client)
         {
-            var images = await client.Images.ListImagesAsync(new ImagesListParameters()
+            var images = await client.Images.ListImagesAsync(new ImagesListParameters
             {
                 All = true
             });
@@ -56,7 +53,7 @@ namespace Boondocks.Agent
             {
                 Console.WriteLine($"Deleting image '{image.ID}'...");
 
-                await client.Images.DeleteImageAsync(image.ID, new ImageDeleteParameters()
+                await client.Images.DeleteImageAsync(image.ID, new ImageDeleteParameters
                 {
                     Force = true,
                     PruneChildren = true
@@ -64,9 +61,10 @@ namespace Boondocks.Agent
             }
         }
 
-        public static async Task DeleteImageByImageId(this DockerClient client, string imageId, CancellationToken cancellationToken)
+        public static async Task DeleteImageByImageId(this DockerClient client, string imageId,
+            CancellationToken cancellationToken)
         {
-            var images = await client.Images.ListImagesAsync(new ImagesListParameters()
+            var images = await client.Images.ListImagesAsync(new ImagesListParameters
             {
                 All = true
             }, cancellationToken);
@@ -75,7 +73,7 @@ namespace Boondocks.Agent
             {
                 Console.WriteLine($"Deleting image '{image.ID}'...");
 
-                await client.Images.DeleteImageAsync(image.ID, new ImageDeleteParameters()
+                await client.Images.DeleteImageAsync(image.ID, new ImageDeleteParameters
                 {
                     Force = true,
                     PruneChildren = true
@@ -84,18 +82,18 @@ namespace Boondocks.Agent
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="client"></param>
         /// <param name="imageId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>The number of containers removed.</returns>
-        public static async Task<int> RemoveContainersByImageIdAsync(this DockerClient client, string imageId, CancellationToken cancellationToken)
+        public static async Task<int> RemoveContainersByImageIdAsync(this DockerClient client, string imageId,
+            CancellationToken cancellationToken)
         {
-            int containersRemovedCount = 0;
+            var containersRemovedCount = 0;
 
-            var containers = await client.Containers.ListContainersAsync(new ContainersListParameters()
+            var containers = await client.Containers.ListContainersAsync(new ContainersListParameters
             {
                 All = true
             }, cancellationToken);
@@ -104,7 +102,7 @@ namespace Boondocks.Agent
             {
                 Console.WriteLine($"Deleting container {container.ID}...");
 
-                await client.Containers.RemoveContainerAsync(container.ID, new ContainerRemoveParameters()
+                await client.Containers.RemoveContainerAsync(container.ID, new ContainerRemoveParameters
                 {
                     Force = false
                 }, cancellationToken);
@@ -116,25 +114,24 @@ namespace Boondocks.Agent
         }
 
         /// <summary>
-        /// Should theoretically only ever stop one container.
+        ///     Should theoretically only ever stop one container.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="imageId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task StopContainersByImageId(this DockerClient client, string imageId, CancellationToken cancellationToken = new CancellationToken())
+        public static async Task StopContainersByImageId(this DockerClient client, string imageId,
+            CancellationToken cancellationToken = new CancellationToken())
         {
             //List the running containers
-            var containers = await client.Containers.ListContainersAsync(new ContainersListParameters()
-            {
-            }, cancellationToken);
+            var containers =
+                await client.Containers.ListContainersAsync(new ContainersListParameters(), cancellationToken);
 
             //Look at each 
             foreach (var container in containers)
-            {
                 if (container.ImageID == imageId)
                 {
-                    var stopParameters = new ContainerStopParameters()
+                    var stopParameters = new ContainerStopParameters
                     {
                         WaitBeforeKillSeconds = 30
                     };
@@ -146,46 +143,51 @@ namespace Boondocks.Agent
 
                     Console.WriteLine($"Container '{container.ID}' stopped.");
                 }
-            }
         }
 
         public static async Task<ImagesListResponse> GetImageAsync(
-            this DockerClient dockerClient, 
-            string imageId, 
+            this DockerClient dockerClient,
+            string imageId,
             CancellationToken cancellationToken)
         {
-            var images = await dockerClient.Images.ListImagesAsync(new ImagesListParameters()
+            var images = await dockerClient.Images.ListImagesAsync(new ImagesListParameters
             {
                 All = true
             }, cancellationToken);
 
             return images.FirstOrDefault(i => i.ID == imageId);
         }
-        
-        public static async Task<bool> IsContainerRunningAsync(this DockerClient client, string containerId, CancellationToken cancellationToken)
+
+        public static async Task<bool> IsContainerRunningAsync(this DockerClient client, string containerId,
+            CancellationToken cancellationToken)
         {
-            var runningContainers = await client.Containers.ListContainersAsync(new ContainersListParameters(), cancellationToken);
+            var runningContainers =
+                await client.Containers.ListContainersAsync(new ContainersListParameters(), cancellationToken);
 
             return runningContainers.Any(c => c.ID == containerId);
         }
 
-        public static async Task<int> GetNumberOfRunningContainersAsync(this DockerClient client, string imageId, CancellationToken cancellationToken)
+        public static async Task<int> GetNumberOfRunningContainersAsync(this DockerClient client, string imageId,
+            CancellationToken cancellationToken)
         {
-            var runningContainers = await client.Containers.ListContainersAsync(new ContainersListParameters(), cancellationToken);
+            var runningContainers =
+                await client.Containers.ListContainersAsync(new ContainersListParameters(), cancellationToken);
 
             return runningContainers.Count(c => c.ImageID == imageId);
         }
 
-        public static async Task<bool> DoesImageExistAsync(this DockerClient client, string imageId, CancellationToken cancellationToken)
+        public static async Task<bool> DoesImageExistAsync(this DockerClient client, string imageId,
+            CancellationToken cancellationToken)
         {
             var image = await client.GetImageAsync(imageId, cancellationToken);
 
             return image != null;
         }
 
-        public static async Task<ContainerListResponse> GetContainerByImageId(this DockerClient client, string imageId, CancellationToken cancellationToken)
+        public static async Task<ContainerListResponse> GetContainerByImageId(this DockerClient client, string imageId,
+            CancellationToken cancellationToken)
         {
-            var allContainers = await client.Containers.ListContainersAsync(new ContainersListParameters()
+            var allContainers = await client.Containers.ListContainersAsync(new ContainersListParameters
             {
                 All = true
             }, cancellationToken);

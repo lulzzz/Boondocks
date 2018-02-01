@@ -2,7 +2,7 @@
 {
     public interface IBlobDataAccesConfiguration
     {
-        string ConnectionString { get; }   
+        string ConnectionString { get; }
 
         string DatabaseName { get; }
     }

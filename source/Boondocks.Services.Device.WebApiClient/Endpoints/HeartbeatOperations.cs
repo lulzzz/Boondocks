@@ -1,12 +1,12 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Boondocks.Services.Device.Contracts;
-using Boondocks.Services.WebApiClient;
-
-namespace Boondocks.Services.Device.WebApiClient.Endpoints
+﻿namespace Boondocks.Services.Device.WebApiClient.Endpoints
 {
+    using System;
+    using System.Net.Http;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Contracts;
+    using Services.WebApiClient;
+
     public class HeartbeatOperations
     {
         private readonly ApiClient _client;
@@ -19,12 +19,13 @@ namespace Boondocks.Services.Device.WebApiClient.Endpoints
         }
 
         /// <summary>
-        /// Heartbeat.
+        ///     Heartbeat.
         /// </summary>
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task<HeartbeatResponse> HeartbeatAsync(HeartbeatRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public Task<HeartbeatResponse> HeartbeatAsync(HeartbeatRequest request,
+            CancellationToken cancellationToken = new CancellationToken())
         {
             return _client.MakeJsonRequestAsync<HeartbeatResponse>(cancellationToken, HttpMethod.Post,
                 ResourceUris.Heartbeat, headers: _tokenFactory.CreateRequestHeaders(), request: request);

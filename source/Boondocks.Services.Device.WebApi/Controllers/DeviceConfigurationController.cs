@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Boondocks.Services.Contracts;
-using Boondocks.Services.DataAccess;
-using Boondocks.Services.DataAccess.Interfaces;
-using Boondocks.Services.Device.Contracts;
-using Boondocks.Services.Device.WebApi.Common;
-using Dapper.Contrib.Extensions;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
-namespace Boondocks.Services.Device.WebApi.Controllers
+﻿namespace Boondocks.Services.Device.WebApi.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Common;
+    using Contracts;
+    using Dapper.Contrib.Extensions;
+    using DataAccess;
+    using DataAccess.Interfaces;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Services.Contracts;
+
     [Produces("application/json")]
     [Route("v1/deviceConfiguration")]
     [Authorize]
@@ -35,7 +35,7 @@ namespace Boondocks.Services.Device.WebApi.Controllers
                 //      Might have to use some T-SQL to get the application given the device id.
 
                 //Get the device
-                var device = connection.Get<Services.Contracts.Device>(DeviceId);
+                var device = connection.Get<Device>(DeviceId);
 
                 if (device == null)
                     return NotFound("Unable to find device.");
@@ -49,11 +49,11 @@ namespace Boondocks.Services.Device.WebApi.Controllers
                 var deviceEnvironmentVariables = connection.GetDeviceEnvironmentVariables(DeviceId);
                 var applicationEnvironmentVariables = connection.GetApplicationEnvironmentVariables(application.Id);
 
-                Guid? applicationVersionId = application.ApplicationVersionId;
-                Guid? supervisorVersionId = application.SupervisorVersionId;
+                var applicationVersionId = application.ApplicationVersionId;
+                var supervisorVersionId = application.SupervisorVersionId;
 
                 //Start out with the version information at the application level.
-                var response = new GetDeviceConfigurationResponse()
+                var response = new GetDeviceConfigurationResponse
                 {
                     RootFileSystemVersionId = application.RootFileSystemVersionId,
                     ConfigurationVersion = device.ConfigurationVersion
@@ -77,7 +77,7 @@ namespace Boondocks.Services.Device.WebApi.Controllers
                         return StatusCode(StatusCodes.Status500InternalServerError);
 
                     //Set thhe image reference
-                    response.ApplicationVersion = new VersionReference()
+                    response.ApplicationVersion = new VersionReference
                     {
                         Id = applicationVersion.Id,
                         ImageId = applicationVersion.ImageId
@@ -91,7 +91,7 @@ namespace Boondocks.Services.Device.WebApi.Controllers
                     if (supervisorVersion == null)
                         return StatusCode(StatusCodes.Status500InternalServerError);
 
-                    response.SupervisorVersion = new VersionReference()
+                    response.SupervisorVersion = new VersionReference
                     {
                         Id = supervisorVersion.Id,
                         ImageId = supervisorVersion.ImageId
@@ -99,21 +99,17 @@ namespace Boondocks.Services.Device.WebApi.Controllers
                 }
 
                 //Once again, start out with the application level (this time environment variables)
-                Dictionary<string, string> effectiveEnvironmentVariables = new Dictionary<string, string>();
+                var effectiveEnvironmentVariables = new Dictionary<string, string>();
 
                 foreach (var variable in applicationEnvironmentVariables)
-                {
                     effectiveEnvironmentVariables[variable.Name] = variable.Value;
-                }
 
                 //Now add / override with the device level environment variables.
                 foreach (var variable in deviceEnvironmentVariables)
-                {
                     effectiveEnvironmentVariables[variable.Name] = variable.Value;
-                }
 
                 //Copy the effective variables to the response
-                response.EnvironmentVariables = effectiveEnvironmentVariables.Select(v => new EnvironmentVariable()
+                response.EnvironmentVariables = effectiveEnvironmentVariables.Select(v => new EnvironmentVariable
                 {
                     Name = v.Key,
                     Value = v.Value
@@ -121,7 +117,7 @@ namespace Boondocks.Services.Device.WebApi.Controllers
 
                 //We're good
                 return Ok(response);
-            }   
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Boondocks.Cli.ExtensionMethods
+﻿namespace Boondocks.Cli.ExtensionMethods
 {
+    using System;
+
     public static class ArrayExtensions
     {
         public static void DisplayEntities<TEntity>(this TEntity[] entities, Func<TEntity, string> formatFunc)
@@ -12,10 +12,7 @@ namespace Boondocks.Cli.ExtensionMethods
             }
             else
             {
-                foreach (var entity in entities)
-                {
-                    Console.WriteLine($"  {formatFunc(entity)}");
-                }
+                foreach (var entity in entities) Console.WriteLine($"  {formatFunc(entity)}");
 
                 Console.WriteLine($"{entities.Length} found.");
             }

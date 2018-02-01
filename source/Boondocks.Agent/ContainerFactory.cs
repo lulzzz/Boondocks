@@ -1,9 +1,9 @@
-﻿using Autofac;
-using Boondocks.Agent.Interfaces;
-using Boondocks.Agent.Model;
-
-namespace Boondocks.Agent
+﻿namespace Boondocks.Agent
 {
+    using Autofac;
+    using Interfaces;
+    using Model;
+
     internal static class ContainerFactory
     {
         public static IContainer Create(IDeviceConfigurationOverride deviceConfigurationOverride)
@@ -12,7 +12,7 @@ namespace Boondocks.Agent
 
             builder.RegisterInstance(deviceConfigurationOverride);
 
-            builder.Register<IDeviceConfiguration>(context =>
+            builder.Register(context =>
             {
                 var provider = context.Resolve<IDeviceConfigurationProvider>();
 
