@@ -63,26 +63,31 @@
                         }
                     };
 
+                    BuildResult result;
+
                     //Build it!!!!!
                     using (var resultStream =
                         await dockerClient.Images.BuildImageFromDockerfileAsync(tarStream, imageBuildParmeters, cancellationToken))
                     {
                         //Deal with the result
-                        var result = await ProcessResult(resultStream);
-
-                        //Check to see if we have any errors
-                        if (result.Errors.Any())
-                        {
-                            Console.WriteLine($"Build completed with {result.Errors.Count} errors.");
-
-                            return 1;
-                        }
-
-                        //Let us deploy
-                        if (Deploy) return await DeployAsync(context, dockerClient, result, tag, cancellationToken);
-
-                        return 0;
+                        result = await ProcessResult(resultStream);
                     }
+
+                    //Check to see if we have any errors
+                    if (result.Errors.Any())
+                    {
+                        Console.WriteLine($"Build completed with {result.Errors.Count} errors.");
+
+                        return 1;
+                    }
+
+                    //Let us deploy
+                    if (Deploy)
+                    {
+                        return await DeployAsync(context, dockerClient, result, tag, cancellationToken);
+                    }
+
+                    return 0;
                 }
             }
         }
@@ -107,7 +112,7 @@
                 return 1;
             }
 
-            var application = await context.Client.Applications.GetApplicationAsync(Application);
+            var application = await context.Client.Applications.GetApplicationAsync(Application, cancellationToken);
 
             if (application == null)
             {
@@ -193,14 +198,14 @@
                 HandleStream,
                 HandleError
             };
-
-            try
+           
+            using (var streamReader = new StreamReader(responseStream))
             {
-                using (var streamReader = new StreamReader(responseStream))
-                {
-                    var line = await streamReader.ReadLineAsync();
+                var line = await streamReader.ReadLineAsync();
 
-                    while (!string.IsNullOrEmpty(line))
+                while (!string.IsNullOrEmpty(line))
+                {
+                    try
                     {
                         //Parse the line
                         var parsedLine = JObject.Parse(line);
@@ -209,18 +214,32 @@
                         var handler = handlers.FirstOrDefault(h => h(parsedLine, result));
 
                         //Check to see if it was handled.
-                        if (handler == null) Console.WriteLine(line);
+                        if (handler == null)
+                        {
+                            Console.WriteLine(line);
 
+                            //Add this as a raw message
+                            result.Messages.Add(line);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Warning: Unable to parse {line}");
+                    }
+
+                    try
+                    {
                         //Read the next line
                         line = await streamReader.ReadLineAsync();
                     }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        throw;
+                    }
+
+                        
                 }
-            }
-            catch (IOException)
-            {
-            }
-            catch (SocketException)
-            {
             }
 
             return result;

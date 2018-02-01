@@ -50,7 +50,7 @@
         {
             //TODO: Add a bloody api call that does this.
 
-            var applications = await GetApplicationsAsync(null, cancellationToken);
+            var applications = await GetApplicationsAsync(new GetApplicationsRequest(), cancellationToken);
 
             return applications.FirstOrDefault(a => a.Name == name);
         }

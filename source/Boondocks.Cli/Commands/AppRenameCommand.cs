@@ -40,7 +40,7 @@
             application.Name = Name;
 
             //Update it!
-            await context.Client.Applications.UpdateApplicationAsync(application);
+            await context.Client.Applications.UpdateApplicationAsync(application, cancellationToken);
 
             //We're done here.
             Console.WriteLine("Application renamed.");

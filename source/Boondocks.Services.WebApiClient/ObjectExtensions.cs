@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using Newtonsoft.Json;
 
     public static class ObjectExtensions
@@ -12,7 +13,11 @@
             {
                 var json = JsonConvert.SerializeObject(source);
 
-                return new StringContent(json);
+                var content = new StringContent(json);
+
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                return content;
             };
         }
     }

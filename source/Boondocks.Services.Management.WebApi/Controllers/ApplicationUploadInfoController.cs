@@ -24,9 +24,9 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             _registryConfig = registryConfig ?? throw new ArgumentNullException(nameof(registryConfig));
         }
 
-        [HttpGet("{id}")]
+        [HttpPost]
         [Produces(typeof(GetApplicationUploadInfoResponse))]
-        public IActionResult Get(GetApplicationUploadInfoRequest request)
+        public IActionResult Post([FromBody]GetApplicationUploadInfoRequest request)
         {
             //Make sure we can find the application
             using (var connection = _connectionFactory.CreateAndOpen())
@@ -41,19 +41,21 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     return BadRequest();
                 }
 
+                //Check for duplicate image id.
+                if (connection.IsApplicationVersionImageIdInUse(request.ApplicationId, request.ImageId))
+                {
+                    return Ok(new GetApplicationUploadInfoResponse
+                    {
+                        Reason = $"Image '{request.ImageId}' has already been uploaded for application '{application.Name}'. No need to upload again."
+                    });
+                }
+
+                //Check for duplicate name.
                 if (connection.IsApplicationVersionNameInUse(request.ApplicationId, request.Name))
                 {
                     return Ok(new GetApplicationUploadInfoResponse
                     {
-                        Reason = $"Name '{request.Name}' is already in use."
-                    });
-                }
-
-                if (connection.IsApplicationVersionNameInUse(request.ApplicationId, request.ImageId))
-                {
-                    return Ok(new GetApplicationUploadInfoResponse
-                    {
-                        Reason = $"Image '{request.ImageId}' has already been uploaded."
+                        Reason = $"Name '{request.Name}' is already in use for application '{application.Name}'. Specify a new name."
                     });
                 }
 

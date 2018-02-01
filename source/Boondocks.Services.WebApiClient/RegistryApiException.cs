@@ -7,7 +7,7 @@
     public class RegistryApiException : Exception
     {
         internal RegistryApiException(ApiResponse response)
-            : base($"Docker API responded with status code={response.StatusCode}")
+            : base($"API responded with status code={response.StatusCode}")
         {
             StatusCode = response.StatusCode;
             Headers = response.Headers;

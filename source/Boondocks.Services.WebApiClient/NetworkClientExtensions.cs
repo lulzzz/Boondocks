@@ -16,6 +16,7 @@
             IDictionary<string, string> headers = null,
             object request = null)
         {
+
             var response = await client.MakeRequestAsync(cancellationToken, method, path, queryString, headers, request?.ToJsonContent());
 
             //Deserialize the result
