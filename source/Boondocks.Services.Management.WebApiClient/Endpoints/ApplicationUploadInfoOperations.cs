@@ -9,9 +9,9 @@ namespace Boondocks.Services.Management.WebApiClient.Endpoints
 {
     public class ApplicationUploadInfoOperations
     {
-        private readonly NetworkClient _client;
+        private readonly ApiClient _client;
 
-        internal ApplicationUploadInfoOperations(NetworkClient client)
+        internal ApplicationUploadInfoOperations(ApiClient client)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
         }

@@ -8,7 +8,7 @@ namespace Boondocks.Services.Management.WebApiClient
     {
         public ManagementApiClient(string baseUri, TimeSpan? defaultTimeout = null)
         {
-            var client = new NetworkClient(new Uri(baseUri), defaultTimeout);
+            var client = new ApiClient(new Uri(baseUri), defaultTimeout);
 
             Applications = new ApplicationOperations(client);
             ApplicationVersions = new ApplicationVersionOperations(client);

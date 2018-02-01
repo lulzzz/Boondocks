@@ -11,9 +11,9 @@ namespace Boondocks.Services.Management.WebApiClient.Endpoints
 {
     public class ApplicationVersionOperations
     {
-        private readonly NetworkClient _client;
+        private readonly ApiClient _client;
 
-        internal ApplicationVersionOperations(NetworkClient client)
+        internal ApplicationVersionOperations(ApiClient client)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
         }

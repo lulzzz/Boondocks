@@ -13,9 +13,9 @@ namespace Boondocks.Services.Management.WebApiClient.Endpoints
 {
     public class ApplicationOperations
     {
-        private readonly NetworkClient _client;
+        private readonly ApiClient _client;
 
-        internal ApplicationOperations(NetworkClient client)
+        internal ApplicationOperations(ApiClient client)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
         }

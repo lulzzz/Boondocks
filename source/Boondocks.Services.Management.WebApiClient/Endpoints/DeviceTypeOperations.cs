@@ -11,9 +11,9 @@ namespace Boondocks.Services.Management.WebApiClient.Endpoints
 {
     public class DeviceTypeOperations
     {
-        private readonly NetworkClient _client;
+        private readonly ApiClient _client;
 
-        internal DeviceTypeOperations(NetworkClient client)
+        internal DeviceTypeOperations(ApiClient client)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
         }

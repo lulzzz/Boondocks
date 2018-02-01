@@ -9,7 +9,7 @@ namespace Boondocks.Services.WebApiClient
 {
     public static class NetworkClientExtensions
     {
-        public static async Task<TResult> MakeJsonRequestAsync<TResult>(this NetworkClient client, 
+        public static async Task<TResult> MakeJsonRequestAsync<TResult>(this ApiClient client, 
             CancellationToken cancellationToken,
             HttpMethod method,
             string path,

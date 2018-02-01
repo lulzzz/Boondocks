@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace Boondocks.Services.WebApiClient
 {
-    public class NetworkClient : IDisposable
+    public class ApiClient : IDisposable
     {
         private readonly Uri _baseUri;
 
@@ -34,7 +34,7 @@ namespace Boondocks.Services.WebApiClient
             }
         };
 
-        public NetworkClient(Uri baseUri, TimeSpan? defaultTimeout = null)
+        public ApiClient(Uri baseUri, TimeSpan? defaultTimeout = null)
         {
             _baseUri = baseUri;
             _client = new HttpClient();

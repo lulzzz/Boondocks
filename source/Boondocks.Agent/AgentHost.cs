@@ -68,24 +68,28 @@ namespace Boondocks.Agent
             }
         }
 
-        private async Task DownloadApplicationImageAsync(DockerClient dockerClient, Guid id, CancellationToken cancellationToken)
+        private async Task DownloadApplicationImageAsync(DockerClient dockerClient, string imageId, CancellationToken cancellationToken)
         {
             //Dowload it!
-            Console.WriteLine($"Downloading application '{id}'...");
+            Console.WriteLine($"Downloading application '{imageId}'...");
 
-            //Download the application image
-            using (var sourceStream =
-                await _deviceApiClient.DownloadApplicationVersionImage(id,
-                    cancellationToken))
-            {
-                //Load it up into docker as we download it
-                await dockerClient.Images.LoadImageAsync(new ImageLoadParameters()
-                    {
-                        Quiet = false
-                    }, sourceStream,
-                    new Progress(),
-                    cancellationToken);
-            }
+            //await dockerClient.Images.
+
+            //TODO: Figure out how the bloody hell to do a pull.
+
+            ////Download the application image
+            //using (var sourceStream =
+            //    await _deviceApiClient.DownloadApplicationVersionImage(id,
+            //        cancellationToken))
+            //{
+            //    //Load it up into docker as we download it
+            //    await dockerClient.Images.LoadImageAsync(new ImageLoadParameters()
+            //        {
+            //            Quiet = false
+            //        }, sourceStream,
+            //        new Progress(),
+            //        cancellationToken);
+            //}
         }
 
         private async Task EnsureCurrentApplicationRunning(CancellationToken cancellationToken)
@@ -116,7 +120,7 @@ namespace Boondocks.Agent
                         if (!await dockerClient.DoesImageExistAsync(_operationalStateProvider.State.CurrentApplicationVersion.ImageId, cancellationToken))
                         {
                             //Download the image
-                            await DownloadApplicationImageAsync(dockerClient, _operationalStateProvider.State.CurrentApplicationVersion.Id, cancellationToken);
+                            await DownloadApplicationImageAsync(dockerClient, _operationalStateProvider.State.CurrentApplicationVersion.ImageId, cancellationToken);
                         }
 
                         //Try to find the container for this image
@@ -186,7 +190,7 @@ namespace Boondocks.Agent
             try
             {
                 //Get the configuration from the device api
-                var configuration = await _deviceApiClient.GetConfigurationAsync(cancellationToken);
+                var configuration = await _deviceApiClient.Configuration.GetConfigurationAsync(cancellationToken);
 
                 //Save the configuration version.
                 _operationalStateProvider.State.ConfigurationVersion = configuration.ConfigurationVersion;
@@ -224,7 +228,7 @@ namespace Boondocks.Agent
                     if (!await dockerClient.DoesImageExistAsync(_operationalStateProvider.State.NextApplicationVersion.ImageId, cancellationToken))
                     {
                         //Attempt to download
-                        await DownloadApplicationImageAsync(dockerClient, _operationalStateProvider.State.NextApplicationVersion.Id, cancellationToken);
+                        await DownloadApplicationImageAsync(dockerClient, _operationalStateProvider.State.NextApplicationVersion.ImageId, cancellationToken);
                     }
 
                     //Stop the existing application
@@ -329,7 +333,7 @@ namespace Boondocks.Agent
             };
 
             //Send the request.
-            var response = await _deviceApiClient.HeartbeatAsync(request, cancellationToken);
+            var response = await _deviceApiClient.Heartbeat.HeartbeatAsync(request, cancellationToken);
 
             //Check to see if we need to update the configuration
             if (_operationalStateProvider.State.ConfigurationVersion != response.ConfigurationVersion)
