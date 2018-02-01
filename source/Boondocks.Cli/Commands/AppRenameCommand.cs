@@ -1,9 +1,11 @@
 ﻿namespace Boondocks.Cli.Commands
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Base;
     using CommandLine;
+    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("app-rename", HelpText = "Rename an application")]
     public class AppRenameCommand : CommandBase
@@ -14,7 +16,7 @@
         [Option('n', "name", Required = true, HelpText = "The new name of the application.")]
         public string Name { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context)
+        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
         {
             //Console.WriteLine($"Deploy app: {ApplicationId} {ImageId}");
             var applicationId = ApplicationId.TryParseGuid();
@@ -32,7 +34,7 @@
             }
 
             //Get the existing application
-            var application = await context.Client.Applications.GetApplicationAsync(applicationId.Value);
+            var application = await context.Client.Applications.GetApplicationAsync(applicationId.Value, cancellationToken);
 
             //Change the name
             application.Name = Name;

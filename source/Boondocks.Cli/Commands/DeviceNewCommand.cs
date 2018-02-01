@@ -1,10 +1,12 @@
 ﻿namespace Boondocks.Cli.Commands
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Base;
     using CommandLine;
     using Services.Management.Contracts;
+    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("device-new", HelpText = "Create a new device.")]
     public class DeviceNewCommand : CommandBase
@@ -21,7 +23,7 @@
         [Option('k', "dev-key", HelpText = "Specify a device key for this device.")]
         public string DeviceKey { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context)
+        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
         {
             var applicationId = ApplicationId.TryParseGuid();
             var deviceKey = DeviceKey.TryParseGuid();
@@ -41,7 +43,7 @@
             };
 
             //Create the device
-            var device = await context.Client.Devices.CreateDeviceAsync(request);
+            var device = await context.Client.Devices.CreateDeviceAsync(request, cancellationToken);
 
             //Let the user know what happened.
             Console.WriteLine($"Device {device.Id} created with name '{device.Name}'.");

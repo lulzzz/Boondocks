@@ -1,10 +1,12 @@
 ﻿namespace Boondocks.Cli.Commands
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Base;
     using CommandLine;
     using Services.Management.Contracts;
+    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("app-new", HelpText = "Create a new application.")]
     public class AppNewCommand : CommandBase
@@ -15,7 +17,7 @@
         [Option('n', "Name", Required = true, HelpText = "The name of the application.")]
         public string Name { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context)
+        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
         {
             var deviceTypeId = DeviceTypeId.TryParseGuid();
 
@@ -32,7 +34,7 @@
             };
 
             //Create the application.
-            var application = await context.Client.Applications.CreateApplicationAsync(request);
+            var application = await context.Client.Applications.CreateApplicationAsync(request, cancellationToken);
 
             Console.WriteLine($"Application {application.Id} created.");
 

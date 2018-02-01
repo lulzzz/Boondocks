@@ -1,5 +1,6 @@
 ﻿namespace Boondocks.Cli
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using CommandLine;
 
@@ -9,13 +10,13 @@
             Default = "http://localhost:54985/")]
         public string EndpointUrl { get; set; }
 
-        protected abstract Task<int> ExecuteAsync(ExecutionContext context);
+        protected abstract Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken);
 
-        public Task<int> ExecuteAsync()
+        public Task<int> ExecuteAsync(CancellationToken cancellationToken)
         {
             var context = new ExecutionContext(EndpointUrl);
 
-            return ExecuteAsync(context);
+            return ExecuteAsync(context, cancellationToken);
         }
     }
 }

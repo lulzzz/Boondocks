@@ -6,12 +6,14 @@
     using System.Linq;
     using System.Net.Sockets;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using CommandLine;
     using Docker.DotNet;
     using Docker.DotNet.Models;
     using Newtonsoft.Json.Linq;
     using Services.Management.Contracts;
+    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("build", HelpText = "Builds an application.")]
     public class BuildCommand : CommandBase
@@ -31,7 +33,7 @@
         [Option('n', "name", HelpText = "The name to give this version.")]
         public string Name { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context)
+        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(Name))
             {
@@ -63,7 +65,7 @@
 
                     //Build it!!!!!
                     using (var resultStream =
-                        await dockerClient.Images.BuildImageFromDockerfileAsync(tarStream, imageBuildParmeters))
+                        await dockerClient.Images.BuildImageFromDockerfileAsync(tarStream, imageBuildParmeters, cancellationToken))
                     {
                         //Deal with the result
                         var result = await ProcessResult(resultStream);
@@ -77,7 +79,7 @@
                         }
 
                         //Let us deploy
-                        if (Deploy) return await DeployAsync(context, dockerClient, result, tag);
+                        if (Deploy) return await DeployAsync(context, dockerClient, result, tag, cancellationToken);
 
                         return 0;
                     }
@@ -86,7 +88,7 @@
         }
 
         private async Task<int> DeployAsync(ExecutionContext context, DockerClient dockerClient, BuildResult result,
-            string tag)
+            string tag, CancellationToken cancellationToken)
         {
             //Get the last id
             var imageId = result.Ids.LastOrDefault();
@@ -113,52 +115,68 @@
                 return 1;
             }
 
-            var applicationUploadInfo = await context.Client.ApplicationUpload.GetApplicationUploadInfo(application.Id);
-
-            Console.WriteLine($"Deploying with imageid '{imageId}'...");
-
-            var parameters = new ImagePushParameters
-            {
-                ImageID = imageId,
-                Tag = tag
-            };
-
-            var target = $"{applicationUploadInfo.RegistryHost}/{applicationUploadInfo.Repository}";
-
-            //Tag it!
-            await dockerClient.Images.TagImageAsync(imageId, new ImageTagParameters
-            {
-                RepositoryName = target,
-                Tag = tag
-            });
-
-            //Auth config (will have to include the token)
-            var authConfig = new AuthConfig
-            {
-                ServerAddress = applicationUploadInfo.RegistryHost
-            };
-
-            try
-            {
-                //Push it!
-                await dockerClient.Images.PushImageAsync(target, parameters, authConfig,
-                    new Progress<JSONMessage>(p => { }));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Temporarily ignoring error from push: {e.Message}");
-            }
-
-            var uploadRequest = new CreateApplicationVersionRequest
+            //Create the request
+            var applicationUploadInfoRequest = new GetApplicationUploadInfoRequest()
             {
                 ApplicationId = application.Id,
-                Name = tag,
                 ImageId = imageId,
-                Logs = result.ToString()
+                Name = tag
             };
 
-            //TODO: Upload the logs as well.
-            await context.Client.ApplicationVersions.UploadApplicationVersionAsync(uploadRequest);
+            var applicationUploadInfo = await context.Client.ApplicationUpload.GetApplicationUploadInfo(applicationUploadInfoRequest, cancellationToken);
+
+            if (applicationUploadInfo.CanUpload)
+            {
+
+                Console.WriteLine($"Deploying with imageid '{imageId}'...");
+
+                var parameters = new ImagePushParameters
+                {
+                    ImageID = imageId,
+                    Tag = tag
+                };
+
+                var target = $"{applicationUploadInfo.RegistryHost}/{applicationUploadInfo.Repository}";
+
+                //Tag it!
+                await dockerClient.Images.TagImageAsync(imageId, new ImageTagParameters
+                {
+                    RepositoryName = target,
+                    Tag = tag
+                });
+
+                //Auth config (will have to include the token)
+                var authConfig = new AuthConfig
+                {
+                    ServerAddress = applicationUploadInfo.RegistryHost
+                };
+
+                try
+                {
+                    //Push it!
+                    await dockerClient.Images.PushImageAsync(target, parameters, authConfig,
+                        new Progress<JSONMessage>(p => { }));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Temporarily ignoring error from push: {e.Message}");
+                }
+
+                var uploadRequest = new CreateApplicationVersionRequest
+                {
+                    ApplicationId = application.Id,
+                    Name = tag,
+                    ImageId = imageId,
+                    Logs = result.ToString()
+                };
+
+                //TODO: Upload the logs as well.
+                await context.Client.ApplicationVersions.UploadApplicationVersionAsync(uploadRequest, cancellationToken);               
+            }
+            else
+            {
+                Console.WriteLine($"Warning: Unable to upload image - '{applicationUploadInfo.Reason}'.");
+            }
 
             return 0;
         }
