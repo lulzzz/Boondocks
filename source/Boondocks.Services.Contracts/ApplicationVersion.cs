@@ -19,5 +19,8 @@ namespace Boondocks.Services.Contracts
 
         [JsonProperty("imageId")]
         public string ImageId { get; set; }
+
+        [JsonProperty("logs")]
+        public string Logs { get; set; }
     }
 }

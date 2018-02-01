@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Boondocks.Base;
 using Boondocks.Services.Contracts;
+using Boondocks.Services.Management.Contracts;
 using CommandLine;
 
 namespace Boondocks.Cli.Commands
@@ -33,8 +34,15 @@ namespace Boondocks.Cli.Commands
                 return 1;
             }
 
+            var request = new CreateDeviceRequest
+            {
+                ApplicationId = applicationId.Value,
+                Name = Name,
+                DeviceKey = deviceKey
+            };
+
             //Create the device
-            Device device = await context.Client.CreateDeviceAsync(applicationId.Value, Name, applicationVersionId, deviceKey);
+            Device device = await context.Client.Devices.CreateDeviceAsync(request);
 
             //Let the user know what happened.
             Console.WriteLine($"Device {device.Id} created with name '{device.Name}'.");

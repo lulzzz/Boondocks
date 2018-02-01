@@ -209,7 +209,7 @@ namespace Boondocks.Services.WebApiClient
 
 #if NET46
 
-            var query = HttpUtility.ParseQueryString(builder.Query);
+            var query = UriUtility.ParseQueryString(builder.Query);
 
             if (parameters != null)
             {

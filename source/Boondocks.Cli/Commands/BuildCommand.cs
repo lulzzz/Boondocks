@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
+using Boondocks.Services.Management.Contracts;
 using CommandLine;
 using Docker.DotNet;
 using Docker.DotNet.Models;
@@ -104,7 +106,7 @@ namespace Boondocks.Cli.Commands
                 return 1;
             }
 
-            var application =  await context.Client.GetApplicationAsync(Application);
+            var application =  await context.Client.Applications.GetApplicationAsync(Application);
 
             if (application == null)
             {
@@ -112,7 +114,7 @@ namespace Boondocks.Cli.Commands
                 return 1;
             }
 
-            var applicationUploadInfo = await context.Client.GetApplicationUploadInfo(application.Id);
+            var applicationUploadInfo = await context.Client.ApplicationUpload.GetApplicationUploadInfo(application.Id);
 
             Console.WriteLine($"Deploying with imageid '{imageId}'...");
 
@@ -137,11 +139,26 @@ namespace Boondocks.Cli.Commands
                 ServerAddress = applicationUploadInfo.RegistryHost,
             };
 
-            //Push it!
-            await dockerClient.Images.PushImageAsync(target, parameters, authConfig, new Progress<JSONMessage>(p => { }));
+            try
+            {
+                //Push it!
+                await dockerClient.Images.PushImageAsync(target, parameters, authConfig, new Progress<JSONMessage>(p => { }));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Temporarily ignoring error from push: {e.Message}");
+            }
 
-            //TODO: Upload the version information
-            
+            var uploadRequest = new CreateApplicationVersionRequest()
+            {
+                ApplicationId = application.Id,
+                Name = tag,
+                ImageId = imageId,
+                Logs = result.ToString()
+            };
+
+            //TODO: Upload the logs as well.
+            await context.Client.ApplicationVersions.UploadApplicationVersionAsync(uploadRequest);
 
             return 0;
         }
@@ -263,6 +280,18 @@ namespace Boondocks.Cli.Commands
             public IList<string> Messages { get; } = new List<string>();
 
             public IList<string> Errors { get; } = new List<string>();
+
+            public override string ToString()
+            {
+                StringBuilder output = new StringBuilder();
+
+                foreach (var message in Messages)
+                {
+                    output.Append(message);
+                }
+
+                return output.ToString();
+            }
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Boondocks.Cli.Commands
                 ApplicationId = ApplicationId.TryParseGuid()
             };
 
-            var devices = await context.Client.GetDevicesAsync(request);
+            var devices = await context.Client.Devices.GetDevicesAsync(request);
 
             devices.DisplayEntities(d => $"{d.Id:D}: {d.Name}");
 

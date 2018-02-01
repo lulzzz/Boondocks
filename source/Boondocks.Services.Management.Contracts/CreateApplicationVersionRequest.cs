@@ -22,5 +22,11 @@ namespace Boondocks.Services.Management.Contracts
         /// </summary>
         [JsonProperty("applicationId")]
         public Guid ApplicationId { get; set; }
+
+        /// <summary>
+        /// The logs from the build process
+        /// </summary>
+        [JsonProperty("logs")]
+        public string Logs { get; set; }
     }
 }

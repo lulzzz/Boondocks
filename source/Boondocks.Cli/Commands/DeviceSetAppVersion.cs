@@ -31,11 +31,11 @@ namespace Boondocks.Cli.Commands
                 return 1;
             }
 
-            var device = await context.Client.GetDeviceAsync(deviceId.Value);
+            var device = await context.Client.Devices.GetDeviceAsync(deviceId.Value);
 
             device.ApplicationVersionId = applicationVersionId;
 
-            await context.Client.UpdateDeviceAsync(device);
+            await context.Client.Devices.UpdateDeviceAsync(device);
 
             return 0;
         }

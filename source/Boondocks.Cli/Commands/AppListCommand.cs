@@ -22,7 +22,7 @@ namespace Boondocks.Cli.Commands
                 DeviceTypeId = deviceTypeId
             };
 
-            var applications = await context.Client.GetApplicationsAsync(request);
+            var applications = await context.Client.Applications.GetApplicationsAsync(request);
 
             applications.DisplayEntities(a => $"{a.Id}: {a.Name}");
 

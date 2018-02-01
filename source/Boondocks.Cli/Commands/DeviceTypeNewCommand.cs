@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Boondocks.Services.Management.Contracts;
 using CommandLine;
 
 namespace Boondocks.Cli.Commands
@@ -12,7 +13,12 @@ namespace Boondocks.Cli.Commands
 
         protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
-            var deviceType = await context.Client.CreateDeviceTypeAsync(Name);
+            var request = new CreateDeviceTypeRequest
+            {
+                Name = Name
+            };
+
+            var deviceType = await context.Client.DeviceTypes.CreateDeviceTypeAsync(request);
 
             Console.WriteLine($"DeviceType {deviceType.Id} created.");
 

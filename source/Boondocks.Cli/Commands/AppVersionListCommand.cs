@@ -20,7 +20,7 @@ namespace Boondocks.Cli.Commands
                 ApplicationId = ApplicationId.TryParseGuid()
             };
 
-            var applicationVersions = await context.Client.GetApplicationVersionsAsync(request);
+            var applicationVersions = await context.Client.ApplicationVersions.GetApplicationVersionsAsync(request);
 
             applicationVersions.DisplayEntities(v => $"{v.Id}: {v.Name}");
 

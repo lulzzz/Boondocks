@@ -13,6 +13,5 @@ namespace Boondocks.Cli
         }
 
         public ManagementApiClient Client => _client.Value;
-
     }
 }

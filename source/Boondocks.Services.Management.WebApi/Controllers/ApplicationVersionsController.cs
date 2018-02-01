@@ -17,12 +17,10 @@ namespace Boondocks.Services.Management.WebApi.Controllers
     [Route("v1/applicationVersions")]
     public class ApplicationVersionsController : Controller
     {
-        private readonly IBlobDataAccessProvider _blobDataAccessProvider;
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public ApplicationVersionsController(IDbConnectionFactory connectionFactory, IBlobDataAccessProvider blobDataAccessProvider)
+        public ApplicationVersionsController(IDbConnectionFactory connectionFactory)
         {
-            _blobDataAccessProvider = blobDataAccessProvider ?? throw new ArgumentNullException(nameof(blobDataAccessProvider));
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
@@ -61,27 +59,12 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         /// <summary>
         /// Upload an application version / docker image.
         /// </summary>
-        /// <param name="file"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
         [Produces(typeof(ApplicationVersion))]
-        [Consumes("multipart/form-data")]
-        public IActionResult Post(IFormFile file)
+        public IActionResult Post([FromBody] CreateApplicationVersionRequest request)
         {
-            // Found some info here on dealing with multiple parts of a request.
-            // I couldn't figure out how to make request a parameter. [FromForm] didn't exactly work. Dangit.
-            // https://forums.asp.net/t/2099194.aspx?Net+Core+Web+API+How+to+upload+multi+part+form+data
-
-            var requestJson = Request.Form["request"];
-
-            //Make sure we got some json
-            if (string.IsNullOrWhiteSpace(requestJson))
-                return BadRequest("No request object was specified.");
-
-            //Deserialize the request
-            CreateApplicationVersionRequest request =
-                Newtonsoft.Json.JsonConvert.DeserializeObject<CreateApplicationVersionRequest>(requestJson);
-
             if (request == null)
                 return BadRequest("No request was specified.");
 
@@ -93,9 +76,6 @@ namespace Boondocks.Services.Management.WebApi.Controllers
 
             if (string.IsNullOrWhiteSpace(request.ImageId))
                 return BadRequest("No ImageId was specified.");
-
-            if (file == null)
-                return BadRequest("No upload file was provided.");
 
             using (var connection = _connectionFactory.CreateAndOpen())
             {
@@ -111,14 +91,9 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                 {
                     Name = request.Name,
                     ApplicationId = request.ApplicationId,
-                    ImageId = request.ImageId
+                    ImageId = request.ImageId,
+                    Logs = request.Logs
                 }.SetNew();
-
-                //Store this mammer jammer in a blob
-                using (var sourceStream = file.OpenReadStream())
-                {
-                    _blobDataAccessProvider.ApplicationVersionImages.UploadFromStream(applicationVersion.Id, sourceStream);
-                }
 
                 //Insert into the relational database
                 connection.Insert(applicationVersion);

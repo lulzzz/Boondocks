@@ -9,7 +9,7 @@ namespace Boondocks.Cli.Commands
     {
         protected override async Task<int> ExecuteAsync(ExecutionContext context)
         {
-            var deviceTypes = await context.Client.GetDeviceTypes();
+            var deviceTypes = await context.Client.DeviceTypes.GetDeviceTypesAsync();
 
             deviceTypes.DisplayEntities(d => $"{d.Id}: {d.Name}");
 

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Boondocks.Base;
 using Boondocks.Services.Contracts;
+using Boondocks.Services.Management.Contracts;
 using CommandLine;
 
 namespace Boondocks.Cli.Commands
@@ -25,8 +26,14 @@ namespace Boondocks.Cli.Commands
                 return 1;
             }
 
+            var request = new CreateApplicationRequest
+            {
+                DeviceTypeId = deviceTypeId.Value,
+                Name = Name
+            };
+
             //Create the application.
-            Application application = await context.Client.CreateApplicationAsync(deviceTypeId.Value, Name);
+            Application application = await context.Client.Applications.CreateApplicationAsync(request);
 
             Console.WriteLine($"Application {application.Id} created.");
 

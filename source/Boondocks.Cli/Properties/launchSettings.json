@@ -2,7 +2,7 @@
   "profiles": {
     "BoondocksCli": {
       "commandName": "Project",
-      "commandLineArgs": "build -h http://10.0.4.44:2375 -s c:\\testbuild -a SCADADevelopment -n supervisor1.0.0"
+      "commandLineArgs": "device-type-list"
     }
   }
 }

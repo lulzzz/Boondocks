@@ -32,13 +32,13 @@ namespace Boondocks.Cli.Commands
             }
 
             //Get the existing application
-            var application = await context.Client.GetApplicationAsync(applicationId.Value);
+            var application = await context.Client.Applications.GetApplicationAsync(applicationId.Value);
 
             //Change the name
             application.Name = Name;
 
             //Update it!
-            await context.Client.UpdateApplicationAsync(application);
+            await context.Client.Applications.UpdateApplicationAsync(application);
 
             //We're done here.
             Console.WriteLine("Application renamed.");
