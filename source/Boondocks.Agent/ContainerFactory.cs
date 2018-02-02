@@ -6,18 +6,16 @@
 
     internal static class ContainerFactory
     {
-        public static IContainer Create(IDeviceConfigurationOverride deviceConfigurationOverride)
+        public static IContainer Create()
         {
             var builder = new ContainerBuilder();
-
-            builder.RegisterInstance(deviceConfigurationOverride);
 
             builder.Register(context =>
             {
                 var provider = context.Resolve<IDeviceConfigurationProvider>();
 
                 return provider.GetDeviceConfiguration();
-            });
+            }).SingleInstance();
 
             builder.RegisterType<DeviceStateProvider>().SingleInstance();
             builder.RegisterType<DeviceConfigurationProvider>().As<IDeviceConfigurationProvider>();

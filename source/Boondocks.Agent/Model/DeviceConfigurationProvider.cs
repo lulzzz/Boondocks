@@ -5,6 +5,8 @@
     using Domain;
     using Interfaces;
     using Newtonsoft.Json;
+    using Services.Contracts;
+    using Services.Contracts.Interfaces;
 
     internal class DeviceConfigurationProvider : IDeviceConfigurationProvider
     {

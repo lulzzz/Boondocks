@@ -2,7 +2,7 @@
   "profiles": {
     "BoondocksCli": {
       "commandName": "Project",
-      "commandLineArgs": "build -s \"C:\\github\\Boondocks\\BoondocksApplicationExamples\\RaspberryPi3\\HelloWorld\" -h http://localhost:2375/ -n HelloWorld1.0.2 -a SCADADevelopment"
+      "commandLineArgs": "device-config -d prototype1 -o c:\\config.json"
     }
   }
 }

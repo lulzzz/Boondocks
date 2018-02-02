@@ -1,4 +1,4 @@
-﻿namespace Boondocks.Agent.Domain
+﻿namespace Boondocks.Services.Contracts
 {
     using System;
     using Interfaces;
@@ -7,7 +7,7 @@
     /// <summary>
     ///     The configuration for a device.
     /// </summary>
-    internal class DeviceConfiguration : IDeviceConfiguration
+    public class DeviceConfiguration : IDeviceConfiguration
     {
         /// <summary>
         ///     The unique ID of this device.
@@ -43,6 +43,6 @@
         ///     The repository to pull our images from.
         /// </summary>
         [JsonProperty("registryEndpoint")]
-        public string RegistryEndpoint { get; set; }
+        public string RegistryHost { get; set; }
     }
 }

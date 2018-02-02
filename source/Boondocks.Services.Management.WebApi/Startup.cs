@@ -83,10 +83,13 @@ namespace Boondocks.Services.Management.WebApi
             string dbConnectionString = config["DbConnectionString"];
 
             var registryConfig = new RegistryConfig();
+            var provisioningConfig = new ProvisioningConfig();
 
             config.GetSection("registry").Bind(registryConfig);
+            config.GetSection("provisioningConfig").Bind(provisioningConfig);
 
             builder.RegisterInstance(registryConfig);
+            builder.RegisterInstance(provisioningConfig);
                 
             // Add things to the Autofac ContainerBuilder.
             builder.RegisterInstance(new SqlServerDbConnectionFactory(dbConnectionString))

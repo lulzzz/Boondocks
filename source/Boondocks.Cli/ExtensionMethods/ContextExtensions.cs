@@ -44,7 +44,7 @@
 
         public static async Task<Device> FindDeviceAsync(this ExecutionContext context, string search, CancellationToken cancellationToken)
         {
-            Guid? deviceId = search.TryParseGuid();
+            Guid? deviceId = search.TryParseGuid(false);
 
             Device device;
 

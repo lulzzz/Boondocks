@@ -8,6 +8,7 @@
     using Docker.DotNet.Models;
     using Interfaces;
     using Model;
+    using Services.Contracts.Interfaces;
     using Services.Device.Contracts;
     using Services.Device.WebApiClient;
 

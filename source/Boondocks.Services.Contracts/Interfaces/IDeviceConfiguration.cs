@@ -1,8 +1,8 @@
-﻿namespace Boondocks.Agent.Interfaces
+﻿namespace Boondocks.Services.Contracts.Interfaces
 {
     using System;
 
-    internal interface IDeviceConfiguration
+    public interface IDeviceConfiguration
     {
         string DeviceApiUrl { get; }
 
@@ -14,6 +14,6 @@
 
         int PollSeconds { get; }
 
-        string RegistryEndpoint { get; }
+        string RegistryHost { get; }
     }
 }

@@ -14,6 +14,7 @@
             ApplicationVersions = new ApplicationVersionOperations(client);
             ApplicationUpload = new ApplicationUploadInfoOperations(client);
             Devices = new DeviceOperations(client);
+            DeviceConfiguration = new DeviceConfigurationOperations(client);
             DeviceTypes = new DeviceTypeOperations(client);
         }
 
@@ -24,6 +25,8 @@
         public ApplicationUploadInfoOperations ApplicationUpload { get; }
 
         public DeviceOperations Devices { get; }
+
+        public DeviceConfigurationOperations DeviceConfiguration { get; }
 
         public DeviceTypeOperations DeviceTypes { get; }
     }
