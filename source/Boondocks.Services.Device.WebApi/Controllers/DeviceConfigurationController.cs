@@ -13,9 +13,9 @@
     using Microsoft.AspNetCore.Mvc;
     using Services.Contracts;
 
+    [Authorize]
     [Produces("application/json")]
     [Route("v1/deviceConfiguration")]
-    [Authorize]
     public class DeviceConfigurationController : DeviceControllerBase
     {
         private readonly IDbConnectionFactory _connectionFactory;
@@ -69,6 +69,7 @@
                 if (device.RootFileSystemVersionId != null)
                     response.RootFileSystemVersionId = device.RootFileSystemVersionId.Value;
 
+                //Get the detailed application version information
                 if (applicationVersionId != null)
                 {
                     var applicationVersion = connection.Get<ApplicationVersion>(applicationVersionId.Value);
@@ -80,10 +81,12 @@
                     response.ApplicationVersion = new VersionReference
                     {
                         Id = applicationVersion.Id,
-                        ImageId = applicationVersion.ImageId
+                        ImageId = applicationVersion.ImageId,
+                        Name = applicationVersion.Name
                     };
                 }
 
+                //Get the detailed supervisor version id
                 if (supervisorVersionId != null)
                 {
                     var supervisorVersion = connection.Get<SupervisorVersion>(supervisorVersionId);
@@ -94,7 +97,8 @@
                     response.SupervisorVersion = new VersionReference
                     {
                         Id = supervisorVersion.Id,
-                        ImageId = supervisorVersion.ImageId
+                        ImageId = supervisorVersion.ImageId,
+                        Name = supervisorVersion.Name
                     };
                 }
 

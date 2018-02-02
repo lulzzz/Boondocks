@@ -10,9 +10,9 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
 
+    [Authorize]
     [Produces("application/json")]
     [Route("v1/heartbeat")]
-    [Authorize]
     public class HeartbeatController : DeviceControllerBase
     {
         private readonly IDbConnectionFactory _connectionFactory;

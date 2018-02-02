@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Base;
     using CommandLine;
+    using ExtensionMethods;
     using Services.Management.Contracts;
     using ExecutionContext = Cli.ExecutionContext;
 
@@ -14,32 +15,27 @@
         [Option('n', "name", Required = true, HelpText = "The name of the device.")]
         public string Name { get; set; }
 
-        [Option('a', "app-id", Required = true, HelpText = "The id of the application to create this device in.")]
-        public string ApplicationId { get; set; }
-
-        [Option('v', "app-ver", HelpText = "The initial application version to use.")]
-        public string ApplicationVersionId { get; set; }
+        [Option('a', "app", Required = true, HelpText = "The name or id of the application.")]
+        public string Application { get; set; }
 
         [Option('k', "dev-key", HelpText = "Specify a device key for this device.")]
         public string DeviceKey { get; set; }
 
         protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
         {
-            var applicationId = ApplicationId.TryParseGuid();
-            var deviceKey = DeviceKey.TryParseGuid();
-            var applicationVersionId = ApplicationVersionId.TryParseGuid();
+            //Get the application
+            var application = await context.FindApplicationAsync(Application, cancellationToken);
 
-            if (applicationId == null)
-            {
-                Console.WriteLine("Invalid format for ApplicationId.");
+            if (application == null)
                 return 1;
-            }
+
+            var deviceKey = DeviceKey.TryParseGuid();
 
             var request = new CreateDeviceRequest
             {
-                ApplicationId = applicationId.Value,
+                ApplicationId = application.Id,
                 Name = Name,
-                DeviceKey = deviceKey
+                DeviceKey = deviceKey,
             };
 
             //Create the device

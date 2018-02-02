@@ -1,9 +1,10 @@
 ﻿namespace Boondocks.Services.Contracts
 {
     using System;
+    using Interfaces;
     using Newtonsoft.Json;
 
-    public class Application : EntityBase
+    public class Application : EntityBase, INamedEntity
     {
         [JsonProperty("name")] public string Name { get; set; }
 

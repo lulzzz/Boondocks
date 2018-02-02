@@ -11,6 +11,7 @@
     using CommandLine;
     using Docker.DotNet;
     using Docker.DotNet.Models;
+    using ExtensionMethods;
     using Newtonsoft.Json.Linq;
     using Services.Management.Contracts;
     using ExecutionContext = Cli.ExecutionContext;
@@ -18,7 +19,7 @@
     [Verb("build", HelpText = "Builds an application.")]
     public class BuildCommand : CommandBase
     {
-        [Option('h', "dockeHost", HelpText = "The docker endpoint to use for building.")]
+        [Option('h', "dockerHost", HelpText = "The docker endpoint to use for building.")]
         public string DockerEndpoint { get; set; }
 
         [Option('s', "source", Required = true, HelpText = "The source directory to build from.")]
@@ -70,7 +71,7 @@
                         await dockerClient.Images.BuildImageFromDockerfileAsync(tarStream, imageBuildParmeters, cancellationToken))
                     {
                         //Deal with the result
-                        result = await ProcessResult(resultStream);
+                        result = await ProcessResultAsync(resultStream);
                     }
 
                     //Check to see if we have any errors
@@ -112,11 +113,10 @@
                 return 1;
             }
 
-            var application = await context.Client.Applications.GetApplicationAsync(Application, cancellationToken);
+            var application = await context.FindApplicationAsync(Application, cancellationToken);
 
             if (application == null)
             {
-                Console.WriteLine($"Unable to find application '{Application}'.");
                 return 1;
             }
 
@@ -148,7 +148,7 @@
                 {
                     RepositoryName = target,
                     Tag = tag
-                });
+                }, cancellationToken);
 
                 //Auth config (will have to include the token)
                 var authConfig = new AuthConfig
@@ -175,7 +175,7 @@
                     Logs = result.ToString()
                 };
 
-                //TODO: Upload the logs as well.
+                //Upload the application version
                 await context.Client.ApplicationVersions.UploadApplicationVersionAsync(uploadRequest, cancellationToken);               
             }
             else
@@ -186,7 +186,7 @@
             return 0;
         }
 
-        private async Task<BuildResult> ProcessResult(Stream responseStream)
+        private async Task<BuildResult> ProcessResultAsync(Stream responseStream)
         {
             //This response will get built up.
             var result = new BuildResult();
@@ -224,7 +224,7 @@
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Warning: Unable to parse {line}");
+                        Console.WriteLine($"Warning: Unable to parse {line}: {ex.Message}");
                     }
 
                     try

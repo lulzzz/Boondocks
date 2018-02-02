@@ -2,9 +2,10 @@
 {
     using System;
     using Dapper.Contrib.Extensions;
+    using Interfaces;
     using Newtonsoft.Json;
 
-    public class EntityBase
+    public class EntityBase : IEntity
     {
         [JsonProperty("id", Order = -100)]
         [ExplicitKey]

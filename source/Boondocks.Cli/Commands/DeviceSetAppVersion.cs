@@ -5,37 +5,38 @@
     using System.Threading.Tasks;
     using Base;
     using CommandLine;
+    using ExtensionMethods;
+    using Services.Contracts;
     using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("device-set-app-version", HelpText = "Sets the current application version for a given device.")]
     public class DeviceSetAppVersion : CommandBase
     {
-        [Option('d', "device-id", Required = true, HelpText = "The device id to update.")]
-        public string DeviceId { get; set; }
+        [Option('d', "device", Required = true, HelpText = "The device to update.")]
+        public string Device { get; set; }
 
-        [Option('v', "app-version-id", Required = true, HelpText = "The id of the application version to use.")]
-        public string ApplicationVersionId { get; set; }
+        [Option('v', "app-version-id", HelpText = "The application version to use. Leave blank to use the value specfied at the application level.")]
+        public string ApplicationVersion { get; set; }
 
         protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
         {
-            var deviceId = DeviceId.TryParseGuid();
-            var applicationVersionId = ApplicationVersionId.TryParseGuid();
+            //Get the device
+            var device = await context.FindDeviceAsync(Device, cancellationToken);
 
-            if (deviceId == null)
+            if (device == null)
             {
-                Console.WriteLine("Invalid device-id.");
                 return 1;
             }
 
-            if (applicationVersionId == null)
+            ApplicationVersion applicationVersion = null;
+
+            if (!string.IsNullOrWhiteSpace(ApplicationVersion))
             {
-                Console.WriteLine("Invalid app-version-id.");
-                return 1;
+                applicationVersion = await context.FindApplicationVersionAsync(ApplicationVersion, cancellationToken);
             }
 
-            var device = await context.Client.Devices.GetDeviceAsync(deviceId.Value, cancellationToken);
-
-            device.ApplicationVersionId = applicationVersionId;
+            //Set the application version.
+            device.ApplicationVersionId = applicationVersion?.Id;
 
             await context.Client.Devices.UpdateDeviceAsync(device, cancellationToken);
 

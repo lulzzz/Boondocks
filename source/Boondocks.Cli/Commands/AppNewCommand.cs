@@ -1,35 +1,42 @@
 ﻿namespace Boondocks.Cli.Commands
 {
     using System;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Base;
     using CommandLine;
+    using ExtensionMethods;
+    using Services.Contracts;
     using Services.Management.Contracts;
     using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("app-new", HelpText = "Create a new application.")]
     public class AppNewCommand : CommandBase
     {
-        [Option('d', "device-type-id", Required = true, HelpText = "The device type id.")]
-        public string DeviceTypeId { get; set; }
+        [Option('d', "device-type", Required = true, HelpText = "The device type")]
+        public string DeviceType { get; set; }
 
         [Option('n', "Name", Required = true, HelpText = "The name of the application.")]
         public string Name { get; set; }
 
         protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
         {
-            var deviceTypeId = DeviceTypeId.TryParseGuid();
+            //Get all of the device types
+            DeviceType[] deviceTypes = await context.Client.DeviceTypes.GetDeviceTypesAsync(cancellationToken);
 
-            if (deviceTypeId == null)
+            //Find the device type
+            DeviceType deviceType = deviceTypes.FindEntity(DeviceType);
+
+            if (deviceType == null)
             {
-                Console.WriteLine("Please specify a valid value for device-type-id.");
+                Console.WriteLine($"Unable to find device type '{DeviceType}'.");
                 return 1;
             }
 
+            //Create the request
             var request = new CreateApplicationRequest
             {
-                DeviceTypeId = deviceTypeId.Value,
+                DeviceTypeId = deviceType.Id,
                 Name = Name
             };
 

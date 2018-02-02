@@ -6,6 +6,9 @@
     using Microsoft.IdentityModel.Tokens;
     using Services.Contracts;
 
+    /// <summary>
+    /// Used to create Authorization tokens.
+    /// </summary>
     internal class TokenFactory
     {
         private readonly ClaimsIdentity _claimsIdentity;

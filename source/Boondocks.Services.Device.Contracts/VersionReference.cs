@@ -6,23 +6,29 @@
     public class VersionReference
     {
         /// <summary>
-        ///     The internal id of the image.
+        /// The internal id of the image.
         /// </summary>
         [JsonProperty("id")]
         public Guid Id { get; set; }
 
         /// <summary>
-        ///     The docker id of the image.
+        /// The docker id of the image.
         /// </summary>
         [JsonProperty("imageId")]
         public string ImageId { get; set; }
+
+        /// <summary>
+        /// The name / tag of the image.
+        /// </summary>
+        [JsonProperty("name")]
+        public string Name { get; set; }
 
         public override bool Equals(object obj)
         {
             if (!(obj is VersionReference other))
                 return false;
 
-            return other.Id == Id && other.ImageId == ImageId;
+            return other.ToString() == ToString();
         }
 
         public override int GetHashCode()
@@ -32,7 +38,7 @@
 
         public override string ToString()
         {
-            return $"{Id}_{ImageId}";
+            return $"{Id}_{ImageId}:{Name}";
         }
     }
 }

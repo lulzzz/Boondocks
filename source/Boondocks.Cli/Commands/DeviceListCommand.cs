@@ -1,8 +1,8 @@
 ﻿namespace Boondocks.Cli.Commands
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Base;
     using CommandLine;
     using ExtensionMethods;
     using Services.Management.WebApiClient;
@@ -11,14 +11,20 @@
     [Verb("device-list", HelpText = "List devices.")]
     public class DeviceListCommand : CommandBase
     {
-        [Option('a', "app-id", HelpText = "The id of the application to filter on.")]
-        public string ApplicationId { get; set; }
+        [Option('a', "app", Required = true, HelpText = "The name or id of the application.")]
+        public string Application { get; set; }
 
         protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
         {
+            //Get the application
+            var application = await context.FindApplicationAsync(Application, cancellationToken);
+
+            if (application == null)
+                return 1;
+
             var request = new GetDevicesRequest
             {
-                ApplicationId = ApplicationId.TryParseGuid()
+                ApplicationId = application.Id
             };
 
             var devices = await context.Client.Devices.GetDevicesAsync(request, cancellationToken);

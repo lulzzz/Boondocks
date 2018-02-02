@@ -11,18 +11,27 @@
     [Verb("app-version-list", HelpText = "Lists the available application versions.")]
     public class AppVersionListCommand : CommandBase
     {
-        [Option('a', "app-id", Required = true, HelpText = "The id of the application to filter on.")]
-        public string ApplicationId { get; set; }
+        [Option('a', "app", Required = true, HelpText = "The name or id of the application.")]
+        public string Application { get; set; }
 
         protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
         {
+            //Get the application
+            var application = await context.FindApplicationAsync(Application, cancellationToken);
+           
+            if (application == null)
+                return 1;
+            
+            //Create the request
             var request = new GetApplicationVersionsRequest
             {
-                ApplicationId = ApplicationId.TryParseGuid()
+                ApplicationId = application.Id
             };
 
+            //Get the versions
             var applicationVersions = await context.Client.ApplicationVersions.GetApplicationVersionsAsync(request, cancellationToken);
 
+            //Display them.
             applicationVersions.DisplayEntities(v => $"{v.Id}: {v.Name}");
 
             return 0;
