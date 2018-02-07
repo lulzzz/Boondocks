@@ -10,13 +10,10 @@
 
     internal class DeviceConfigurationProvider : IDeviceConfigurationProvider
     {
-        private readonly IDeviceConfigurationOverride _deviceConfigurationOverride;
         private readonly PathFactory _pathFactory;
 
-        public DeviceConfigurationProvider(PathFactory pathFactory,
-            IDeviceConfigurationOverride deviceConfigurationOverride)
+        public DeviceConfigurationProvider(PathFactory pathFactory)
         {
-            _deviceConfigurationOverride = deviceConfigurationOverride;
             _pathFactory = pathFactory ?? throw new ArgumentNullException(nameof(pathFactory));
         }
 
@@ -28,35 +25,6 @@
             //Deserialize it
             var configuration = JsonConvert.DeserializeObject<DeviceConfiguration>(json);
 
-            if (!string.IsNullOrWhiteSpace(_deviceConfigurationOverride.DeviceApiUrl))
-            {
-                configuration.DeviceApiUrl = _deviceConfigurationOverride.DeviceApiUrl;
-                Console.WriteLine("Overring DeviceApiUrl.");
-            }
-
-            if (_deviceConfigurationOverride.DeviceId != null)
-            {
-                configuration.DeviceId = _deviceConfigurationOverride.DeviceId.Value;
-                Console.WriteLine("Overring DeviceId.");
-            }
-
-            if (_deviceConfigurationOverride.DeviceKey != null)
-            {
-                configuration.DeviceKey = _deviceConfigurationOverride.DeviceKey.Value;
-                Console.WriteLine("Overring DeviceKey.");
-            }
-
-            if (!string.IsNullOrWhiteSpace(_deviceConfigurationOverride.DockerEndpoint))
-            {
-                configuration.DockerEndpoint = _deviceConfigurationOverride.DockerEndpoint;
-                Console.WriteLine("Overring DockerEndpoint.");
-            }
-
-            if (_deviceConfigurationOverride.PollSeconds != null)
-            {
-                configuration.PollSeconds = _deviceConfigurationOverride.PollSeconds.Value;
-                Console.WriteLine("Overring PollSeconds.");
-            }
 
             return configuration;
         }

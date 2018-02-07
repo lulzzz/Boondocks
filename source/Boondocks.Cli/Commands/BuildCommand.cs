@@ -19,7 +19,7 @@
     [Verb("build", HelpText = "Builds an application.")]
     public class BuildCommand : CommandBase
     {
-        [Option('h', "dockerHost", HelpText = "The docker endpoint to use for building.")]
+        [Option('h', "dockerHost", Default= "http://localhost:2375", HelpText = "The docker endpoint to use for building.")]
         public string DockerEndpoint { get; set; }
 
         [Option('s', "source", Required = true, HelpText = "The source directory to build from.")]

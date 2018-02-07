@@ -24,7 +24,7 @@
         /// <summary>
         ///     The boot directory
         /// </summary>
-        public string Boot => Path.Combine(Root, "boot");
+        public string Boot => Path.Combine(Root, "mnt", "boot");
 
         /// <summary>
         ///     The path of the device configuration file.

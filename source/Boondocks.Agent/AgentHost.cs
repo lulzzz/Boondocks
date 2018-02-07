@@ -78,21 +78,23 @@
             //Dowload it!
             Console.WriteLine($"Downloading application '{versionReference.ImageId}'...");
 
-            var imageCreateParameters = new ImagesCreateParameters
-            {
-                Repo = "a repo!",
-                FromImage = versionReference.ImageId
-            };
+            Console.WriteLine("Well - not really. It's not implemented yet.");
 
-            var authConfig = new AuthConfig();
+            //var imageCreateParameters = new ImagesCreateParameters
+            //{
+            //    Repo = "a repo!",
+            //    FromImage = versionReference.ImageId
+            //};
 
-            //Do the donwload!!!!!
-            await dockerClient.Images.CreateImageAsync(
-                imageCreateParameters,
-                authConfig,
-                new Progress<JSONMessage>(
-                    m => Console.WriteLine($"\tCreatImageProgress: {m.ProgressMessage}")),
-                cancellationToken);
+            //var authConfig = new AuthConfig();
+
+            ////Do the donwload!!!!!
+            //await dockerClient.Images.CreateImageAsync(
+            //    imageCreateParameters,
+            //    authConfig,
+            //    new Progress<JSONMessage>(
+            //        m => Console.WriteLine($"\tCreateImageProgress: {m.ProgressMessage}")),
+            //    cancellationToken);
         }
 
         private async Task EnsureCurrentApplicationRunning(CancellationToken cancellationToken)
