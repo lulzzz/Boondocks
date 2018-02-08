@@ -39,12 +39,12 @@ namespace Boondocks.Services.Device.WebApi.Controllers
         /// <returns></returns>
         [HttpPost]
         [Produces(typeof(ImageDownloadInfo))]
-        public IActionResult Post(Guid id)
+        public IActionResult Post([FromBody] GetImageDownloadInfoRequest request)
         {
             //Ensure that the application version exists and that the device has access to it.
             using (var connection = _connectionFactory.CreateAndOpen())
             {
-                var applicationVersion = connection.Get<ApplicationVersion>(id);
+                var applicationVersion = connection.Get<ApplicationVersion>(request.Id);
 
                 if (applicationVersion == null)
                     return NotFound();
@@ -60,7 +60,7 @@ namespace Boondocks.Services.Device.WebApi.Controllers
                 //Verify that the device has access to this *specific* version.
                 var application = connection.Get<Application>(device.ApplicationId);
 
-                if (application.ApplicationVersionId != id && device.ApplicationVersionId != id)
+                if (application.ApplicationVersionId != request.Id && device.ApplicationVersionId != request.Id)
                     return BadRequest();
 
                 var response = new ImageDownloadInfo()

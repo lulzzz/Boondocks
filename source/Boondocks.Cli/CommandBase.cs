@@ -8,7 +8,7 @@
     {
         //TODO: Change the default for this to the public endpoint.
         [Option('e', "endpoint-url", HelpText = "Specify the management API endpoint.",
-            Default = "http://localhost/Boondocks.Services/Management.WebApi/")]
+            Default = "http://localhost/Boondocks.Services.Management.WebApi/")]
         public string EndpointUrl { get; set; }
 
         protected abstract Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken);

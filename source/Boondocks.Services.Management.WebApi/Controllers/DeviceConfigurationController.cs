@@ -45,7 +45,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                 {
                     DeviceKey = device.DeviceKey,
                     DeviceId = device.Id,
-                    DockerEndpoint = "localhost:2375",
+                    DockerEndpoint = "http://localhost:2375/",
                     DeviceApiUrl = _provisioningConfig.DeviceApiUrl,
                     PollSeconds = 60,
                     RegistryHost = _registryConfig.RegistryHost

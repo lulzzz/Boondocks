@@ -75,13 +75,23 @@
         private async Task DownloadApplicationImageAsync(DockerClient dockerClient, VersionReference versionReference,
             CancellationToken cancellationToken)
         {
+            var versionRequest = new GetImageDownloadInfoRequest()
+            {
+                Id = versionReference.Id
+            };
+
+            //Get the download info
+            var downloadInfo =
+                await _deviceApiClient.ApplicationDownloadInfo.GetApplicationVersionDownloadInfo(versionRequest,
+                    cancellationToken);
+
             //Dowload it!
             Console.WriteLine($"Downloading application '{versionReference.ImageId}'...");
 
             var imageCreateParameters = new ImagesCreateParameters
             {
-                Repo = "http",
-                FromImage = versionReference.ImageId
+                Repo = downloadInfo.Repository,
+                FromImage = downloadInfo.ImageId
             };
 
             var authConfig = new AuthConfig();
