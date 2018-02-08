@@ -15,6 +15,8 @@ using Swashbuckle.AspNetCore.Swagger;
 
 namespace Boondocks.Services.Management.WebApi
 {
+    using Services.Contracts;
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -95,10 +97,6 @@ namespace Boondocks.Services.Management.WebApi
             builder.RegisterInstance(new SqlServerDbConnectionFactory(dbConnectionString))
                 .As<IDbConnectionFactory>()
                 .SingleInstance();
-
-            //blob config
-            builder.RegisterInstance(new BlobDataAccessConfiguration("mongodb://localhost", "Boondocks"))
-                .As<IBlobDataAccesConfiguration>();
 
             //blob access
             builder.RegisterType<BlobDataAccessProvider>()

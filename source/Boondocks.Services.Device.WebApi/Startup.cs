@@ -3,6 +3,7 @@
     using System.IO;
     using Authentication;
     using Autofac;
+    using Base;
     using DataAccess;
     using DataAccess.Interfaces;
     using Microsoft.AspNetCore.Builder;
@@ -11,6 +12,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.PlatformAbstractions;
+    using Services.Contracts;
     using Swashbuckle.AspNetCore.Swagger;
 
     public class Startup
@@ -76,15 +78,29 @@
 
         public void ConfigureContainer(ContainerBuilder builder)
         {
+            var configBuilder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+
+            //Deal with the configuration bits
+            var config = configBuilder.Build();
+
+            builder.RegisterInstance(config);
+
+            string dbConnectionString = config["DbConnectionString"];
+
             // Add things to the Autofac ContainerBuilder.
-            builder.RegisterInstance(new SqlServerDbConnectionFactory(
-                    @"Server=localhost\sqlexpress;Database=Boondocks;User Id=boondocks;Password=#Px@S:w_j+V97ngz;"))
+            builder.RegisterInstance(new SqlServerDbConnectionFactory(dbConnectionString))
                 .As<IDbConnectionFactory>()
                 .SingleInstance();
 
-            //blob config
-            builder.RegisterInstance(new BlobDataAccessConfiguration("mongodb://localhost", "Boondocks"))
-                .As<IBlobDataAccesConfiguration>();
+            var registryConfig = new RegistryConfig();
+
+            config.GetSection("registry").Bind(registryConfig);
+
+            builder.RegisterInstance(registryConfig);
+            
+            builder.RegisterType<RepositoryNameFactory>().SingleInstance();
 
             //blob access
             builder.RegisterType<BlobDataAccessProvider>()

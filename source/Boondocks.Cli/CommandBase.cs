@@ -6,8 +6,9 @@
 
     public abstract class CommandBase
     {
-        [Option('e', "endpoint-url", HelpText = "Specify a specific management endpoint.",
-            Default = "http://localhost:54985/")]
+        //TODO: Change the default for this to the public endpoint.
+        [Option('e', "endpoint-url", HelpText = "Specify the management API endpoint.",
+            Default = "http://localhost/Boondocks.Services/Management.WebApi/")]
         public string EndpointUrl { get; set; }
 
         protected abstract Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken);

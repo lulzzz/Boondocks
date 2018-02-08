@@ -34,8 +34,8 @@ RUN apt-get update && apt-get -y install libunwind8 gettext wget
 
 # Install .NET Core
 ENV DOTNET_VERSION 2.0.5
-ENV DOTNET_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Runtime/$DOTNET_VERSION/dotnet-runtime-$DOTNET_VERSION-linux-x64.tar.gz
-ENV DOTNET_DOWNLOAD_SHA 21D54E559C5130BB3F8C38EADACB7833EC90943F71C4E9C8FA2D53192313505311230B96F1AFEB52D74D181D49CE736B83521754E55F15D96A8756921783CD33
+ENV DOTNET_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Runtime/$DOTNET_VERSION/dotnet-runtime-$DOTNET_VERSION-linux-arm.tar.gz
+ENV DOTNET_DOWNLOAD_SHA 73F66386D844CBEEF2AE55AE4DA9C3701E27FA18F1FC335A5E9CAF50D239938088F223B46114776A52182CF457A4C68318E5CF6A17CC4EABC7BFF02353AFEF7E
 
 RUN curl -SL $DOTNET_DOWNLOAD_URL --output dotnet.tar.gz \
     && echo "$DOTNET_DOWNLOAD_SHA dotnet.tar.gz" | sha512sum -c - \
@@ -43,7 +43,7 @@ RUN curl -SL $DOTNET_DOWNLOAD_URL --output dotnet.tar.gz \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
     && rm dotnet.tar.gz \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
-
+	
 #copy the built files over to the device.
 COPY --from=core-build-step /build/Boondocks.Agent/bin/Debug/netcoreapp2.0/linux-arm/publish/ /opt/boondocks/
 

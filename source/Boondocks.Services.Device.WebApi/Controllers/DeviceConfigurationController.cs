@@ -25,6 +25,10 @@
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
+        /// <summary>
+        /// Gets the effective device configuration considering both application and device level settings.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Produces(typeof(GetDeviceConfigurationResponse))]
         public IActionResult Get()

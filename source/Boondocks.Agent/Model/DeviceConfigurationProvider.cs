@@ -2,7 +2,6 @@
 {
     using System;
     using System.IO;
-    using Domain;
     using Interfaces;
     using Newtonsoft.Json;
     using Services.Contracts;
@@ -25,6 +24,10 @@
             //Deserialize it
             var configuration = JsonConvert.DeserializeObject<DeviceConfiguration>(json);
 
+            Console.WriteLine("Overriding the device api uri...");
+
+            //Do a horribly hacky override here because I don't have physical access to my pi right now
+            configuration.DeviceApiUrl = "http://desktop-richq.captiveaire.com/Boondocks.Services.Device.WebApi/";
 
             return configuration;
         }

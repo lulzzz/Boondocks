@@ -8,7 +8,5 @@
         public const string Devices = "v1/devices";
         public const string DeviceConfiguration = "v1/deviceConfiguration";
         public const string DeviceTypes = "v1/deviceTypes";
-        
-        
     }
 }

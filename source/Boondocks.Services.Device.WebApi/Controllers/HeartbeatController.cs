@@ -25,7 +25,8 @@
         }
 
         /// <summary>
-        ///     A heartbeat.
+        /// Proceses the device heartbeat so we know that the device is still alive. We also send back the 
+        /// configuration version of the device so that the device knows if it needs to update itself.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -41,7 +42,6 @@
                                          "  State = @State " +
                                          "where " +
                                          "  DeviceId = @DeviceId";
-
 
                 connection.Execute(updateSql, new
                 {

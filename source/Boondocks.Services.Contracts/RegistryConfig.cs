@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-
-namespace Boondocks.Services.Management.WebApi.Model
+﻿namespace Boondocks.Services.Contracts
 {
+    using Newtonsoft.Json;
+
     public class RegistryConfig
     {
         [JsonProperty("registryHost")]
