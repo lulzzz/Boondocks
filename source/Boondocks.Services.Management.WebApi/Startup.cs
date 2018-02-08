@@ -63,7 +63,7 @@ namespace Boondocks.Services.Management.WebApi
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Boondocks Management API V1");
+                c.SwaggerEndpoint("v1/swagger.json", "Boondocks Management API V1");
             });
 
             app.UseMvc();

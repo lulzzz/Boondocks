@@ -2,7 +2,7 @@
   "profiles": {
     "BoondocksCli": {
       "commandName": "Project",
-      "commandLineArgs": "build -d false -n supervisor1.0.8 -s c:\\testbuild\\"
+      "commandLineArgs": "build -n \"helloworld-1.0.0\" -d -s \"C:\\github\\Boondocks\\BoondocksApplicationExamples\\RaspberryPi3\\HelloWorld\" -a SCADADevelopment"
     }
   }
 }

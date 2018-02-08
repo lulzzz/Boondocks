@@ -85,8 +85,11 @@
                     //Let us deploy
                     if (Deploy)
                     {
+
                         return await DeployAsync(context, dockerClient, result, tag, cancellationToken);
                     }
+
+                    await Task.Delay(TimeSpan.FromSeconds(5));
 
                     return 0;
                 }
