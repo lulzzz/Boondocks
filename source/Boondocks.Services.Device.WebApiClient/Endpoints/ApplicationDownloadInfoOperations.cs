@@ -26,6 +26,7 @@
                 cancellationToken,
                 HttpMethod.Post,
                 ResourceUris.ApplicationDownloadInfo,
+                headers: _tokenFactory.CreateRequestHeaders(),
                 request: request);
 
         }

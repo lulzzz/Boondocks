@@ -159,17 +159,11 @@
                     ServerAddress = applicationUploadInfo.RegistryHost
                 };
 
-                try
-                {
-                    //Push it!
-                    await dockerClient.Images.PushImageAsync(target, parameters, authConfig,
-                        new Progress<JSONMessage>(p => { }));
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Temporarily ignoring error from push: {e.Message}");
-                }
+                //Push it to the application registry!
+                await dockerClient.Images.PushImageAsync(target, parameters, authConfig,
+                    new Progress<JSONMessage>(p => { }), cancellationToken);
 
+                //Let the service now about the new application version.
                 var uploadRequest = new CreateApplicationVersionRequest
                 {
                     ApplicationId = application.Id,

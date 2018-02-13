@@ -37,14 +37,47 @@
             _uptimeProvider = uptimeProvider ?? throw new ArgumentNullException(nameof(uptimeProvider));
             _deviceConfiguration = deviceConfiguration ?? throw new ArgumentNullException(nameof(deviceConfiguration));
 
+            Console.WriteLine($"DockerEndpoint: {_deviceConfiguration.DockerEndpoint}");
+            Console.WriteLine($"DeviceId: {_deviceConfiguration.DeviceId}");
+            Console.WriteLine($"DeviceApiUrl: {_deviceConfiguration.DeviceApiUrl}");
+
             _deviceApiClient = new DeviceApiClient(
                 _deviceConfiguration.DeviceId,
                 _deviceConfiguration.DeviceKey,
                 _deviceConfiguration.DeviceApiUrl);
         }
 
+        private async Task LogImagesAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                using (var dockerClient = CreateDockerClient())
+                {
+                    var images = await dockerClient.Images.ListImagesAsync(new ImagesListParameters()
+                    {
+                        All = true
+                    }, cancellationToken);
+
+                    foreach (var image in images)
+                    {
+                        string tags = string.Join(",", image.RepoTags);
+
+                        Console.WriteLine($"{image.ID} {tags} {image.Created}");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+
+            }
+        }
+
         public async Task RunAsync(CancellationToken cancellationToken)
         {
+            await LogImagesAsync(cancellationToken);
+
+
             //This is how long we'll wait inbetween heartbeats.
             var pollTime = TimeSpan.FromSeconds(_deviceConfiguration.PollSeconds);
 
@@ -56,7 +89,7 @@
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Heartbeat error: {e.Message}");
+                    Console.WriteLine($"Heartbeat error: {e}");
                 }
 
                 //Wait for a bit.
@@ -94,7 +127,10 @@
                 FromImage = downloadInfo.ImageId
             };
 
-            var authConfig = new AuthConfig();
+            var authConfig = new AuthConfig()
+            {
+
+            };
 
             //Do the donwload!!!!!
             await dockerClient.Images.CreateImageAsync(
@@ -184,7 +220,7 @@
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.ToString());
             }
         }
 
@@ -219,7 +255,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error getting the current configuration: {ex.Message}.");
+                Console.WriteLine($"Error getting the current configuration: {ex}.");
             }
 
             try
@@ -260,7 +296,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"A problem occurred getting the next application version: '{ex.Message}'");
+                Console.WriteLine($"A problem occurred getting the next application version: '{ex}'");
             }
         }
 
@@ -348,7 +384,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Problem garbage collecting applications: {ex.Message}");
+                Console.WriteLine($"Problem garbage collecting applications: {ex}");
             }
         }
     }

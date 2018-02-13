@@ -9,6 +9,7 @@ namespace Boondocks.Services.Device.WebApi.Controllers
     using Dapper.Contrib.Extensions;
     using DataAccess;
     using DataAccess.Interfaces;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.Extensions.Logging;
     using Services.Contracts;
 
@@ -39,6 +40,7 @@ namespace Boondocks.Services.Device.WebApi.Controllers
         /// <returns></returns>
         [HttpPost]
         [Produces(typeof(ImageDownloadInfo))]
+        [Authorize]
         public IActionResult Post([FromBody] GetImageDownloadInfoRequest request)
         {
             //Ensure that the application version exists and that the device has access to it.
