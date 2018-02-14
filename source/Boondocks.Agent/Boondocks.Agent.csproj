@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.6.2" />
-    <PackageReference Include="Docker.DotNet" Version="3.125.0" />
+    <PackageReference Include="Docker.DotNet" Version="3.125.1" />
   </ItemGroup>
 
   <ItemGroup>

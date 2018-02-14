@@ -1,6 +1,7 @@
 ﻿namespace Boondocks.Agent
 {
     using Autofac;
+    using Domain;
     using Interfaces;
     using Model;
 
@@ -25,6 +26,7 @@
             builder.RegisterType<PathFactory>().SingleInstance();
             builder.RegisterType<OperationalStateProvider>().SingleInstance();
             builder.RegisterType<PlatformDetector>().As<IPlatformDetector>().SingleInstance();
+            builder.RegisterType<EnvironmentConfigurationProvider>().As<IEnvironmentConfigurationProvider>().SingleInstance();
 
             return builder.Build();
         }

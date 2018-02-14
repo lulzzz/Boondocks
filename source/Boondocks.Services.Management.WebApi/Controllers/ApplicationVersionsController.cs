@@ -66,21 +66,22 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         public IActionResult Post([FromBody] CreateApplicationVersionRequest request)
         {
             if (request == null)
-                return BadRequest("No request was specified.");
+                return BadRequest(new Error("No request was specified."));
 
             if (request.ApplicationId == Guid.Empty)
-                return BadRequest("An empty application id was specified.");
+                return BadRequest(new Error("An empty application id was specified."));
 
             if (string.IsNullOrWhiteSpace(request.Name))
-                return BadRequest("No name was specified.");
+                return BadRequest(new Error("No name was specified."));
 
             if (string.IsNullOrWhiteSpace(request.ImageId))
-                return BadRequest("No ImageId was specified.");
+                return BadRequest(new Error("No ImageId was specified."));
 
             using (var connection = _connectionFactory.CreateAndOpen())
+            using (var transaction = connection.BeginTransaction())
             {
                 //Make sure that the application exists.
-                Application application = connection.Get<Application>(request.ApplicationId);
+                Application application = connection.Get<Application>(request.ApplicationId, transaction);
 
                 //Make sure that we found it
                 if (application == null)
@@ -96,7 +97,20 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                 }.SetNew();
 
                 //Insert into the relational database
-                connection.Insert(applicationVersion);
+                connection.Insert(applicationVersion, transaction);
+
+                //Check to see if we need to make this the current version at the application level.
+                if (request.MakeCurrent)
+                {
+                    //Update the application with the latest
+                    application.ApplicationVersionId = applicationVersion.Id;
+                    connection.Update(application, transaction);
+
+                    //Update the configuration for all of the devices
+                    connection.SetNewDeviceConfigurationVersionForApplication(transaction, application.Id);
+                }
+
+                transaction.Commit();
 
                 return Ok(applicationVersion);
             }

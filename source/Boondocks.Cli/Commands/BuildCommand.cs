@@ -28,11 +28,14 @@
         [Option('d', "deploy", Default = true, HelpText = "True to deploy, false to skip.")]
         public bool Deploy { get; set; }
 
-        [Option('a', "Application", HelpText = "The application to deploy this build to. Required if deploy=true.")]
+        [Option('a', "application", HelpText = "The application to deploy this build to. Required if deploy=true.")]
         public string Application { get; set; }
 
         [Option('n', "name", HelpText = "The name to give this version.")]
         public string Name { get; set; }
+
+        [Option('c', "make-current", HelpText = "Make this the current version of the application.", Default = true)]
+        public bool MakeCurrent { get; set; }
 
         protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
         {
@@ -85,11 +88,10 @@
                     //Let us deploy
                     if (Deploy)
                     {
-
                         return await DeployAsync(context, dockerClient, result, tag, cancellationToken);
                     }
 
-                    await Task.Delay(TimeSpan.FromSeconds(5));
+                    await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
 
                     return 0;
                 }
@@ -104,7 +106,7 @@
 
             if (string.IsNullOrWhiteSpace(imageId))
             {
-                Console.WriteLine("No image id was found. Unable to deploy.");
+                Console.Error.WriteLine("No image id was found. Unable to deploy.");
 
                 return 1;
             }
@@ -112,7 +114,7 @@
             //Make sure we have an application name
             if (string.IsNullOrWhiteSpace(Application))
             {
-                Console.WriteLine("No application was specified.");
+                Console.Error.WriteLine("No application was specified.");
                 return 1;
             }
 
@@ -135,7 +137,6 @@
 
             if (applicationUploadInfo.CanUpload)
             {
-
                 Console.WriteLine($"Deploying with imageid '{imageId}'...");
 
                 var parameters = new ImagePushParameters
@@ -169,7 +170,8 @@
                     ApplicationId = application.Id,
                     Name = tag,
                     ImageId = imageId,
-                    Logs = result.ToString()
+                    Logs = result.ToString(),
+                    MakeCurrent = MakeCurrent
                 };
 
                 //Upload the application version
@@ -177,7 +179,7 @@
             }
             else
             {
-                Console.WriteLine($"Warning: Unable to upload image - '{applicationUploadInfo.Reason}'.");
+                Console.Error.WriteLine($"Warning: Unable to upload image - '{applicationUploadInfo.Reason}'.");
             }
 
             return 0;

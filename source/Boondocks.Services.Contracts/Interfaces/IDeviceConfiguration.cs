@@ -10,10 +10,6 @@
 
         Guid DeviceKey { get; }
 
-        string DockerEndpoint { get; }
-
         int PollSeconds { get; }
-
-        string RegistryHost { get; }
     }
 }

@@ -202,7 +202,7 @@
             Guid applicationId)
         {
             const string sql = "update devices set " +
-                               "  ConfigurationVersion = @ConfigurationVersion" +
+                               "  ConfigurationVersion = @ConfigurationVersion " +
                                "where " +
                                "  ApplicationId = @ApplicationId " +
                                "  and IsDisabled = 0" +

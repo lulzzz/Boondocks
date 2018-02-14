@@ -16,7 +16,6 @@ namespace Boondocks.Services.Management.WebApi.Controllers
     public class DeviceConfigurationController : ControllerBase
     {
         private readonly IDbConnectionFactory _connectionFactory;
-        private readonly RegistryConfig _registryConfig;
         private readonly ProvisioningConfig _provisioningConfig;
 
         public DeviceConfigurationController(
@@ -25,7 +24,6 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             ProvisioningConfig provisioningConfig)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
-            _registryConfig = registryConfig ?? throw new ArgumentNullException(nameof(registryConfig));
             _provisioningConfig = provisioningConfig ?? throw new ArgumentNullException(nameof(provisioningConfig));
         }
 
@@ -45,10 +43,8 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                 {
                     DeviceKey = device.DeviceKey,
                     DeviceId = device.Id,
-                    DockerEndpoint = "http://localhost:2375/",
                     DeviceApiUrl = _provisioningConfig.DeviceApiUrl,
                     PollSeconds = 60,
-                    RegistryHost = _registryConfig.RegistryHost
                 };
 
                 //Craft the response
