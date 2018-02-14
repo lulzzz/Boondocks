@@ -70,7 +70,8 @@ namespace Boondocks.Services.Device.WebApi.Controllers
                     ImageId = applicationVersion.ImageId,
                     Registry = _registryConfig.RegistryHost,
                     AuthToken = null, //TODO: This is where the auth token will go
-                    Repository = _repositoryNameFactory.FromApplication(device.ApplicationId)
+                    Repository = _repositoryNameFactory.FromApplication(device.ApplicationId),
+                    Name = applicationVersion.Name,
                 };
 
                 //TODO: Add a device event for getting this token

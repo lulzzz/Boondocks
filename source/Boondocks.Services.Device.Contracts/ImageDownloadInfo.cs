@@ -30,5 +30,11 @@
         /// </summary>
         [JsonProperty("authToken")]
         public string AuthToken { get; set; }
+
+        /// <summary>
+        /// The name (tag of the image)
+        /// </summary>
+        [JsonProperty("name")]
+        public string Name { get; set; }
     }
 }
