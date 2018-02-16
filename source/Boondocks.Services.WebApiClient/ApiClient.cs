@@ -14,13 +14,8 @@
     public class ApiClient : IDisposable
     {
         private readonly Uri _baseUri;
-
-
         private readonly HttpClient _client;
-
         private static readonly TimeSpan s_InfiniteTimeout = TimeSpan.FromMilliseconds(Timeout.Infinite);
-
-        private const string UserAgent = "Docker.Registry.DotNet";
 
         private readonly IEnumerable<Action<ApiResponse>> _errorHandlers = new Action<ApiResponse>[]
         {
@@ -42,6 +37,8 @@
 
             JsonSerializer = new JsonSerializer();
         }
+
+        protected virtual string UserAgent => "ApiClient";
 
         public async Task<ApiResponse<string>> MakeRequestAsync(
             CancellationToken cancellationToken,
@@ -118,7 +115,7 @@
             // No custom handler was fired. Default the response for generic success/failures.
             if (response.StatusCode < HttpStatusCode.OK || response.StatusCode >= HttpStatusCode.BadRequest)
             {
-                throw new RegistryApiException(response);
+                throw new ApiException(response);
             }
         }
 

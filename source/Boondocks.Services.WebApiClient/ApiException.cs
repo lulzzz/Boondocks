@@ -4,9 +4,9 @@
     using System.Net;
     using System.Net.Http.Headers;
 
-    public class RegistryApiException : Exception
+    public class ApiException : Exception
     {
-        internal RegistryApiException(ApiResponse response)
+        internal ApiException(ApiResponse response)
             : base($"API responded with status code={response.StatusCode}")
         {
             StatusCode = response.StatusCode;
