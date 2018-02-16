@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Boondocks.Services.Management.WebApi.Controllers
 {
+    using DataAccess.Domain;
+
     [Produces("application/json")]
     [Route("v1/applicationEnvironmentVariables")]
     public class ApplicationEnvironmentVariablesController : Controller

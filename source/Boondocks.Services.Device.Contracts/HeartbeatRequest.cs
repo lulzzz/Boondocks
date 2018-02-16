@@ -1,6 +1,7 @@
 ﻿namespace Boondocks.Services.Device.Contracts
 {
     using System;
+    using DataAccess.Domain;
     using Newtonsoft.Json;
     using Services.Contracts;
 

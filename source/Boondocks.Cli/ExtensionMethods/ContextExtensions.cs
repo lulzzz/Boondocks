@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Base;
     using Services.Contracts;
+    using Services.DataAccess.Domain;
     using Services.Management.WebApiClient;
     using ExecutionContext = Cli.ExecutionContext;
 

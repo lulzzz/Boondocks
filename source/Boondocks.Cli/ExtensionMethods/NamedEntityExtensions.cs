@@ -4,6 +4,7 @@
     using Services.Contracts.Interfaces;
     using System;
     using System.Collections.Generic;
+    using Services.DataAccess.Domain.Interfaces;
 
     internal static class NamedEntityExtensions
     {

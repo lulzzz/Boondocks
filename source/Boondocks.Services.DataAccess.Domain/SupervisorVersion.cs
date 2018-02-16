@@ -1,4 +1,4 @@
-﻿namespace Boondocks.Services.Contracts
+﻿namespace Boondocks.Services.DataAccess.Domain
 {
     using System;
     using Newtonsoft.Json;

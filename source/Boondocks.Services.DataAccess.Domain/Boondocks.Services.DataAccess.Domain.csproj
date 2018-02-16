@@ -5,12 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="1.50.4" />
+    <PackageReference Include="Dapper.Contrib" Version="1.50.4" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Boondocks.Services.Contracts\Boondocks.Services.Contracts.csproj" />
-    <ProjectReference Include="..\Boondocks.Services.DataAccess\Boondocks.Services.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

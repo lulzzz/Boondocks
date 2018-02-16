@@ -7,6 +7,7 @@
     using CommandLine;
     using ExtensionMethods;
     using Services.Contracts;
+    using Services.DataAccess.Domain;
     using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("device-set-app-version", HelpText = "Sets the current application version for a given device.")]

@@ -7,6 +7,7 @@
     using CommandLine;
     using ExtensionMethods;
     using Services.Contracts;
+    using Services.DataAccess.Domain;
     using Services.Management.Contracts;
     using ExecutionContext = Cli.ExecutionContext;
 

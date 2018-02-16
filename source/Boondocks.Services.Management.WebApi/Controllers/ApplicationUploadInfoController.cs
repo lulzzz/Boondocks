@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Rewrite.Internal.IISUrlRewrite;
 
 namespace Boondocks.Services.Management.WebApi.Controllers
 {
+    using DataAccess.Domain;
+
     [Produces("application/json")]
     [Route("v1/applicationUploadInfo")]
     public class ApplicationUploadInfoController : ControllerBase

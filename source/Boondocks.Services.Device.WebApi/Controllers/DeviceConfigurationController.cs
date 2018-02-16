@@ -7,6 +7,7 @@
     using Contracts;
     using Dapper.Contrib.Extensions;
     using DataAccess;
+    using DataAccess.Domain;
     using DataAccess.Interfaces;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;

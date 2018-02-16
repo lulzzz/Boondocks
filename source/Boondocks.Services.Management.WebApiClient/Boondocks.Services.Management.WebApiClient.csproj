@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Boondocks.Services.Contracts\Boondocks.Services.Contracts.csproj" />
+    <ProjectReference Include="..\Boondocks.Services.DataAccess.Domain\Boondocks.Services.DataAccess.Domain.csproj" />
     <ProjectReference Include="..\Boondocks.Services.Management.Contracts\Boondocks.Services.Management.Contracts.csproj" />
     <ProjectReference Include="..\Boondocks.Services.WebApiClient\Boondocks.Services.WebApiClient.csproj" />
   </ItemGroup>

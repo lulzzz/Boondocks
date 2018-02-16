@@ -1,4 +1,4 @@
-﻿namespace Boondocks.Services.Contracts.Interfaces
+﻿namespace Boondocks.Services.DataAccess.Domain.Interfaces
 {
     using System;
 

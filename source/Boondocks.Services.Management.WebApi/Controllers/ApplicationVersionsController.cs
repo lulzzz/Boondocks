@@ -13,6 +13,8 @@ using MongoDB.Bson.IO;
 
 namespace Boondocks.Services.Management.WebApi.Controllers
 {
+    using DataAccess.Domain;
+
     [Produces("application/json")]
     [Route("v1/applicationVersions")]
     public class ApplicationVersionsController : Controller

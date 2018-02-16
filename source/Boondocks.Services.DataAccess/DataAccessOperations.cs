@@ -6,6 +6,7 @@
     using Contracts;
     using Dapper;
     using Dapper.Contrib.Extensions;
+    using Domain;
 
     public static class DataAccessOperations
     {

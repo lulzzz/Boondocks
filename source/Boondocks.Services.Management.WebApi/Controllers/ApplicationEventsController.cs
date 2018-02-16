@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Boondocks.Services.Management.WebApi.Controllers
 {
+    using DataAccess.Domain;
+
     [Produces("application/json")]
     [Route("v1/applicationEvents")]
     public class ApplicationEventsController : Controller

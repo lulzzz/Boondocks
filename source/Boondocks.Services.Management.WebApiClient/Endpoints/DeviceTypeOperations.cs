@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Contracts;
+    using DataAccess.Domain;
     using Services.Contracts;
     using Services.WebApiClient;
 

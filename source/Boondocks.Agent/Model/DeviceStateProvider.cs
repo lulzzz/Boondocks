@@ -1,6 +1,7 @@
 ﻿namespace Boondocks.Agent.Model
 {
     using Services.Contracts;
+    using Services.DataAccess.Domain;
 
     internal class DeviceStateProvider
     {

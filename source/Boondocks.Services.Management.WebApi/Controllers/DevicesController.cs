@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Boondocks.Services.Management.WebApi.Controllers
 {
+    using DataAccess.Domain;
+
     [Produces("application/json")]
     [Route("v1/devices")]
     public class DevicesController : Controller
