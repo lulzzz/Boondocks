@@ -200,5 +200,16 @@
 
             return allContainers.FirstOrDefault(c => c.ImageID == imageId);
         }
+
+        public static async Task<ContainerListResponse> GetContainerByName(this DockerClient client, string name,
+            CancellationToken cancellationToken)
+        {
+            var allContainers = await client.Containers.ListContainersAsync(new ContainersListParameters
+            {
+                All = true
+            }, cancellationToken);
+
+            return allContainers.FirstOrDefault(c => c.Names.Any(n => n.EndsWith(name)));
+        }
     }
 }

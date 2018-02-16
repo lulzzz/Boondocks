@@ -32,9 +32,6 @@
             }
 
             if (State == null) State = new DeviceOperationalState();
-
-            //Ensure we have a value here.
-            if (State.ApplicationsToRemove == null) State.ApplicationsToRemove = new List<VersionReference>();
         }
 
         public DeviceOperationalState State { get; }

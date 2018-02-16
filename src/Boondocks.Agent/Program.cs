@@ -8,9 +8,15 @@
 
     internal class Program
     {
+        private const int StartupSeconds = 10;
+
         private static int Main(string[] args)
         {
-            Console.WriteLine("Starting supervisor...");
+            Console.WriteLine($"Starting agent in {StartupSeconds} seconds...");
+
+            Thread.Sleep(StartupSeconds * 1000);
+
+            Console.WriteLine("Agent starting...");
 
             try
             {

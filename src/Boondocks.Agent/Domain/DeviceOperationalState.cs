@@ -1,7 +1,6 @@
 ﻿namespace Boondocks.Agent.Domain
 {
     using System;
-    using System.Collections.Generic;
     using Services.Device.Contracts;
 
     /// <summary>
@@ -21,14 +20,14 @@
         public VersionReference NextApplicationVersion { get; set; }
 
         /// <summary>
-        /// This will be used to calculate a delta.
+        /// The current supervisor version.
         /// </summary>
-        public VersionReference PreviousApplicationVersion { get; set; }
+        public VersionReference CurrentSupervisorVersion { get; set; }
 
         /// <summary>
-        /// Old applications that we need to remove.
+        /// The next supervisor version.
         /// </summary>
-        public List<VersionReference> ApplicationsToRemove { get; set; }
+        public VersionReference NextSupervisorVersion { get; set; }
 
         /// <summary>
         /// Keep track of this to see if it has changed.
