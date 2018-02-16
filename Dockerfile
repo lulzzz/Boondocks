@@ -4,7 +4,7 @@
 FROM microsoft/dotnet:sdk AS core-build-step
 
 #copy the code to the image
-COPY ./source/ /build/
+COPY ./src/ /build/
 
 #move to the build directory
 WORKDIR /build/
