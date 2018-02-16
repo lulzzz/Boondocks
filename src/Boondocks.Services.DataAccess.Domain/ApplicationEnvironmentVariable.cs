@@ -5,6 +5,7 @@
 
     public class ApplicationEnvironmentVariable : EnvironmentVariableBase
     {
-        [JsonProperty("applicationId")] public Guid ApplicationId { get; set; }
+        [JsonProperty("applicationId")]
+        public Guid ApplicationId { get; set; }
     }
 }

@@ -5,6 +5,7 @@
 
     public class DeviceEnvironmentVariable : EnvironmentVariableBase
     {
-        [JsonProperty("deviceId")] public Guid DeviceId { get; set; }
+        [JsonProperty("deviceId")]
+        public Guid DeviceId { get; set; }
     }
 }

@@ -5,7 +5,7 @@
     using Interfaces;
     using Newtonsoft.Json;
 
-    public class EntityBase : IEntity
+    public abstract class EntityBase : IEntity
     {
         [JsonProperty("id", Order = -100)]
         [ExplicitKey]

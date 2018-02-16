@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Domain\**" />
+    <EmbeddedResource Remove="Domain\**" />
+    <None Remove="Domain\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.4" />
     <PackageReference Include="Dapper.Contrib" Version="1.50.4" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="2.0.1" />
@@ -16,10 +22,6 @@
     <ProjectReference Include="..\Boondocks.Base\Boondocks.Base.csproj" />
     <ProjectReference Include="..\Boondocks.Services.Contracts\Boondocks.Services.Contracts.csproj" />
     <ProjectReference Include="..\Boondocks.Services.DataAccess.Domain\Boondocks.Services.DataAccess.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Domain\" />
   </ItemGroup>
 
 </Project>

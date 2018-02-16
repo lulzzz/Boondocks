@@ -2,10 +2,9 @@
 {
     using Newtonsoft.Json;
 
-    public class EnvironmentVariableBase : EntityBase
+    public abstract class EnvironmentVariableBase : NamedEntityBase
     {
-        [JsonProperty("name")] public string Name { get; set; }
-
-        [JsonProperty("Value")] public string Value { get; set; }
+        [JsonProperty("Value")]
+        public string Value { get; set; }
     }
 }
