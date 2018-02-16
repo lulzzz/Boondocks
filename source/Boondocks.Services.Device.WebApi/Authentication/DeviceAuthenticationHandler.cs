@@ -8,6 +8,7 @@ namespace Boondocks.Services.Device.WebApi.Authentication
     using System.Text.Encodings.Web;
     using System.Threading.Tasks;
     using Base;
+    using Contracts;
     using DataAccess;
     using DataAccess.Interfaces;
     using Microsoft.AspNetCore.Authentication;
