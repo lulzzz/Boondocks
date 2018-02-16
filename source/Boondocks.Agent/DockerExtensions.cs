@@ -124,18 +124,23 @@
             CancellationToken cancellationToken = new CancellationToken())
         {
             //List the running containers
-            var containers =
-                await client.Containers.ListContainersAsync(new ContainersListParameters(), cancellationToken);
+            var containers = await client.Containers.ListContainersAsync(new ContainersListParameters(), cancellationToken);
 
-            //Look at each 
-            foreach (var container in containers)
-                if (container.ImageID == imageId)
+            //Find the containers to stop (there should only be one if all has gone to plan)
+            var containersToStop = containers
+                .Where(c => string.Equals(c.ImageID, imageId))
+                .ToArray();
+
+            if (containersToStop.Any())
+            {
+                var stopParameters = new ContainerStopParameters
                 {
-                    var stopParameters = new ContainerStopParameters
-                    {
-                        WaitBeforeKillSeconds = 30
-                    };
+                    WaitBeforeKillSeconds = 30
+                };
 
+                //Look at each 
+                foreach (var container in containersToStop)
+                {
                     Console.WriteLine($"Stopping container '{container.ID}'...");
 
                     //Stop this application
@@ -143,6 +148,7 @@
 
                     Console.WriteLine($"Container '{container.ID}' stopped.");
                 }
+            }
         }
 
         public static async Task<ImagesListResponse> GetImageAsync(

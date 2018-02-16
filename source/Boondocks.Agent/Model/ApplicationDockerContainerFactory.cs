@@ -17,8 +17,6 @@
             //Inspect the image to get its configuration
             var inspection = await dockerClient.Images.InspectImageAsync(imageId, cancellationToken);
 
-            
-
             var parameters = GetCreationParameters(imageId, inspection.Config);
 
             //Create the container
@@ -28,45 +26,9 @@
 
         private CreateContainerParameters GetCreationParameters(string imageId, Config config)
         {
-            //var config = new Config
-            //{
-            //    Hostname = "boondocksapp",
-            //    Domainname = "",
-            //    User = "",
-            //    AttachStdout = true,
-            //    AttachStderr = true,
-            //    Env = new[]
-            //    {
-            //        "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
-            //        "LC_ALL=C.UTF-8",
-            //        "DEBIAN_FRONTEND=noninteractive",
-            //        "TINI_VERSION=0.14.0",
-            //        "container=docker",
-            //        "BOONDOCKS_VERSION=1.0.0"
-            //    },
-            //    Image = imageId,
-            //    Volumes = new Dictionary<string, EmptyStruct>
-            //    {
-            //        {"/sys/fs/cgroup", new EmptyStruct()},
-            //        {"/data", new EmptyStruct()}
-            //    },
-            //    WorkingDir = "",
-            //    Entrypoint = new[]
-            //    {
-            //        "dotnet",
-            //        "/opt/scada/CaptiveAire.Scada.Module.SystemRunnerHost.dll"
-            //    },
-            //    Labels = new Dictionary<string, string>
-            //    {
-            //        {"io.resin.architecture", "armv7hf"},
-            //        {"io.resin.device-type", "raspberry-pi2"},
-            //        {"io.resin.qemu.version", "2.9.0.resin1-arm"}
-            //    },
-            //    StopSignal = "37"
-            //};
-
             var createContainerParameters = new CreateContainerParameters(config)
             {
+                Name = DockerConstants.ApplicationContainerName,
                 Image = imageId,
                 HostConfig = new HostConfig
                 {
@@ -80,7 +42,7 @@
                     PortBindings = new Dictionary<string, IList<PortBinding>>(),
                     RestartPolicy = new RestartPolicy
                     {
-                        Name = RestartPolicyKind.No
+                        Name = RestartPolicyKind.Always
                     },
                     VolumeDriver = "",
                     DNS = new List<string>(),

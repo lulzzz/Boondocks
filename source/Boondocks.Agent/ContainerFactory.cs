@@ -4,6 +4,7 @@
     using Domain;
     using Interfaces;
     using Model;
+    using Serilog;
 
     internal static class ContainerFactory
     {
@@ -27,6 +28,12 @@
             builder.RegisterType<OperationalStateProvider>().SingleInstance();
             builder.RegisterType<PlatformDetector>().As<IPlatformDetector>().SingleInstance();
             builder.RegisterType<EnvironmentConfigurationProvider>().As<IEnvironmentConfigurationProvider>().SingleInstance();
+
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
+
+            builder.RegisterInstance(Log.Logger);
 
             return builder.Build();
         }

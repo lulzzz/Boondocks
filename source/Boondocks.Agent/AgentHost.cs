@@ -1,12 +1,14 @@
 ﻿namespace Boondocks.Agent
 {
     using System;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Docker.DotNet;
     using Docker.DotNet.Models;
     using Interfaces;
     using Model;
+    using Serilog;
     using Services.Contracts.Interfaces;
     using Services.Device.Contracts;
     using Services.Device.WebApiClient;
@@ -19,6 +21,7 @@
         private readonly DeviceStateProvider _deviceStateProvider;
         private readonly OperationalStateProvider _operationalStateProvider;
         private readonly IEnvironmentConfigurationProvider _environmentConfigurationProvider;
+        private readonly ILogger _logger;
         private readonly IUptimeProvider _uptimeProvider;
 
         public AgentHost(
@@ -27,23 +30,25 @@
             DeviceStateProvider deviceStateProvider,
             ApplicationDockerContainerFactory applicationDockerContainerFactory,
             OperationalStateProvider operationalStateProvider,
-            IEnvironmentConfigurationProvider environmentConfigurationProvider)
+            IEnvironmentConfigurationProvider environmentConfigurationProvider, 
+            ILogger logger)
         {
             _operationalStateProvider = operationalStateProvider ?? throw new ArgumentNullException(nameof(operationalStateProvider));
             _environmentConfigurationProvider = environmentConfigurationProvider ?? throw new ArgumentNullException(nameof(environmentConfigurationProvider));
+            _logger = logger.ForContext(GetType());
             _applicationDockerContainerFactory = applicationDockerContainerFactory ?? throw new ArgumentNullException(nameof(applicationDockerContainerFactory));
             _deviceStateProvider = deviceStateProvider ?? throw new ArgumentNullException(nameof(deviceStateProvider));
             _uptimeProvider = uptimeProvider ?? throw new ArgumentNullException(nameof(uptimeProvider));
             _deviceConfiguration = deviceConfiguration ?? throw new ArgumentNullException(nameof(deviceConfiguration));
 
             //Config
-            Console.WriteLine($"DockerEndpoint: {environmentConfigurationProvider.DockerEndpoint}");
-            Console.WriteLine($"DeviceId: {deviceConfiguration.DeviceId}");
-            Console.WriteLine($"DeviceApiUrl: {deviceConfiguration.DeviceApiUrl}");
+            _logger.Information("DockerEndpoint: {DockerEndpoint}", environmentConfigurationProvider.DockerEndpoint);
+            _logger.Information("DeviceId: {DeviceId}", deviceConfiguration.DeviceId);
+            _logger.Information("DeviceApiUrl: {DeviceApiUrl}", deviceConfiguration.DeviceApiUrl);
 
             //Application version information
-            Console.WriteLine($"CurrentApplicationVersion: {operationalStateProvider.State.CurrentApplicationVersion?.ImageId}");
-            Console.WriteLine($"PreviousApplicationVersion: {operationalStateProvider.State.PreviousApplicationVersion?.ImageId}");
+            _logger.Information("CurrentApplicationVersion: {CurrentApplicationVersion}", operationalStateProvider.State.CurrentApplicationVersion?.ImageId);
+            _logger.Information("PreviousApplicationVersion: {PreviousApplicationVersion}", operationalStateProvider.State.PreviousApplicationVersion?.ImageId);
 
             _deviceApiClient = new DeviceApiClient(
                 deviceConfiguration.DeviceId,
@@ -73,9 +78,9 @@
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.Error.WriteLine(e);
+                _logger.Error(ex, "Error logging images: {Error}", ex.ToString());
             }
         }
 
@@ -92,9 +97,9 @@
                 {
                     await HeartbeatAsync(cancellationToken);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Console.WriteLine($"Heartbeat error: {e}");
+                    _logger.Warning(ex, "Heartbeat error: {Error}", ex.Message);
                 }
 
                 //Wait for a bit.
@@ -118,7 +123,7 @@
                 Id = versionReference.Id
             };
 
-            Console.WriteLine($"Getting application download information for version '{versionReference.ImageId}'...");
+            _logger.Information("Getting application download information for version {ImageId}...", versionReference.ImageId);
 
             //Get the download info
             var downloadInfo =
@@ -127,8 +132,8 @@
 
             string fromImage = $"{downloadInfo.Registry}/{downloadInfo.Repository}:{downloadInfo.Name}";
 
-            //Dowload it!
-            Console.WriteLine($"Downloading with fromImage = '{fromImage}'...");
+            //Dowlnoad it!
+            _logger.Information("Downloading with fromImage = '{FromImage}'...", fromImage);
 
             var imageCreateParameters = new ImagesCreateParameters
             { 
@@ -144,103 +149,106 @@
             await dockerClient.Images.CreateImageAsync(
                 imageCreateParameters,
                 authConfig,
-                new Progress<JSONMessage>(
-                    m => Console.WriteLine($"\tCreateImageProgress: {m.ProgressMessage}")),
+                new Progress<JSONMessage>(m => Console.WriteLine($"\tCreateImageProgress: {m.ProgressMessage}")),
                 cancellationToken);
+
+            _logger.Information("Image {ImageId} downloaded.", versionReference.ImageId);
         }
 
-        //private async Task EnsureCurrentApplicationRunning(CancellationToken cancellationToken)
-        //{
-        //    try
-        //    {
-        //        var dockerClient = CreateDockerClient();
+        private async Task NextApplicationVersionProcessAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                //We need to download the next version.
+                if (_operationalStateProvider.State.NextApplicationVersion != null)
+                {
+                    string imageId = _operationalStateProvider.State.NextApplicationVersion.ImageId;
 
-        //        //Check to see if know what version we're supposed to be running.
-        //        if (_operationalStateProvider.State.CurrentApplicationVersion == null)
-        //        {
-        //            Console.WriteLine("No application to run.");
-        //        }
-        //        else
-        //        {
-        //            //Get the number of running containers
-        //            var numberOfRunningContainers = await dockerClient.GetNumberOfRunningContainersAsync(
-        //                _operationalStateProvider.State.CurrentApplicationVersion.ImageId,
-        //                cancellationToken);
+                    //Create the docker client
+                    using (var dockerClient = CreateDockerClient())
+                    {
+                        //It shouldn't already be downloaded, but check anyway.
+                        if (!await dockerClient.DoesImageExistAsync(imageId, cancellationToken))
+                        {
+                            //Download the application
+                            await DownloadApplicationImageAsync(dockerClient, _operationalStateProvider.State.NextApplicationVersion, cancellationToken);
+                        }
 
-        //            //Check to see if it's running.
-        //            if (numberOfRunningContainers == 0)
-        //            {
-        //                //The current applcation isn't running.
-        //                Console.WriteLine("The current application isn't running.");
+                        //Ditch the current applications
+                        await StopAndDestroyApplicationAsync(dockerClient, cancellationToken);
+                        
+                        _logger.Information("Create the container for {ImageId} ...", imageId);
 
-        //                //Check to see if the application exists
-        //                if (!await dockerClient.DoesImageExistAsync(_operationalStateProvider.State.CurrentApplicationVersion.ImageId, cancellationToken))
-        //                {
-        //                    Console.WriteLine("The image doesn't exist, so download it.");
+                        //Create the container
+                        var createContainerResponse = await _applicationDockerContainerFactory.CreateApplicationContainerAsync(
+                                dockerClient,
+                                imageId,
+                                cancellationToken);
 
-        //                    await DownloadApplicationImageAsync(dockerClient, _operationalStateProvider.State.CurrentApplicationVersion, cancellationToken);
-        //                }
+                        if (createContainerResponse.Warnings != null && createContainerResponse.Warnings.Any())
+                        {
+                            string formattedWarnings = string.Join(",", createContainerResponse.Warnings);
 
-        //                //Try to find the container for this image
-        //                var container = await dockerClient.GetContainerByImageId(
-        //                    _operationalStateProvider.State.CurrentApplicationVersion.ImageId, cancellationToken);
+                            _logger.Warning("Warnings during container creation: {Warnings}", formattedWarnings);
+                        }
 
-        //                //Check to see if we found it
-        //                if (container == null)
-        //                {
-        //                    Console.WriteLine("The container doesn't exist, so create it.");
+                        _logger.Information("Container {ContainerId} created for application {}. Starting...", createContainerResponse.ID, imageId);
+                        
+                        //Attempt to start the container
+                        var started = await dockerClient.Containers.StartContainerAsync(
+                            createContainerResponse.ID,
+                            new ContainerStartParameters(),
+                            cancellationToken);
 
-        //                    //Create the container
-        //                    var createContainerResponse
-        //                        = await _applicationDockerContainerFactory.CreateApplicationContainerAsync(
-        //                            dockerClient,
-        //                            _operationalStateProvider.State.CurrentApplicationVersion.ImageId,
-        //                            cancellationToken);
+                        //Check to see if the application started
+                        if (started)
+                        {
+                            //Update the operational state
+                            _operationalStateProvider.State.CurrentApplicationVersion = _operationalStateProvider.State.NextApplicationVersion;
+                            _operationalStateProvider.State.NextApplicationVersion = null;
+                            _operationalStateProvider.Save();
+                        }
+                        else
+                        {
+                            _logger.Warning("Warning: Application not started.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Warning($"DownloadAndUpdateConfigurationAsync: '{ex}'");
+            }
+        }
 
-        //                    Console.WriteLine($"Container '{createContainerResponse.ID}' created for application.");
+        private async Task StopAndDestroyApplicationAsync(DockerClient dockerClient, CancellationToken cancellationToken)
+        {
+            //Get all of the containers
+            var containers = await dockerClient.Containers.ListContainersAsync(new ContainersListParameters()
+            {
+                All = true
+            }, cancellationToken);
 
-        //                    //Get the container
-        //                    container = await dockerClient.GetContainerByImageId(
-        //                        _operationalStateProvider.State.CurrentApplicationVersion.ImageId, cancellationToken);
-        //                }
+            //Find all of the application containers (should should be one)
+            var containersToDelete = containers
+                .Where(c => c.Names.Any(n => n.EndsWith(DockerConstants.ApplicationContainerName)))
+                .ToArray();
 
-        //                //This shouldn't happen, but we're paranoid.
-        //                if (container == null)
-        //                {
-        //                    Console.WriteLine("Unable to find container for application. That's really odd.");
-        //                }
-        //                else
-        //                {
+            //Create the parameters
+            var parameters = new ContainerRemoveParameters()
+            {
+                Force = true
+            };
 
-        //                    Console.WriteLine("Staring container...");
+            //Delete each one
+            foreach (var container in containersToDelete)
+            {
+                _logger.Information("Removing application container {ContainerId} with image {ImageId}", container.ID, container.ImageID);
 
-        //                    //Attempt to start the container
-        //                    var started = await dockerClient.Containers.StartContainerAsync(
-        //                        container.ID,
-        //                        new ContainerStartParameters(),
-        //                        cancellationToken);
-
-        //                    if (started)
-        //                    {
-        //                        Console.WriteLine($"Application {_operationalStateProvider.State.CurrentApplicationVersion.Id} started.");
-        //                    }
-        //                    else
-        //                    {
-        //                        Console.WriteLine("Warning: Application not started.");
-        //                    }
-        //                }
-        //            }
-        //            else
-        //            {
-        //                Console.WriteLine("The application container is already running.");
-        //            }
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.Error.WriteLine(e.ToString());
-        //    }
-        //}
+                //Delete it
+                await dockerClient.Containers.RemoveContainerAsync(container.ID, parameters, cancellationToken);
+            }
+        }
 
         /// <summary>
         ///     Downloads the configuration for this device and saves it.
@@ -259,19 +267,18 @@
 
                 if (configuration.ApplicationVersion == null)
                 {
-                    Console.Error.WriteLine("No application version id was specified for this device.");
+                    _logger.Information("No application version id was specified for this device.");
                 }
                 else
                 {
                     //Check to see if we're supposed to update the application
-                    if (Equals(_operationalStateProvider.State.CurrentApplicationVersion,
-                        configuration.ApplicationVersion))
+                    if (Equals(_operationalStateProvider.State.CurrentApplicationVersion, configuration.ApplicationVersion))
                     {
-                        Console.WriteLine($"The application version has stayed the same: {configuration.ApplicationVersion.ImageId}");
+                        _logger.Verbose("The application version has stayed the same: {ImageId}", configuration.ApplicationVersion.ImageId);
                     }
                     else
                     {
-                        Console.WriteLine($"The application version is now '{configuration.ApplicationVersion.ImageId}'");
+                        _logger.Information("The application version is now {ImageId}", configuration.ApplicationVersion.ImageId);
                         _operationalStateProvider.State.NextApplicationVersion = configuration.ApplicationVersion;
                     }   
                 }
@@ -280,82 +287,12 @@
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"Error getting the current configuration: {ex}.");
-            }
-
-            try
-            {
-                //We need to download the next version.
-                if (_operationalStateProvider.State.NextApplicationVersion != null)
-                {
-                    //Create the docker client
-                    var dockerClient = CreateDockerClient();
-
-                    //It shouldn't already be downloaded, but check anyway.
-                    if (!await dockerClient.DoesImageExistAsync(
-                        _operationalStateProvider.State.NextApplicationVersion.ImageId, cancellationToken))
-                    {
-                        await DownloadApplicationImageAsync(dockerClient, _operationalStateProvider.State.NextApplicationVersion, cancellationToken);
-                    }
-
-                    //Stop the existing application
-                    if (_operationalStateProvider.State.CurrentApplicationVersion != null)
-                    {
-                        await dockerClient.StopContainersByImageId(_operationalStateProvider.State.CurrentApplicationVersion.ImageId, cancellationToken);
-                    }
-
-                    //Save this in case we need to delete this version.
-                    if (_operationalStateProvider.State.PreviousApplicationVersion != null)
-                    {
-                        _operationalStateProvider.State.ApplicationsToRemove.Add(_operationalStateProvider.State.PreviousApplicationVersion);
-                    }
-
-                    //Update the operational state
-                    _operationalStateProvider.State.CurrentApplicationVersion = _operationalStateProvider.State.NextApplicationVersion;
-                    _operationalStateProvider.State.NextApplicationVersion = null;
-                    _operationalStateProvider.Save();
-
-                    //Download the application
-                    await DownloadApplicationImageAsync(dockerClient, _operationalStateProvider.State.CurrentApplicationVersion, cancellationToken);
-
-                    Console.WriteLine($"Create the container for {_operationalStateProvider.State.CurrentApplicationVersion.ImageId} ...");
-
-                    //Create the container
-                    var createContainerResponse
-                        = await _applicationDockerContainerFactory.CreateApplicationContainerAsync(
-                            dockerClient,
-                            _operationalStateProvider.State.CurrentApplicationVersion.ImageId,
-                            cancellationToken);
-
-                    Console.WriteLine($"Container '{createContainerResponse.ID}' created for application. Starting...");
-
-                    //Attempt to start the container
-                    var started = await dockerClient.Containers.StartContainerAsync(
-                        createContainerResponse.ID,
-                        new ContainerStartParameters(),
-                        cancellationToken);
-
-                    if (started)
-                    {
-                        Console.WriteLine($"Application {_operationalStateProvider.State.CurrentApplicationVersion.ImageId} started.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Warning: Application not started.");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"DownloadAndUpdateConfigurationAsync: '{ex}'");
+                _logger.Warning(ex, "Error getting the current configuration: {ex}", ex.ToString());
             }
         }
 
         private async Task HeartbeatAsync(CancellationToken cancellationToken)
         {
-            ////Make sure that the current application is running.
-            //await EnsureCurrentApplicationRunning(cancellationToken);
-
             //Create the request.
             var request = new HeartbeatRequest
             {
@@ -369,14 +306,16 @@
             //Check to see if we need to update the configuration
             if (_operationalStateProvider.State.ConfigurationVersion == response.ConfigurationVersion)
             {
-                Console.WriteLine("Heartbeat complete. No new configuration.");
+                _logger.Verbose("Heartbeat complete. No new configuration.");
             }
             else
             {
-
-                Console.WriteLine("Downloading new configuration...");
+                _logger.Information("Downloading new configuration...");
                 await DownloadAndUpdateConfigurationAsync(cancellationToken);
             }
+
+            //Do this in case we have a "next" application to download / install
+            await NextApplicationVersionProcessAsync(cancellationToken);
         }
     }
 }
