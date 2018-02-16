@@ -14,6 +14,8 @@
         {
             Console.WriteLine($"Starting agent in {StartupSeconds} seconds...");
 
+            //wait a bit to give the previous supervisor container instance time to exit.
+            //this is to prevent a dirty read of the version configuration information.
             Thread.Sleep(StartupSeconds * 1000);
 
             Console.WriteLine("Agent starting...");

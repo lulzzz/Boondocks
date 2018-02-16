@@ -1,10 +1,14 @@
 ﻿namespace Boondocks.Agent
 {
+    using System;
     using Autofac;
+    using Docker.DotNet;
     using Domain;
     using Interfaces;
     using Model;
     using Serilog;
+    using Services.Contracts.Interfaces;
+    using Services.Device.WebApiClient;
 
     internal static class ContainerFactory
     {
@@ -29,6 +33,33 @@
             builder.RegisterType<OperationalStateProvider>().SingleInstance();
             builder.RegisterType<PlatformDetector>().As<IPlatformDetector>().SingleInstance();
             builder.RegisterType<EnvironmentConfigurationProvider>().As<IEnvironmentConfigurationProvider>().SingleInstance();
+
+            builder.RegisterType<ApplicationUpdateService>().SingleInstance();
+            builder.RegisterType<AgentUpdateService>().SingleInstance();
+
+            //Device api
+            builder.Register(context =>
+            {
+                IDeviceConfiguration deviceConfiguration = context.Resolve<IDeviceConfiguration>();
+
+                return new DeviceApiClient(
+                    deviceConfiguration.DeviceId,
+                    deviceConfiguration.DeviceKey,
+                    deviceConfiguration.DeviceApiUrl);
+
+            }).SingleInstance();
+
+            //IDockerClient
+            builder.Register(context =>
+            {
+                EnvironmentConfigurationProvider environmentConfigurationProvider =
+                    context.Resolve<EnvironmentConfigurationProvider>();
+
+                var dockerClientConfiguration = new DockerClientConfiguration(new Uri(environmentConfigurationProvider.DockerEndpoint));
+
+                return dockerClientConfiguration.CreateClient();
+               
+            }).As<IDockerClient>().SingleInstance();
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()

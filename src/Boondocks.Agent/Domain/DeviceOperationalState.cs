@@ -20,14 +20,14 @@
         public VersionReference NextApplicationVersion { get; set; }
 
         /// <summary>
-        /// The current supervisor version.
+        /// The current agent version.
         /// </summary>
-        public VersionReference CurrentSupervisorVersion { get; set; }
+        public VersionReference CurrentAgentVersion { get; set; }
 
         /// <summary>
-        /// The next supervisor version.
+        /// The next agent version.
         /// </summary>
-        public VersionReference NextSupervisorVersion { get; set; }
+        public VersionReference NextAgentVersion { get; set; }
 
         /// <summary>
         /// Keep track of this to see if it has changed.

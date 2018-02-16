@@ -8,7 +8,7 @@
 
     internal abstract class DockerContainerFactory
     {
-        public async Task<CreateContainerResponse> CreateContainerAsync(DockerClient dockerClient, string imageId, CancellationToken cancellationToken)
+        public async Task<CreateContainerResponse> CreateContainerAsync(IDockerClient dockerClient, string imageId, CancellationToken cancellationToken)
         {
             //Inspect the image to get its configuration
             var inspection = await dockerClient.Images.InspectImageAsync(imageId, cancellationToken);

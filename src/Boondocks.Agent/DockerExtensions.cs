@@ -9,7 +9,7 @@
 
     internal static class DockerExtensions
     {
-        public static async Task StartAllContainers(this DockerClient client)
+        public static async Task StartAllContainers(this IDockerClient client)
         {
             var containers = await client.Containers.ListContainersAsync(new ContainersListParameters
             {
@@ -24,7 +24,7 @@
             }
         }
 
-        public static async Task RemoveAllContainersAsync(this DockerClient client)
+        public static async Task RemoveAllContainersAsync(this IDockerClient client)
         {
             var containers = await client.Containers.ListContainersAsync(new ContainersListParameters
             {
@@ -42,7 +42,7 @@
             }
         }
 
-        public static async Task DeleteAllImagesAsync(this DockerClient client)
+        public static async Task DeleteAllImagesAsync(this IDockerClient client)
         {
             var images = await client.Images.ListImagesAsync(new ImagesListParameters
             {
@@ -61,7 +61,7 @@
             }
         }
 
-        public static async Task DeleteImageByImageId(this DockerClient client, string imageId,
+        public static async Task DeleteImageByImageId(this IDockerClient client, string imageId,
             CancellationToken cancellationToken)
         {
             var images = await client.Images.ListImagesAsync(new ImagesListParameters
@@ -88,7 +88,7 @@
         /// <param name="imageId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>The number of containers removed.</returns>
-        public static async Task<int> RemoveContainersByImageIdAsync(this DockerClient client, string imageId,
+        public static async Task<int> RemoveContainersByImageIdAsync(this IDockerClient client, string imageId,
             CancellationToken cancellationToken)
         {
             var containersRemovedCount = 0;
@@ -120,7 +120,7 @@
         /// <param name="imageId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task StopContainersByImageId(this DockerClient client, string imageId,
+        public static async Task StopContainersByImageId(this IDockerClient client, string imageId,
             CancellationToken cancellationToken = new CancellationToken())
         {
             //List the running containers
@@ -152,7 +152,7 @@
         }
 
         public static async Task<ImagesListResponse> GetImageAsync(
-            this DockerClient dockerClient,
+            this IDockerClient dockerClient,
             string imageId,
             CancellationToken cancellationToken)
         {
@@ -164,7 +164,7 @@
             return images.FirstOrDefault(i => i.ID == imageId);
         }
 
-        public static async Task<bool> IsContainerRunningAsync(this DockerClient client, string containerId,
+        public static async Task<bool> IsContainerRunningAsync(this IDockerClient client, string containerId,
             CancellationToken cancellationToken)
         {
             var runningContainers =
@@ -173,7 +173,7 @@
             return runningContainers.Any(c => c.ID == containerId);
         }
 
-        public static async Task<int> GetNumberOfRunningContainersAsync(this DockerClient client, string imageId,
+        public static async Task<int> GetNumberOfRunningContainersAsync(this IDockerClient client, string imageId,
             CancellationToken cancellationToken)
         {
             var runningContainers =
@@ -182,7 +182,7 @@
             return runningContainers.Count(c => c.ImageID == imageId);
         }
 
-        public static async Task<bool> DoesImageExistAsync(this DockerClient client, string imageId,
+        public static async Task<bool> DoesImageExistAsync(this IDockerClient client, string imageId,
             CancellationToken cancellationToken)
         {
             var image = await client.GetImageAsync(imageId, cancellationToken);
@@ -190,7 +190,7 @@
             return image != null;
         }
 
-        public static async Task<ContainerListResponse> GetContainerByImageId(this DockerClient client, string imageId,
+        public static async Task<ContainerListResponse> GetContainerByImageId(this IDockerClient client, string imageId,
             CancellationToken cancellationToken)
         {
             var allContainers = await client.Containers.ListContainersAsync(new ContainersListParameters
@@ -201,7 +201,7 @@
             return allContainers.FirstOrDefault(c => c.ImageID == imageId);
         }
 
-        public static async Task<ContainerListResponse> GetContainerByName(this DockerClient client, string name,
+        public static async Task<ContainerListResponse> GetContainerByName(this IDockerClient client, string name,
             CancellationToken cancellationToken)
         {
             var allContainers = await client.Containers.ListContainersAsync(new ContainersListParameters
