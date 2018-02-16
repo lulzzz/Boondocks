@@ -1,6 +1,7 @@
 ﻿namespace Boondocks.Cli.ExtensionMethods
 {
     using System;
+    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
     using Base;
@@ -22,6 +23,23 @@
             if (entity == null)
             {
                 Console.WriteLine($"Unable to find application '{search}'.");
+            }
+
+            return entity;
+        }
+
+        public static async Task<DeviceArchitecture> FindDeviceArchitecture(this ExecutionContext context,
+            string search, CancellationToken cancellationToken)
+        {
+            //Get the applications
+            var entities = await context.Client.DeviceArchitectures.GetDeviceArchitectures(cancellationToken);
+
+            //Find the application
+            var entity = entities.FindEntity(search);
+
+            if (entity == null)
+            {
+                Console.WriteLine($"Unable to find device architecture '{search}'.");
             }
 
             return entity;

@@ -15,6 +15,7 @@ using Swashbuckle.AspNetCore.Swagger;
 
 namespace Boondocks.Services.Management.WebApi
 {
+    using Base;
     using Services.Contracts;
 
     public class Startup
@@ -101,6 +102,9 @@ namespace Boondocks.Services.Management.WebApi
             //blob access
             builder.RegisterType<BlobDataAccessProvider>()
                 .As<IBlobDataAccessProvider>()
+                .SingleInstance();
+
+            builder.RegisterType<RepositoryNameFactory>()
                 .SingleInstance();
         }
     }

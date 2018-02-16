@@ -2,7 +2,7 @@
 {
     using Newtonsoft.Json;
 
-    public class GetApplicationUploadInfoResponse
+    public class GetUploadInfoResponse
     {
         /// <summary>
         ///     If true, the version can be uploaded.

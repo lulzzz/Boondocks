@@ -16,6 +16,9 @@
             Devices = new DeviceOperations(client);
             DeviceConfiguration = new DeviceConfigurationOperations(client);
             DeviceTypes = new DeviceTypeOperations(client);
+            DeviceArchitectures = new DeviceArchitectureOperations(client);
+            SupervisorVersions = new SupervisorVersionOperations(client);
+            SupervisorUploadInfo = new SupervisorUploadInfoOperations(client);
         }
 
         public ApplicationOperations Applications { get; }
@@ -29,6 +32,12 @@
         public DeviceConfigurationOperations DeviceConfiguration { get; }
 
         public DeviceTypeOperations DeviceTypes { get; }
+
+        public DeviceArchitectureOperations DeviceArchitectures { get; }
+
+        public SupervisorVersionOperations SupervisorVersions { get; }
+
+        public SupervisorUploadInfoOperations SupervisorUploadInfo { get; }
     }
 
     public class GetApplicationVersionsRequest

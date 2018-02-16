@@ -2,7 +2,7 @@
   "profiles": {
     "BoondocksCli": {
       "commandName": "Project",
-      "commandLineArgs": "build --source \"C:\\github\\Boondocks\\BoondocksApplicationExamples\\RaspberryPi3\\HelloWorld\" --deploy --name \"1.1.4\" --application \"SCADADevelopment\""
+      "commandLineArgs": "build-supervisor -s \"C:\\testbuild\" -n \"1.2.0\" -d -a \"armv7hf\""
     }
   }
 }

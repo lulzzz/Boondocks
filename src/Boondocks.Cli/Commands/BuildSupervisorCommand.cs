@@ -4,21 +4,19 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Net.Sockets;
     using System.Threading;
     using System.Threading.Tasks;
     using CommandLine;
     using Docker.DotNet;
     using Docker.DotNet.Models;
     using ExtensionMethods;
-    using Newtonsoft.Json.Linq;
     using Services.Management.Contracts;
     using ExecutionContext = Cli.ExecutionContext;
 
-    [Verb("build", HelpText = "Builds an application.")]
-    public class BuildCommand : CommandBase
+    [Verb("build-supervisor", HelpText = "Builds a supervisor and optionally uploads it.")]
+    public class BuildSupervisorCommand : CommandBase
     {
-        [Option('h', "dockerHost", Default= "http://localhost:2375", HelpText = "The docker endpoint to use for building.")]
+        [Option('h', "dockerHost", Default = "http://localhost:2375", HelpText = "The docker endpoint to use for building.")]
         public string DockerEndpoint { get; set; }
 
         [Option('s', "source", Required = true, HelpText = "The source directory to build from.")]
@@ -27,8 +25,8 @@
         [Option('d', "deploy", Default = true, HelpText = "True to deploy, false to skip.")]
         public bool Deploy { get; set; }
 
-        [Option('a', "application", HelpText = "The application to deploy this build to. Required if deploy=true.")]
-        public string Application { get; set; }
+        [Option('a', "arhitecture", HelpText = "The device architecture. Required if deplopying.")]
+        public string DeviceArchitecture { get; set; }
 
         [Option('n', "name", HelpText = "The name to give this version.")]
         public string Name { get; set; }
@@ -98,7 +96,7 @@
         }
 
         private async Task<int> DeployAsync(ExecutionContext context, DockerClient dockerClient, BuildResult result,
-            string tag, CancellationToken cancellationToken)
+           string tag, CancellationToken cancellationToken)
         {
             //Get the last id
             var imageId = result.Ids.LastOrDefault();
@@ -111,28 +109,28 @@
             }
 
             //Make sure we have an application name
-            if (string.IsNullOrWhiteSpace(Application))
+            if (string.IsNullOrWhiteSpace(DeviceArchitecture))
             {
                 Console.Error.WriteLine("No application was specified.");
                 return 1;
             }
 
-            var application = await context.FindApplicationAsync(Application, cancellationToken);
+            var deviceArchitecture = await context.FindDeviceArchitecture(DeviceArchitecture, cancellationToken);
 
-            if (application == null)
+            if (deviceArchitecture == null)
             {
                 return 1;
             }
 
             //Create the request
-            var applicationUploadInfoRequest = new GetApplicationUploadInfoRequest()
+            var uploadInforRequest = new GetSupervisorUploadInfoRequest()
             {
-                ApplicationId = application.Id,
+                DeviceArchitectureId = deviceArchitecture.Id,
                 ImageId = imageId,
                 Name = tag
             };
 
-            var applicationUploadInfo = await context.Client.ApplicationUpload.GetApplicationUploadInfo(applicationUploadInfoRequest, cancellationToken);
+            var applicationUploadInfo = await context.Client.SupervisorUploadInfo.GetSupervisorUploadInfo(uploadInforRequest, cancellationToken);
 
             if (applicationUploadInfo.CanUpload)
             {
@@ -164,9 +162,9 @@
                     new Progress<JSONMessage>(p => { }), cancellationToken);
 
                 //Let the service now about the new application version.
-                var uploadRequest = new CreateApplicationVersionRequest
+                var uploadRequest = new CreateSupervisorVersionRequest()
                 {
-                    ApplicationId = application.Id,
+                    DeviceArchitectureId = deviceArchitecture.Id,
                     Name = tag,
                     ImageId = imageId,
                     Logs = result.ToString(),
@@ -174,7 +172,7 @@
                 };
 
                 //Upload the application version
-                await context.Client.ApplicationVersions.UploadApplicationVersionAsync(uploadRequest, cancellationToken);               
+                await context.Client.SupervisorVersions.CreateSupervisorVersion(uploadRequest, cancellationToken);
             }
             else
             {
@@ -183,11 +181,5 @@
 
             return 0;
         }
-
-        
-
-        
-
-        
     }
 }

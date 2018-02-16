@@ -1,17 +1,16 @@
-﻿using System;
-using System.Data;
-using System.Linq;
-using Boondocks.Services.Contracts;
-using Boondocks.Services.DataAccess;
-using Boondocks.Services.DataAccess.Interfaces;
-using Boondocks.Services.Management.Contracts;
-using Boondocks.Services.Management.WebApi.Model;
-using Dapper;
-using Dapper.Contrib.Extensions;
-using Microsoft.AspNetCore.Mvc;
-
+﻿
 namespace Boondocks.Services.Management.WebApi.Controllers
 {
+    using System;
+    using System.Linq;
+    using DataAccess;
+    using DataAccess.Interfaces;
+    using Contracts;
+    using Model;
+    using Dapper;
+    using Dapper.Contrib.Extensions;
+    using Microsoft.AspNetCore.Mvc;
+
     using DataAccess.Domain;
 
     [Produces("application/json")]
@@ -69,9 +68,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     Name = request.Name
                 }.SetNew();
 
-                connection.Execute(
-                    @"insert Applications(Id, Name, DeviceTypeId, CreatedUtc) values (@Id, @Name, @DeviceTypeId, @CreatedUtc)",
-                    application, transaction);
+                connection.Insert(application, transaction);
 
                 connection.InsertApplicationEvent(
                     transaction, 

@@ -16,9 +16,9 @@ namespace Boondocks.Services.Management.WebApiClient.Endpoints
             _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
-        public Task<GetApplicationUploadInfoResponse> GetApplicationUploadInfo(GetApplicationUploadInfoRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public Task<GetUploadInfoResponse> GetApplicationUploadInfo(GetApplicationUploadInfoRequest request, CancellationToken cancellationToken = new CancellationToken())
         {
-            return _client.MakeJsonRequestAsync<GetApplicationUploadInfoResponse>(cancellationToken, HttpMethod.Post,
+            return _client.MakeJsonRequestAsync<GetUploadInfoResponse>(cancellationToken, HttpMethod.Post,
                 ResourceUrls.ApplicationUploadInfo, request: request);
         }
     }

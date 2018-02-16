@@ -3,10 +3,10 @@
     using System;
     using Newtonsoft.Json;
 
-    public class GetApplicationUploadInfoRequest
+    public class GetSupervisorUploadInfoRequest
     {
-        [JsonProperty("applicationId")]
-        public Guid ApplicationId { get; set; }
+        [JsonProperty("deviceArchitectureId")]
+        public Guid DeviceArchitectureId { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }

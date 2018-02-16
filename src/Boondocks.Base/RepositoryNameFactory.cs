@@ -11,5 +11,7 @@
         {
             return $"{applicationId:D}";
         }
+
+        public string Supervisor => "supervisor";
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Rewrite.Internal.IISUrlRewrite;
 
 namespace Boondocks.Services.Management.WebApi.Controllers
 {
+    using Base;
     using DataAccess.Domain;
 
     [Produces("application/json")]
@@ -19,15 +20,17 @@ namespace Boondocks.Services.Management.WebApi.Controllers
     {
         private readonly IDbConnectionFactory _connectionFactory;
         private readonly RegistryConfig _registryConfig;
+        private readonly RepositoryNameFactory _repositoryNameFactory;
 
-        public ApplicationUploadInfoController(IDbConnectionFactory connectionFactory, RegistryConfig registryConfig)
+        public ApplicationUploadInfoController(IDbConnectionFactory connectionFactory, RegistryConfig registryConfig, RepositoryNameFactory repositoryNameFactory)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
             _registryConfig = registryConfig ?? throw new ArgumentNullException(nameof(registryConfig));
+            _repositoryNameFactory = repositoryNameFactory;
         }
 
         [HttpPost]
-        [Produces(typeof(GetApplicationUploadInfoResponse))]
+        [Produces(typeof(GetUploadInfoResponse))]
         public IActionResult Post([FromBody]GetApplicationUploadInfoRequest request)
         {
             //Make sure we can find the application
@@ -36,17 +39,18 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                 var application = connection.Get<Application>(request.ApplicationId);
 
                 if (application == null)
-                    return NotFound();
+                    return NotFound(new Error($"Unable to find application '{request.ApplicationId}'."));
 
-                if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.ImageId))
-                {
-                    return BadRequest();
-                }
+                if (string.IsNullOrWhiteSpace(request.Name))
+                    return BadRequest(new Error("No name was specified."));
+
+                if (string.IsNullOrWhiteSpace(request.ImageId))
+                    return BadRequest(new Error("No image id was specified."));
 
                 //Check for duplicate image id.
                 if (connection.IsApplicationVersionImageIdInUse(request.ApplicationId, request.ImageId))
                 {
-                    return Ok(new GetApplicationUploadInfoResponse
+                    return Ok(new GetUploadInfoResponse
                     {
                         Reason = $"Image '{request.ImageId}' has already been uploaded for application '{application.Name}'. No need to upload again."
                     });
@@ -55,18 +59,18 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                 //Check for duplicate name.
                 if (connection.IsApplicationVersionNameInUse(request.ApplicationId, request.Name))
                 {
-                    return Ok(new GetApplicationUploadInfoResponse
+                    return Ok(new GetUploadInfoResponse
                     {
                         Reason = $"Name '{request.Name}' is already in use for application '{application.Name}'. Specify a new name."
                     });
                 }
 
                 //Craft the response
-                var response = new GetApplicationUploadInfoResponse
+                var response = new GetUploadInfoResponse
                 {
                     CanUpload = true,
                     RegistryHost = _registryConfig.RegistryHost,
-                    Repository = RepositoryNameFactory.Create(request.ApplicationId)
+                    Repository = _repositoryNameFactory.FromApplication(request.ApplicationId)
                 };
 
                 return Ok(response);
