@@ -8,11 +8,9 @@
 
     internal class Program
     {
-        private const int StartupSeconds = 10;
-
         private static int Main(string[] args)
         {
-            Console.WriteLine("Agent starting...");
+            Console.WriteLine("Boondocks agent starting...");
 
             try
             {

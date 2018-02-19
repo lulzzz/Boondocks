@@ -28,7 +28,7 @@
                         Name = RestartPolicyKind.Always
                     },
                 },
-                Name = DockerConstants.AgentContainerName,
+                Name = DockerConstants.ApplicationContainerName,
             };
 
             Logger.Information("Creating application docker container from image {ImageId}...", imageId);
