@@ -11,10 +11,12 @@
 
     internal abstract class UpdateService
     {
+        private readonly IDockerClient _dockerClient;
         private VersionReference _nextVersion;
 
-        protected UpdateService(ILogger logger)
+        protected UpdateService(ILogger logger, IDockerClient dockerClient)
         {
+            _dockerClient = dockerClient ?? throw new ArgumentNullException(nameof(dockerClient));
             Logger = logger.ForContext(GetType());
         }
 
@@ -85,6 +87,21 @@
             }
         }
 
+        private async Task PruneAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                //Perform the prune
+                var response =  await _dockerClient.Images.PruneImagesAsync(null, cancellationToken);
+
+                Logger.Information("{Count} images pruned for a savings of {Size} bytes.", response.ImagesDeleted.Count, response.SpaceReclaimed);
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning(ex, "An error occurred while attempting to prune the images: {Message}", ex.Message);
+            }
+        }
+
         public async Task<bool> UpdateAsync(CancellationToken cancellationToken)
         {
             try
@@ -94,6 +111,9 @@
                     var result = await UpdateCoreAsync(_nextVersion, cancellationToken);
 
                     _nextVersion = null;
+
+                    //Let's clean up as we work
+                    await PruneAsync(cancellationToken);
 
                     return result;
                 }
