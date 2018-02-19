@@ -39,10 +39,8 @@
         }
 
         public override async Task<bool> UpdateCoreAsync(CancellationToken cancellationToken)
-        {
-            
+        {   
             string imageId = _operationalStateProvider.State.NextApplicationVersion.ImageId;
-
                     
             //It shouldn't already be downloaded, but check anyway.
             if (!await _dockerClient.DoesImageExistAsync(imageId, cancellationToken))

@@ -52,8 +52,7 @@
             //IDockerClient
             builder.Register(context =>
             {
-                EnvironmentConfigurationProvider environmentConfigurationProvider =
-                    context.Resolve<EnvironmentConfigurationProvider>();
+                IEnvironmentConfigurationProvider environmentConfigurationProvider = context.Resolve<IEnvironmentConfigurationProvider>();
 
                 var dockerClientConfiguration = new DockerClientConfiguration(new Uri(environmentConfigurationProvider.DockerEndpoint));
 

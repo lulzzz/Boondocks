@@ -49,7 +49,7 @@
             if (!await _dockerClient.DoesImageExistAsync(imageId, cancellationToken))
             {
                 //Download the application
-                await DownloadSupervisorImageAsync(_dockerClient, _operationalStateProvider.State.NextApplicationVersion, cancellationToken);
+                await DownloadSupervisorImageAsync(_dockerClient, _operationalStateProvider.State.NextAgentVersion, cancellationToken);
             }
 
             var renameParameters = new ContainerRenameParameters()
@@ -57,9 +57,7 @@
                 NewName = DockerConstants.AgentContainerOutgoingName
             };
 
-            //TODO: Set a flag or something indicating that this supervisor is on its way out.
-
-            //TODO: Check for the existance of an outgoing agent container (and destroy it????)
+            //TODO: Check for the existence of an outgoing agent container (and destroy it????)
 
             var existingContainer = await _dockerClient.GetContainerByName(DockerConstants.AgentContainerName, cancellationToken);
 
@@ -81,7 +79,7 @@
                 Logger.Warning("Warnings during container creation: {Warnings}", formattedWarnings);
             }
 
-            Logger.Information("Container {ContainerId} created for application {}. Starting...", createContainerResponse.ID, imageId);
+            Logger.Information("Container {ContainerId} created for agent {ImageId}. Starting...", createContainerResponse.ID, imageId);
 
             //Attempt to start the container
             var started = await _dockerClient.Containers.StartContainerAsync(
@@ -97,6 +95,10 @@
                 _operationalStateProvider.State.NextAgentVersion = null;
                 _operationalStateProvider.Save();
 
+                //Wait just a little bit to give the save time to complete.
+                await Task.Delay(TimeSpan.FromSeconds(2), new CancellationToken());
+
+                //Commit container suicide (this should kill the container that we're in)
                 if (existingContainer != null)
                 {
                     await _dockerClient.Containers.RemoveContainerAsync(existingContainer.ID,
@@ -106,6 +108,7 @@
                         }, cancellationToken);
                 }
 
+                //We probably won't even get here
                 return true;
             }
                     
