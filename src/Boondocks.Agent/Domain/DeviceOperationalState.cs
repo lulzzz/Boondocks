@@ -8,21 +8,21 @@
     /// </summary>
     internal class DeviceOperationalState
     {
-        /// <summary>
-        /// The current application. This is what we should make sure is running before working about the
-        /// NextApplicationVersion.
-        /// </summary>
-        public VersionReference CurrentApplicationVersion { get; set; }
+        // /// <summary>
+        // /// The current application. This is what we should make sure is running before working about the
+        // /// NextApplicationVersion.
+        // /// </summary>
+        // public VersionReference CurrentApplicationVersion { get; set; }
 
         /// <summary>
         /// This is the application that we should be downloading / installing.
         /// </summary>
         public VersionReference NextApplicationVersion { get; set; }
 
-        /// <summary>
-        /// The current agent version.
-        /// </summary>
-        public VersionReference CurrentAgentVersion { get; set; }
+        // /// <summary>
+        // /// The current agent version.
+        // /// </summary>
+        // public VersionReference CurrentAgentVersion { get; set; }
 
         /// <summary>
         /// The next agent version.

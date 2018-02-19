@@ -1,4 +1,4 @@
-﻿namespace Boondocks.Agent
+﻿namespace Boondocks.Agent.Update
 {
     using System;
     using System.Linq;
@@ -7,17 +7,43 @@
     using Docker.DotNet;
     using Docker.DotNet.Models;
     using Serilog;
+    using Services.Device.Contracts;
 
     internal abstract class UpdateService
     {
+        private VersionReference _nextVersion;
+
         protected UpdateService(ILogger logger)
         {
             Logger = logger.ForContext(GetType());
         }
 
-        public abstract bool IsUpdatePending();
-        
+        public abstract Task<string> GetCurrentVersionAsync();
+       
         protected ILogger Logger { get; }
+
+        public abstract VersionReference GetVersionFromConfiguration(GetDeviceConfigurationResponse response);
+
+        /// <summary>
+        /// Compare this version to the current one to see if we need to update.
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
+        public async Task ProcessConfigurationAsync(GetDeviceConfigurationResponse response)
+        {
+            var newVersion = GetVersionFromConfiguration(response);
+
+            if (newVersion != null)
+            {
+                //Get the current version
+                var currentVersion = await GetCurrentVersionAsync();
+
+                if (currentVersion != newVersion.ImageId)
+                {
+                    _nextVersion = newVersion;
+                }
+            }
+        }
 
         protected async Task StopAndDestroyApplicationAsync(IDockerClient dockerClient, string name, CancellationToken cancellationToken)
         {
@@ -52,10 +78,13 @@
         {
             try
             {
-                if (IsUpdatePending())
+                if (_nextVersion != null)
                 {
+                    var result = await UpdateCoreAsync(_nextVersion, cancellationToken);
 
-                    return await UpdateCoreAsync(cancellationToken);
+                    _nextVersion = null;
+
+                    return result;
                 }
             }
             catch (Exception ex)
@@ -66,6 +95,6 @@
             return false;
         }
 
-        public abstract Task<bool> UpdateCoreAsync(CancellationToken cancellationToken);
+        public abstract Task<bool> UpdateCoreAsync(VersionReference imageId, CancellationToken cancellationToken);
     }
 }

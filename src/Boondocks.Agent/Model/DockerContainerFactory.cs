@@ -5,39 +5,18 @@
     using System.Threading.Tasks;
     using Docker.DotNet;
     using Docker.DotNet.Models;
+    using Serilog;
 
     internal abstract class DockerContainerFactory
     {
-        public async Task<CreateContainerResponse> CreateContainerAsync(IDockerClient dockerClient, string imageId, CancellationToken cancellationToken)
+        protected DockerContainerFactory(ILogger logger)
         {
-            //Inspect the image to get its configuration
-            var inspection = await dockerClient.Images.InspectImageAsync(imageId, cancellationToken);
-
-            var parameters = GetCreationParameters(imageId, inspection.Config);
-
-            //Create the container
-            return await dockerClient.Containers.CreateContainerAsync(parameters,
-                cancellationToken);
+            Logger = logger.ForContext(GetType());
         }
 
-        protected abstract string CreateName();
+        protected ILogger Logger { get; }
 
-        protected virtual CreateContainerParameters GetCreationParameters(string imageId, Config config)
-        {
-            var createContainerParameters = new CreateContainerParameters(config)
-            {
-                Name = CreateName(),
-                Image = imageId,
-                HostConfig = new HostConfig
-                {
-                    RestartPolicy = new RestartPolicy
-                    {
-                        Name = RestartPolicyKind.Always
-                    },
-                },
-            };
-
-            return createContainerParameters;
-        }
+        public abstract Task<CreateContainerResponse> CreateContainerAsync(IDockerClient dockerClient, string imageId,
+            CancellationToken cancellationToken);
     }
 }

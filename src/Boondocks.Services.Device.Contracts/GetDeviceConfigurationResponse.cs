@@ -9,7 +9,7 @@
         ///     The version of the supervisor.
         /// </summary>
         [JsonProperty("supervisorVersion")]
-        public VersionReference SupervisorVersion { get; set; }
+        public VersionReference AgentVersion { get; set; }
 
         /// <summary>
         ///     The version of the root file system.

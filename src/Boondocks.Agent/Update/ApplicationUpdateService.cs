@@ -1,4 +1,4 @@
-﻿namespace Boondocks.Agent
+﻿namespace Boondocks.Agent.Update
 {
     using System;
     using System.Linq;
@@ -6,58 +6,58 @@
     using System.Threading.Tasks;
     using Docker.DotNet;
     using Docker.DotNet.Models;
-    using Interfaces;
     using Model;
     using Serilog;
     using Services.Device.Contracts;
     using Services.Device.WebApiClient;
 
-
     internal class ApplicationUpdateService : UpdateService
     {
         private readonly IDockerClient _dockerClient;
-        private readonly OperationalStateProvider _operationalStateProvider;
         private readonly ApplicationDockerContainerFactory _dockerContainerFactory;
         private readonly DeviceApiClient _deviceApiClient;
 
         public ApplicationUpdateService(
             IDockerClient dockerClient,
-            OperationalStateProvider operationalStateProvider,
             ApplicationDockerContainerFactory dockerContainerFactory,
             DeviceApiClient deviceApiClient,
             ILogger logger) : base(logger)
         {
             _dockerClient = dockerClient ?? throw new ArgumentNullException(nameof(dockerClient));
-            _operationalStateProvider = operationalStateProvider ?? throw new ArgumentNullException(nameof(operationalStateProvider));
             _dockerContainerFactory = dockerContainerFactory ?? throw new ArgumentNullException(nameof(dockerContainerFactory));
             _deviceApiClient = deviceApiClient ?? throw new ArgumentNullException(nameof(deviceApiClient));
         }
 
-        public override bool IsUpdatePending()
+        public override async Task<string> GetCurrentVersionAsync()
         {
-            return _operationalStateProvider.State.NextApplicationVersion != null;
+            var container = await _dockerClient.GetContainerByName(DockerConstants.ApplicationContainerName, new CancellationToken());
+
+            return container?.ImageID;
         }
 
-        public override async Task<bool> UpdateCoreAsync(CancellationToken cancellationToken)
+        public override VersionReference GetVersionFromConfiguration(GetDeviceConfigurationResponse response)
+        {
+            return response?.ApplicationVersion;
+        }
+
+        public override async Task<bool> UpdateCoreAsync(VersionReference version, CancellationToken cancellationToken)
         {   
-            string imageId = _operationalStateProvider.State.NextApplicationVersion.ImageId;
-                    
             //It shouldn't already be downloaded, but check anyway.
-            if (!await _dockerClient.DoesImageExistAsync(imageId, cancellationToken))
+            if (!await _dockerClient.DoesImageExistAsync(version.ImageId, cancellationToken))
             {
                 //Download the application
-                await DownloadApplicationImageAsync(_dockerClient, _operationalStateProvider.State.NextApplicationVersion, cancellationToken);
+                await DownloadApplicationImageAsync(_dockerClient, version, cancellationToken);
             }
 
             //Ditch the current applications
             await StopAndDestroyApplicationAsync(_dockerClient, DockerConstants.ApplicationContainerName, cancellationToken);
 
-            Logger.Information("Create the container for {ImageId} ...", imageId);
+            Logger.Information("Create the container for {ImageId} ...", version.ImageId);
 
             //Create the container
             var createContainerResponse = await _dockerContainerFactory.CreateContainerAsync(
                 _dockerClient,
-                    imageId,
+                    version.ImageId,
                     cancellationToken);
 
             if (createContainerResponse.Warnings != null && createContainerResponse.Warnings.Any())
@@ -67,7 +67,7 @@
                 Logger.Warning("Warnings during container creation: {Warnings}", formattedWarnings);
             }
 
-            Logger.Information("Container {ContainerId} created for application {}. Starting...", createContainerResponse.ID, imageId);
+            Logger.Information("Container {ContainerId} created for application {}. Starting...", createContainerResponse.ID, version.ImageId);
 
             //Attempt to start the container
             var started = await _dockerClient.Containers.StartContainerAsync(
@@ -76,18 +76,12 @@
                 cancellationToken);
 
             //Check to see if the application started
-            if (started)
-            {
-                //Update the operational state
-                _operationalStateProvider.State.CurrentApplicationVersion = _operationalStateProvider.State.NextApplicationVersion;
-                _operationalStateProvider.State.NextApplicationVersion = null;
-                _operationalStateProvider.Save();
-            }
-            else
+            if (!started)
             {
                 Logger.Warning("Warning: Application not started.");
             }   
 
+            //We never need to exit the agent for updating an application.
             return false;
         }
 

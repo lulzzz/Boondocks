@@ -1,41 +1,39 @@
 ﻿namespace Boondocks.Services.Device.Contracts
 {
-    using System;
     using DataAccess.Domain;
     using Newtonsoft.Json;
-    using Services.Contracts;
 
     /// <summary>
-    ///     A Ping request.
+    /// A Ping request.
     /// </summary>
     public class HeartbeatRequest
     {
         /// <summary>
-        ///     The number of seconds that the supervisor has been up for.
+        /// The number of seconds that the supervisor has been up for.
         /// </summary>
         [JsonProperty("uptimeSeconds")]
         public double UptimeSeconds { get; set; }
 
         /// <summary>
-        ///     The version of the supervisor.
+        /// The version of the supervisor.
         /// </summary>
-        [JsonProperty("supervisorVversionId")]
-        public Guid SupervisorVersionId { get; set; }
+        [JsonProperty("agentVersion")]
+        public string AgentVersion { get; set; }
 
         /// <summary>
-        ///     The version of the root file system.
+        /// The application version.
         /// </summary>
-        [JsonProperty("rootFileSystemVersionId")]
-        public Guid RootFileSystemVersionId { get; set; }
+        [JsonProperty("applicationVersion")]
+        public string ApplicationVersion { get; set; }
 
         /// <summary>
-        ///     The application version.
+        /// The version of the root file system.
         /// </summary>
-        [JsonProperty("applicationVersionId")]
-        public Guid ApplicationVersionId { get; set; }
+        [JsonProperty("rootFileSystemVersion")]
+        public string RootFileSystemVersion { get; set; }
 
         /// <summary>
-        ///     The current state of the devices.
+        /// The current state of the devices.
         /// </summary>
         [JsonProperty("state")]
         public DeviceState State { get; set; }

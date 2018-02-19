@@ -9,6 +9,7 @@
     using Serilog;
     using Services.Contracts.Interfaces;
     using Services.Device.WebApiClient;
+    using Update;
 
     internal static class ContainerFactory
     {
@@ -30,10 +31,10 @@
             builder.RegisterType<ApplicationDockerContainerFactory>().SingleInstance();
             builder.RegisterType<AgentDockerContainerFactory>().SingleInstance();
             builder.RegisterType<PathFactory>().SingleInstance();
-            builder.RegisterType<OperationalStateProvider>().SingleInstance();
             builder.RegisterType<PlatformDetector>().As<IPlatformDetector>().SingleInstance();
             builder.RegisterType<EnvironmentConfigurationProvider>().As<IEnvironmentConfigurationProvider>().SingleInstance();
 
+            //Update services
             builder.RegisterType<ApplicationUpdateService>().SingleInstance();
             builder.RegisterType<AgentUpdateService>().SingleInstance();
 

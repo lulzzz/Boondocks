@@ -99,7 +99,7 @@
                     if (supervisorVersion == null)
                         return StatusCode(StatusCodes.Status500InternalServerError);
 
-                    response.SupervisorVersion = new VersionReference
+                    response.AgentVersion = new VersionReference
                     {
                         Id = supervisorVersion.Id,
                         ImageId = supervisorVersion.ImageId,

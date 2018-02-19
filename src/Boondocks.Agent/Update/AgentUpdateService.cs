@@ -1,4 +1,4 @@
-﻿namespace Boondocks.Agent
+﻿namespace Boondocks.Agent.Update
 {
     using System;
     using System.Linq;
@@ -14,42 +14,45 @@
     internal class AgentUpdateService : UpdateService
     {
         private readonly IDockerClient _dockerClient;
-        private readonly OperationalStateProvider _operationalStateProvider;
         private readonly AgentDockerContainerFactory _dockerContainerFactory;
         private readonly DeviceApiClient _deviceApiClient;
 
         public AgentUpdateService(
             IDockerClient dockerClient,
-            OperationalStateProvider operationalStateProvider,
             AgentDockerContainerFactory dockerContainerFactory,
             DeviceApiClient deviceApiClient,
             ILogger logger) : base(logger)
         {
             _dockerClient = dockerClient ?? throw new ArgumentNullException(nameof(dockerClient));
-            _operationalStateProvider = operationalStateProvider ?? throw new ArgumentNullException(nameof(operationalStateProvider));
             _dockerContainerFactory = dockerContainerFactory ?? throw new ArgumentNullException(nameof(dockerContainerFactory));
             _deviceApiClient = deviceApiClient ?? throw new ArgumentNullException(nameof(deviceApiClient));
         }
 
-        public override bool IsUpdatePending()
+        public override async Task<string> GetCurrentVersionAsync()
         {
-            return _operationalStateProvider.State.NextAgentVersion != null;
+            var container = await _dockerClient.GetContainerByName(DockerConstants.AgentContainerName, new CancellationToken());
+
+            return container?.ImageID;
+        }
+
+        public override VersionReference GetVersionFromConfiguration(GetDeviceConfigurationResponse response)
+        {
+            return response?.AgentVersion;
         }
 
         /// <summary>
         /// If true, the caller should exit
         /// </summary>
+        /// <param name="version"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public override async Task<bool> UpdateCoreAsync(CancellationToken cancellationToken)
+        public override async Task<bool> UpdateCoreAsync(VersionReference version, CancellationToken cancellationToken)
         {
-            string imageId = _operationalStateProvider.State.NextAgentVersion.ImageId;
-
             //It shouldn't already be downloaded, but check anyway.
-            if (!await _dockerClient.DoesImageExistAsync(imageId, cancellationToken))
+            if (!await _dockerClient.DoesImageExistAsync(version.ImageId, cancellationToken))
             {
                 //Download the application
-                await DownloadSupervisorImageAsync(_dockerClient, _operationalStateProvider.State.NextAgentVersion, cancellationToken);
+                await DownloadSupervisorImageAsync(_dockerClient, version, cancellationToken);
             }
 
             var renameParameters = new ContainerRenameParameters()
@@ -69,7 +72,7 @@
             //Create the container
             var createContainerResponse = await _dockerContainerFactory.CreateContainerAsync(
                 _dockerClient,
-                imageId,
+                version.ImageId,
                 cancellationToken);
 
             if (createContainerResponse.Warnings != null && createContainerResponse.Warnings.Any())
@@ -79,7 +82,7 @@
                 Logger.Warning("Warnings during container creation: {Warnings}", formattedWarnings);
             }
 
-            Logger.Information("Container {ContainerId} created for agent {ImageId}. Starting...", createContainerResponse.ID, imageId);
+            Logger.Information("Container {ContainerId} created for agent {ImageId}. Starting...", createContainerResponse.ID, version.ImageId);
 
             //Attempt to start the container
             var started = await _dockerClient.Containers.StartContainerAsync(
@@ -90,14 +93,6 @@
             //Check to see if the application started
             if (started)
             {
-                //Update the operational state
-                _operationalStateProvider.State.CurrentAgentVersion = _operationalStateProvider.State.NextAgentVersion;
-                _operationalStateProvider.State.NextAgentVersion = null;
-                _operationalStateProvider.Save();
-
-                //Wait just a little bit to give the save time to complete.
-                await Task.Delay(TimeSpan.FromSeconds(2), new CancellationToken());
-
                 //Commit container suicide (this should kill the container that we're in)
                 if (existingContainer != null)
                 {

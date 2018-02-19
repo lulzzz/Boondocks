@@ -11,6 +11,7 @@
     using Services.Contracts.Interfaces;
     using Services.Device.Contracts;
     using Services.Device.WebApiClient;
+    using Update;
 
     internal class AgentHost : IAgentHost
     {
@@ -20,15 +21,17 @@
         private readonly IDockerClient _dockerClient;
         private readonly IDeviceConfiguration _deviceConfiguration;
         private readonly DeviceStateProvider _deviceStateProvider;
-        private readonly OperationalStateProvider _operationalStateProvider;
+        //private readonly OperationalStateProvider _operationalStateProvider;
         private readonly ILogger _logger;
         private readonly IUptimeProvider _uptimeProvider;
+
+        private Guid? _configurationVersion;
 
         public AgentHost(
             IDeviceConfiguration deviceConfiguration,
             IUptimeProvider uptimeProvider,
             DeviceStateProvider deviceStateProvider,
-            OperationalStateProvider operationalStateProvider,
+          //  OperationalStateProvider operationalStateProvider,
             IEnvironmentConfigurationProvider environmentConfigurationProvider, 
             DeviceApiClient deviceApiClient,
             ApplicationUpdateService applicationUpdateService,
@@ -36,7 +39,7 @@
             IDockerClient dockerClient,
             ILogger logger)
         {
-            _operationalStateProvider = operationalStateProvider ?? throw new ArgumentNullException(nameof(operationalStateProvider));
+            //_operationalStateProvider = operationalStateProvider ?? throw new ArgumentNullException(nameof(operationalStateProvider));
             _deviceApiClient = deviceApiClient ?? throw new ArgumentNullException(nameof(deviceApiClient));
             _applicationUpdateService = applicationUpdateService ?? throw new ArgumentNullException(nameof(applicationUpdateService));
             _agentUpdateService = agentUpdateService ?? throw new ArgumentNullException(nameof(agentUpdateService));
@@ -50,19 +53,20 @@
             _logger.Information("DockerEndpoint: {DockerEndpoint}", environmentConfigurationProvider.DockerEndpoint);
             _logger.Information("DeviceId: {DeviceId}", deviceConfiguration.DeviceId);
             _logger.Information("DeviceApiUrl: {DeviceApiUrl}", deviceConfiguration.DeviceApiUrl);
-
-            //Application version information
-            _logger.Information("CurrentApplicationVersion: {CurrentApplicationVersion}", operationalStateProvider.State.CurrentApplicationVersion?.ImageId);
-            _logger.Information("NextApplicationVersion: {NextApplicationVersion}", operationalStateProvider.State.NextApplicationVersion?.ImageId);
-
-            _logger.Information("CurrentAgentVersion: {CurrentAgentVersion}", operationalStateProvider.State.CurrentAgentVersion?.ImageId);
-            _logger.Information("NextAgentVersion: {NextAgentVersion}", operationalStateProvider.State.NextAgentVersion?.ImageId);
         }
 
-        private async Task LogImagesAsync(CancellationToken cancellationToken)
+        private async Task LogStateAsync(CancellationToken cancellationToken)
         {
             try
             {
+                //Version information
+                _logger.Information("CurrentAgentVersion: {CurrentAgentVersion}", await _agentUpdateService.GetCurrentVersionAsync());
+              //  _logger.Information("NextAgentVersion: {NextAgentVersion}", _operationalStateProvider.State.NextAgentVersion?.ImageId);
+
+                _logger.Information("CurrentApplicationVersion: {CurrentApplicationVersion}", await _applicationUpdateService.GetCurrentVersionAsync());
+                //_logger.Information("NextApplicationVersion: {NextApplicationVersion}", _operationalStateProvider.State.NextApplicationVersion?.ImageId);
+
+
                 Console.WriteLine("Existing images:");
                 Console.WriteLine("---------------------------------------------------------");
 
@@ -87,7 +91,7 @@
 
         public async Task RunAsync(CancellationToken cancellationToken)
         {
-            await LogImagesAsync(cancellationToken);
+            await LogStateAsync(cancellationToken);
 
             //This is how long we'll wait inbetween heartbeats.
             var pollTime = TimeSpan.FromSeconds(_deviceConfiguration.PollSeconds);
@@ -120,21 +124,23 @@
             var request = new HeartbeatRequest
             {
                 UptimeSeconds = _uptimeProvider.Ellapsed.TotalSeconds,
-                State = _deviceStateProvider.State
+                State = _deviceStateProvider.State,
+                AgentVersion = await _agentUpdateService.GetCurrentVersionAsync(),
+                ApplicationVersion = await _applicationUpdateService.GetCurrentVersionAsync(),
             };
 
             //Send the request.
             var response = await _deviceApiClient.Heartbeat.HeartbeatAsync(request, cancellationToken);
 
             //Check to see if we need to update the configuration
-            if (_operationalStateProvider.State.ConfigurationVersion == response.ConfigurationVersion)
+            if (_configurationVersion == response.ConfigurationVersion)
             {
                 _logger.Verbose("Heartbeat complete. No new configuration.");
             }
             else
             {
                 _logger.Information("Downloading new configuration...");
-                await DownloadAndUpdateConfigurationAsync(cancellationToken);
+                await DownloadAndProcessConfigurationAsync(cancellationToken);
             }
 
             //Work on getting the next supervisor.
@@ -153,55 +159,18 @@
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private async Task DownloadAndUpdateConfigurationAsync(CancellationToken cancellationToken)
+        private async Task DownloadAndProcessConfigurationAsync(CancellationToken cancellationToken)
         {
             try
             {
                 //Get the configuration from the device api
                 var configuration = await _deviceApiClient.Configuration.GetConfigurationAsync(cancellationToken);
 
-                //Save the configuration version.
-                _operationalStateProvider.State.ConfigurationVersion = configuration.ConfigurationVersion;
+                //Agent
+                await _agentUpdateService.ProcessConfigurationAsync(configuration);
 
-                //Application version
-                if (configuration.ApplicationVersion == null)
-                {
-                    _logger.Information("No application version id was specified for this device.");
-                }
-                else
-                {
-                    //Check to see if we're supposed to update the application
-                    if (Equals(_operationalStateProvider.State.CurrentApplicationVersion, configuration.ApplicationVersion))
-                    {
-                        _logger.Verbose("The application version has stayed the same: {ImageId}", configuration.ApplicationVersion.ImageId);
-                    }
-                    else
-                    {
-                        _logger.Information("The application version is now {ImageId}", configuration.ApplicationVersion.ImageId);
-                        _operationalStateProvider.State.NextApplicationVersion = configuration.ApplicationVersion;
-                    }   
-                }
-
-                //Configuration version
-                if (configuration.SupervisorVersion == null)
-                {
-                    _logger.Warning("No supervisor version was specified for this device.");
-                }
-                else
-                {
-                    if (Equals(_operationalStateProvider.State.CurrentAgentVersion,
-                        configuration.SupervisorVersion))
-                    {
-                        _logger.Verbose("The supervisor version has stayed the same: {ImageId}", configuration.SupervisorVersion?.ImageId);
-                    }
-                    else
-                    {
-                        _logger.Information("The supervisor version is now {ImageId}", configuration.SupervisorVersion.ImageId);
-                        _operationalStateProvider.State.NextAgentVersion = configuration.SupervisorVersion;
-                    }
-                }
-
-                _operationalStateProvider.Save();
+                //Application
+                await _applicationUpdateService.ProcessConfigurationAsync(configuration);
             }
             catch (Exception ex)
             {
