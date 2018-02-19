@@ -3,7 +3,7 @@
     using System;
     using Newtonsoft.Json;
 
-    public class SupervisorVersion : NamedEntityBase
+    public class AgentVersion : NamedEntityBase
     {
         [JsonProperty("deviceArchitectureId")]
         public Guid DeviceArchitectureId { get; set; }

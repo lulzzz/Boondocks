@@ -9,8 +9,8 @@
     using Services.Management.WebApiClient;
     using ExecutionContext = Cli.ExecutionContext;
 
-    [Verb("supervisor-version-list", HelpText = "Lists the supervisor versions for a given architecture.")]
-    public class SupervisorVersionListCommand : CommandBase
+    [Verb("agent-version-list", HelpText = "Lists the agent versions for a given architecture.")]
+    public class AgentVersionListCommand : CommandBase
     {
         [Option('a', "arch", Required = true, HelpText="The device architecture.")]
         public string DeviceArchitecture { get; set; }
@@ -19,7 +19,7 @@
         {
             Guid? deviceArchitectureId = DeviceArchitecture.TryParseGuid(false);
 
-            var request = new GetSupervisorVersionsRequest();
+            var request = new GetAgentVersionsRequest();
 
             if (deviceArchitectureId == null)
             {
@@ -37,7 +37,7 @@
                 request.DeviceArchitectureId = deviceArchitectureId.Value;
             }
 
-            var versions = await context.Client.SupervisorVersions.GetSupervisorVersions(request, cancellationToken);
+            var versions = await context.Client.AgentVersions.GetAgentVersions(request, cancellationToken);
 
             versions.DisplayEntities(v => $"{v.Id}: {v.Name}");
 

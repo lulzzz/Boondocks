@@ -3,7 +3,7 @@
     using System;
     using Newtonsoft.Json;
 
-    public class CreateSupervisorVersionRequest
+    public class CreateAgentVersionRequest
     {
         [JsonProperty("name")]
         public string Name { get; set; }

@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class GetSupervisorVersionsRequest
+    public class GetAgentVersionsRequest
     {
         public Guid? DeviceArchitectureId { get; set; }
     }

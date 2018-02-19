@@ -13,8 +13,8 @@
     using Services.Management.Contracts;
     using ExecutionContext = Cli.ExecutionContext;
 
-    [Verb("build-supervisor", HelpText = "Builds a supervisor and optionally uploads it.")]
-    public class BuildSupervisorCommand : CommandBase
+    [Verb("build-agent", HelpText = "Builds a agent and optionally uploads it.")]
+    public class BuildAgentCommand : CommandBase
     {
         [Option('h', "dockerHost", Default = "http://localhost:2375", HelpText = "The docker endpoint to use for building.")]
         public string DockerEndpoint { get; set; }
@@ -123,14 +123,14 @@
             }
 
             //Create the request
-            var uploadInforRequest = new GetSupervisorUploadInfoRequest()
+            var uploadInforRequest = new GetAgentUploadInfoRequest()
             {
                 DeviceArchitectureId = deviceArchitecture.Id,
                 ImageId = imageId,
                 Name = tag
             };
 
-            var applicationUploadInfo = await context.Client.SupervisorUploadInfo.GetSupervisorUploadInfo(uploadInforRequest, cancellationToken);
+            var applicationUploadInfo = await context.Client.AgentUploadInfo.GetAgentUploadInfo(uploadInforRequest, cancellationToken);
 
             if (applicationUploadInfo.CanUpload)
             {
@@ -162,7 +162,7 @@
                     new Progress<JSONMessage>(p => { }), cancellationToken);
 
                 //Let the service now about the new application version.
-                var uploadRequest = new CreateSupervisorVersionRequest()
+                var uploadRequest = new CreateAgentVersionRequest()
                 {
                     DeviceArchitectureId = deviceArchitecture.Id,
                     Name = tag,
@@ -172,7 +172,7 @@
                 };
 
                 //Upload the application version
-                await context.Client.SupervisorVersions.CreateSupervisorVersion(uploadRequest, cancellationToken);
+                await context.Client.AgentVersions.CreateAgentVersion(uploadRequest, cancellationToken);
             }
             else
             {

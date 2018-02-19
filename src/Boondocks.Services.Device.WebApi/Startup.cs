@@ -101,11 +101,6 @@
             builder.RegisterInstance(registryConfig);
             
             builder.RegisterType<RepositoryNameFactory>().SingleInstance();
-
-            //blob access
-            builder.RegisterType<BlobDataAccessProvider>()
-                .As<IBlobDataAccessProvider>()
-                .SingleInstance();
         }
     }
 }

@@ -19,7 +19,7 @@
                 //Create the container
                 using (var container = ContainerFactory.Create())
                 {
-                    //Get the supervisor host
+                    //Get the agent host
                     var host = container.Resolve<IAgentHost>();
 
                     var cancellationTokenSource = new CancellationTokenSource();
@@ -45,7 +45,7 @@
             }
             finally
             {
-                Console.WriteLine("Supervisor exiting.");
+                Console.WriteLine("Agent exiting.");
             }
 
             return 0;

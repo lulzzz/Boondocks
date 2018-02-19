@@ -15,8 +15,8 @@
         [JsonProperty("applicationVersionId")]
         public Guid? ApplicationVersionId { get; set; }
 
-        [JsonProperty("supervisorVersionId")]
-        public Guid? SupervisorVersionId { get; set; }
+        [JsonProperty("agentVersionId")]
+        public Guid? AgentVersionId { get; set; }
 
         [JsonProperty("rootFileSystemVersionId")]
         public Guid? RootFileSystemVersionId { get; set; }

@@ -1,9 +1,7 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
-
-namespace Boondocks.Services.Device.WebApi.Controllers
+﻿namespace Boondocks.Services.Device.WebApi.Controllers
 {
-    using Boondocks.Base;
+    using System;
+    using Base;
     using Common;
     using Contracts;
     using Dapper.Contrib.Extensions;
@@ -11,21 +9,22 @@ namespace Boondocks.Services.Device.WebApi.Controllers
     using DataAccess.Domain;
     using DataAccess.Interfaces;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Services.Contracts;
 
     [Produces("application/json")]
-    [Route("v1/applicationDownloadInfo")]
-    public class ApplicationDownloadInfoController : DeviceControllerBase
+    [Route("v1/agentDownloadInfo")]
+    public class AgentDownloadInfoController : DeviceControllerBase
     {
         private readonly IDbConnectionFactory _connectionFactory;
-        private readonly ILogger<ApplicationDownloadInfoController> _logger;
+        private readonly ILogger<AgentDownloadInfoController> _logger;
         private readonly RegistryConfig _registryConfig;
         private readonly RepositoryNameFactory _repositoryNameFactory;
 
-        public ApplicationDownloadInfoController(
-            IDbConnectionFactory connectionFactory, 
-            ILogger<ApplicationDownloadInfoController> logger,
+        public AgentDownloadInfoController(
+            IDbConnectionFactory connectionFactory,
+            ILogger<AgentDownloadInfoController> logger,
             RegistryConfig registryConfig,
             RepositoryNameFactory repositoryNameFactory)
         {
@@ -47,38 +46,42 @@ namespace Boondocks.Services.Device.WebApi.Controllers
             //Ensure that the application version exists and that the device has access to it.
             using (var connection = _connectionFactory.CreateAndOpen())
             {
-                var applicationVersion = connection.Get<ApplicationVersion>(request.Id);
+                var agentVersion = connection.Get<AgentVersion>(request.Id);
 
-                if (applicationVersion == null)
-                    return NotFound();
+                if (agentVersion == null)
+                    return NotFound(new Error($"Unable to find agent version {request.Id}"));
 
                 var device = connection.Get<Device>(DeviceId);
 
                 if (device == null)
-                    return NotFound();
+                    return NotFound(new Error("Unable to find device"));
 
-                if (device.ApplicationId != applicationVersion.ApplicationId)
-                    return BadRequest();
-
-                //Verify that the device has access to this *specific* version.
                 var application = connection.Get<Application>(device.ApplicationId);
 
-                if (application.ApplicationVersionId != request.Id && device.ApplicationVersionId != request.Id)
-                    return BadRequest();
+                if (application == null)
+                    return NotFound(new Error($"Unable to find application '{device.ApplicationId}'."));
+
+                var deviceType = connection.Get<DeviceType>(application.DeviceTypeId);
+
+                if (deviceType == null)
+                    return NotFound(new Error($"Unable to find device type '{application.DeviceTypeId}'."));
+
+                if (deviceType.DeviceArchitectureId != agentVersion.DeviceArchitectureId)
+                    return BadRequest(new Error($"Invalid device architecture."));
 
                 var response = new ImageDownloadInfo()
                 {
-                    ImageId = applicationVersion.ImageId,
+                    ImageId = agentVersion.ImageId,
                     Registry = _registryConfig.RegistryHost,
                     AuthToken = null, //TODO: This is where the auth token will go
-                    Repository = _repositoryNameFactory.FromApplication(device.ApplicationId),
-                    Name = applicationVersion.Name,
+                    Repository = _repositoryNameFactory.Agent,
+                    Name = agentVersion.Name,
                 };
 
                 //TODO: Add a device event for getting this token
 
                 return Ok(response);
-            }   
+            }
         }
     }
 }

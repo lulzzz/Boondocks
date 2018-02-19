@@ -9,13 +9,13 @@
     public class HeartbeatRequest
     {
         /// <summary>
-        /// The number of seconds that the supervisor has been up for.
+        /// The number of seconds that the agent has been up for.
         /// </summary>
         [JsonProperty("uptimeSeconds")]
         public double UptimeSeconds { get; set; }
 
         /// <summary>
-        /// The version of the supervisor.
+        /// The version of the agent.
         /// </summary>
         [JsonProperty("agentVersion")]
         public string AgentVersion { get; set; }

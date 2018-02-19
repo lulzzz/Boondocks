@@ -55,7 +55,7 @@
                 var applicationEnvironmentVariables = connection.GetApplicationEnvironmentVariables(application.Id);
 
                 var applicationVersionId = application.ApplicationVersionId;
-                var supervisorVersionId = application.SupervisorVersionId;
+                var agentVersionId = application.AgentVersionId;
 
                 //Start out with the version information at the application level.
                 var response = new GetDeviceConfigurationResponse
@@ -65,8 +65,8 @@
                 };
 
                 //Override with device level version information (if available)
-                if (device.SupervisorVersionId != null)
-                    supervisorVersionId = device.SupervisorVersionId.Value;
+                if (device.AgentVersionId != null)
+                    agentVersionId = device.AgentVersionId.Value;
 
                 if (device.ApplicationVersionId != null)
                     applicationVersionId = device.ApplicationVersionId.Value;
@@ -91,19 +91,19 @@
                     };
                 }
 
-                //Get the detailed supervisor version id
-                if (supervisorVersionId != null)
+                //Get the detailed agent version id
+                if (agentVersionId != null)
                 {
-                    var supervisorVersion = connection.Get<SupervisorVersion>(supervisorVersionId);
+                    var agentVersion = connection.Get<AgentVersion>(agentVersionId);
 
-                    if (supervisorVersion == null)
+                    if (agentVersion == null)
                         return StatusCode(StatusCodes.Status500InternalServerError);
 
                     response.AgentVersion = new VersionReference
                     {
-                        Id = supervisorVersion.Id,
-                        ImageId = supervisorVersion.ImageId,
-                        Name = supervisorVersion.Name
+                        Id = agentVersion.Id,
+                        ImageId = agentVersion.ImageId,
+                        Name = agentVersion.Name
                     };
                 }
 

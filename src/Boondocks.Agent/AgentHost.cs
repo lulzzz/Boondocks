@@ -138,7 +138,7 @@
                 await DownloadAndProcessConfigurationAsync(cancellationToken);
             }
 
-            //Work on getting the next supervisor.
+            //Work on getting the next agent.
             if (await _agentUpdateService.UpdateAsync(cancellationToken))
                 return true;
 

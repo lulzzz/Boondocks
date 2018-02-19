@@ -21,7 +21,7 @@
             IDockerClient dockerClient,
             ApplicationDockerContainerFactory dockerContainerFactory,
             DeviceApiClient deviceApiClient,
-            ILogger logger) : base(logger)
+            ILogger logger) : base(logger, dockerClient)
         {
             _dockerClient = dockerClient ?? throw new ArgumentNullException(nameof(dockerClient));
             _dockerContainerFactory = dockerContainerFactory ?? throw new ArgumentNullException(nameof(dockerContainerFactory));
@@ -57,8 +57,8 @@
             //Create the container
             var createContainerResponse = await _dockerContainerFactory.CreateContainerAsync(
                 _dockerClient,
-                    version.ImageId,
-                    cancellationToken);
+                version.ImageId,
+                cancellationToken);
 
             if (createContainerResponse.Warnings != null && createContainerResponse.Warnings.Any())
             {

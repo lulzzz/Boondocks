@@ -3,7 +3,7 @@
     using System;
     using Newtonsoft.Json;
 
-    public class GetSupervisorUploadInfoRequest
+    public class GetAgentUploadInfoRequest
     {
         [JsonProperty("deviceArchitectureId")]
         public Guid DeviceArchitectureId { get; set; }

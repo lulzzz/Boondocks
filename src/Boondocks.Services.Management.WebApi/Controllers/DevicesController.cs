@@ -108,7 +108,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
 
                 bool configuredChanged = applicationChanged
                     || original.ApplicationVersionId != device.ApplicationVersionId
-                    || original.SupervisorVersionId != device.SupervisorVersionId
+                    || original.AgentVersionId != device.AgentVersionId
                     || original.RootFileSystemVersionId != device.RootFileSystemVersionId;
 
                 if (configuredChanged)
@@ -125,7 +125,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     "  Name = @Name, " + 
                     "  ApplicationId = @ApplicationId, " + 
                     "  ApplicationVersionId = @ApplicationVersionId, " + 
-                    "  SupervisorVersionId = @SupervisorVersionId, " +  
+                    "  AgentVersionId = @AgentVersionId, " +  
                     "  RootFileSystemVersionId = @RootFileSystemVersionId," + 
                     "  ConfigurationVersion = @ConfigurationVersion " +
                     "where " +

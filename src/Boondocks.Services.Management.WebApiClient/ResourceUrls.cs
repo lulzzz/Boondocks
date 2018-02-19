@@ -9,7 +9,7 @@
         public const string Devices = "v1/devices";
         public const string DeviceConfiguration = "v1/deviceConfiguration";
         public const string DeviceTypes = "v1/deviceTypes";
-        public const string SupervisorVersions = "v1/supervisorVersions";
-        public const string SupervisorUploadInfo = "v1/supervisorUploadInfo";
+        public const string AgentVersions = "v1/agentVersions";
+        public const string AgentUploadInfo = "v1/agentUploadInfo";
     }
 }

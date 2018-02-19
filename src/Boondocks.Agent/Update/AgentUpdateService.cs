@@ -21,7 +21,7 @@
             IDockerClient dockerClient,
             AgentDockerContainerFactory dockerContainerFactory,
             DeviceApiClient deviceApiClient,
-            ILogger logger) : base(logger)
+            ILogger logger) : base(logger, dockerClient)
         {
             _dockerClient = dockerClient ?? throw new ArgumentNullException(nameof(dockerClient));
             _dockerContainerFactory = dockerContainerFactory ?? throw new ArgumentNullException(nameof(dockerContainerFactory));
@@ -52,7 +52,7 @@
             if (!await _dockerClient.DoesImageExistAsync(version.ImageId, cancellationToken))
             {
                 //Download the application
-                await DownloadSupervisorImageAsync(_dockerClient, version, cancellationToken);
+                await DownloadAgentImageAsync(_dockerClient, version, cancellationToken);
             }
 
             var renameParameters = new ContainerRenameParameters()
@@ -107,23 +107,23 @@
                 return true;
             }
                     
-            Logger.Warning("Warning: Supervisor not started.");
+            Logger.Warning("Warning: Agent not started.");
 
             return false;
         }
 
-        private async Task DownloadSupervisorImageAsync(IDockerClient dockerClient, VersionReference versionReference, CancellationToken cancellationToken)
+        private async Task DownloadAgentImageAsync(IDockerClient dockerClient, VersionReference versionReference, CancellationToken cancellationToken)
         {
             var versionRequest = new GetImageDownloadInfoRequest()
             {
                 Id = versionReference.Id
             };
 
-            Logger.Information("Getting supervisor download information for version {ImageId}...", versionReference.ImageId);
+            Logger.Information("Getting agent download information for version {ImageId}...", versionReference.ImageId);
 
             //Get the download info
             var downloadInfo =
-                await _deviceApiClient.SupervisorDownloadInfo.GetSupervisorVersionDownloadInfo(versionRequest,
+                await _deviceApiClient.AgentDownloadInfo.GetAgentVersionDownloadInfo(versionRequest,
                     cancellationToken);
 
             string fromImage = $"{downloadInfo.Registry}/{downloadInfo.Repository}:{downloadInfo.Name}";
@@ -148,7 +148,7 @@
                 new Progress<JSONMessage>(m => Console.WriteLine($"\tCreateImageProgress: {m.ProgressMessage}")),
                 cancellationToken);
 
-            Logger.Information("Supervisor image {ImageId} downloaded.", versionReference.ImageId);
+            Logger.Information("Agent image {ImageId} downloaded.", versionReference.ImageId);
         }
     }
 }

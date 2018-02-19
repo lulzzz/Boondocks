@@ -9,36 +9,36 @@
     using DataAccess.Domain;
     using Services.WebApiClient;
 
-    public class SupervisorVersionOperations
+    public class AgentVersionOperations
     {
         private readonly ApiClient _client;
 
-        internal SupervisorVersionOperations(ApiClient client)
+        internal AgentVersionOperations(ApiClient client)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
-        public Task<SupervisorVersion[]> GetSupervisorVersions(GetSupervisorVersionsRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public Task<AgentVersion[]> GetAgentVersions(GetAgentVersionsRequest request, CancellationToken cancellationToken = new CancellationToken())
         {
             dynamic query = new ExpandoObject();
 
             if (request.DeviceArchitectureId != null)
                 query.deviceTypeId = request.DeviceArchitectureId.Value;
 
-            return _client.MakeJsonRequestAsync<SupervisorVersion[]>(
+            return _client.MakeJsonRequestAsync<AgentVersion[]>(
                 cancellationToken, 
                 HttpMethod.Get, 
-                ResourceUrls.SupervisorVersions, 
+                ResourceUrls.AgentVersions, 
                 (object) query);
         }
 
-        public Task<SupervisorVersion> CreateSupervisorVersion(CreateSupervisorVersionRequest request,
+        public Task<AgentVersion> CreateAgentVersion(CreateAgentVersionRequest request,
             CancellationToken cancellationToken = new CancellationToken())
         {
-            return _client.MakeJsonRequestAsync<SupervisorVersion>(
+            return _client.MakeJsonRequestAsync<AgentVersion>(
                 cancellationToken, 
                 HttpMethod.Post,
-                ResourceUrls.SupervisorVersions,
+                ResourceUrls.AgentVersions,
                 request: request);
         }
     }

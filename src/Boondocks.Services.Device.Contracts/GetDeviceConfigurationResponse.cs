@@ -6,9 +6,9 @@
     public class GetDeviceConfigurationResponse
     {
         /// <summary>
-        ///     The version of the supervisor.
+        ///     The version of the agent.
         /// </summary>
-        [JsonProperty("supervisorVersion")]
+        [JsonProperty("agentVersion")]
         public VersionReference AgentVersion { get; set; }
 
         /// <summary>

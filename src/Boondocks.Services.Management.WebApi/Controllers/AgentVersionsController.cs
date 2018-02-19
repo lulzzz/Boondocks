@@ -14,22 +14,22 @@ namespace Boondocks.Services.Management.WebApi.Controllers
     using DataAccess.Interfaces;
 
     [Produces("application/json")]
-    [Route("v1/supervisorVersions")]
-    public class SupervisorVersionsController : Controller
+    [Route("v1/agentVersions")]
+    public class AgentVersionsController : Controller
     {
 
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public SupervisorVersionsController(IDbConnectionFactory connectionFactory)
+        public AgentVersionsController(IDbConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
         [HttpGet]
-        public SupervisorVersion[] Get()
+        public AgentVersion[] Get()
         {
-            var queryBuilder = new SelectQueryBuilder<SupervisorVersion>(
-                "select * from SupervisorVersions",
+            var queryBuilder = new SelectQueryBuilder<AgentVersion>(
+                "select * from AgentVersions",
                 Request.Query,
                 new[]
                 {
@@ -47,12 +47,12 @@ namespace Boondocks.Services.Management.WebApi.Controllers
         }
 
         [HttpPost]
-        public SupervisorVersion Post([FromBody] CreateSupervisorVersionRequest request)
+        public AgentVersion Post([FromBody] CreateAgentVersionRequest request)
         {
             using (var connection = _connectionFactory.CreateAndOpen())
             using (var transaction = connection.BeginTransaction())
             {
-                SupervisorVersion supervisorVersion = new SupervisorVersion()
+                AgentVersion agentVersion = new AgentVersion()
                 {
                     Name = request.Name,
                     ImageId = request.ImageId,
@@ -60,11 +60,11 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     Logs = request.Logs,
                 }.SetNew();
 
-                connection.Insert(supervisorVersion, transaction);
+                connection.Insert(agentVersion, transaction);
 
                 transaction.Commit();
 
-                return supervisorVersion;
+                return agentVersion;
             }
         }
     }

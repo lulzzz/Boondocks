@@ -99,11 +99,6 @@ namespace Boondocks.Services.Management.WebApi
                 .As<IDbConnectionFactory>()
                 .SingleInstance();
 
-            //blob access
-            builder.RegisterType<BlobDataAccessProvider>()
-                .As<IBlobDataAccessProvider>()
-                .SingleInstance();
-
             builder.RegisterType<RepositoryNameFactory>()
                 .SingleInstance();
         }

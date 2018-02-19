@@ -7,24 +7,24 @@
     using Contracts;
     using Services.WebApiClient;
 
-    public class SupervisorDownloadInfoOperations
+    public class AgentDownloadInfoOperations
     {
         private readonly ApiClient _client;
         private readonly TokenFactory _tokenFactory;
 
-        internal SupervisorDownloadInfoOperations(ApiClient client, TokenFactory tokenFactory)
+        internal AgentDownloadInfoOperations(ApiClient client, TokenFactory tokenFactory)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
             _tokenFactory = tokenFactory ?? throw new ArgumentNullException(nameof(tokenFactory));
         }
 
-        public Task<ImageDownloadInfo> GetSupervisorVersionDownloadInfo(GetImageDownloadInfoRequest request,
+        public Task<ImageDownloadInfo> GetAgentVersionDownloadInfo(GetImageDownloadInfoRequest request,
             CancellationToken cancellationToken = new CancellationToken())
         {
             return _client.MakeJsonRequestAsync<ImageDownloadInfo>(
                 cancellationToken,
                 HttpMethod.Post,
-                ResourceUris.SupervisorDownloadInfo,
+                ResourceUris.AgentDownloadInfo,
                 headers: _tokenFactory.CreateRequestHeaders(),
                 request: request);
 

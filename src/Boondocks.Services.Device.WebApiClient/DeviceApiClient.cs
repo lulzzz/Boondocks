@@ -14,7 +14,7 @@
             ApplicationDownloadInfo = new ApplicationDownloadInfoOperations(client, tokenFactory);
             Configuration = new ConfigurationOperations(client, tokenFactory);
             Heartbeat = new HeartbeatOperations(client, tokenFactory);
-            SupervisorDownloadInfo = new SupervisorDownloadInfoOperations(client, tokenFactory);
+            AgentDownloadInfo = new AgentDownloadInfoOperations(client, tokenFactory);
         }
 
         public ApplicationDownloadInfoOperations ApplicationDownloadInfo { get; }
@@ -23,6 +23,6 @@
 
         public HeartbeatOperations Heartbeat { get; }
 
-        public SupervisorDownloadInfoOperations SupervisorDownloadInfo { get; }
+        public AgentDownloadInfoOperations AgentDownloadInfo { get; }
     }
 }

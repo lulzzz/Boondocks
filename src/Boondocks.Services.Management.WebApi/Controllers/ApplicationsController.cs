@@ -98,14 +98,14 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                 //Check to see if any of the versions changed
                 bool deviceConfigurationChanged =
                     original.ApplicationVersionId != application.ApplicationVersionId
-                    || original.SupervisorVersionId != application.SupervisorVersionId
+                    || original.AgentVersionId != application.AgentVersionId
                     || original.RootFileSystemVersionId != application.RootFileSystemVersionId;
 
                 const string sql =
                     @"update Applications set " +
                     "  Name = @Name, " +
                     "  ApplicationVersionId = @ApplicationVersionId, " +
-                    "  SupervisorVersionId = @SupervisorVersionId, " +
+                    "  AgentVersionId = @AgentVersionId, " +
                     "  RootFileSystemVersionId = @RootFileSystemVersionId  " +
                     "where" +
                     "  Id = @Id";

@@ -12,14 +12,14 @@ namespace Boondocks.Services.Management.WebApi.Controllers
     using Services.Contracts;
 
     [Produces("application/json")]
-    [Route("v1/supervisorUploadInfo")]
-    public class SupervisorUploadInfoController : Controller
+    [Route("v1/agentUploadInfo")]
+    public class AgentUploadInfoController : Controller
     {
         private readonly IDbConnectionFactory _connectionFactory;
         private readonly RegistryConfig _registryConfig;
         private readonly RepositoryNameFactory _repositoryNameFactory;
 
-        public SupervisorUploadInfoController(
+        public AgentUploadInfoController(
             IDbConnectionFactory connectionFactory, 
             RegistryConfig registryConfig,
             RepositoryNameFactory repositoryNameFactory)
@@ -31,7 +31,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
 
         [HttpPost]
         [Produces(typeof(GetUploadInfoResponse))]
-        public IActionResult Post([FromBody]GetSupervisorUploadInfoRequest request)
+        public IActionResult Post([FromBody]GetAgentUploadInfoRequest request)
         {
             //Make sure we can find the application
             using (var connection = _connectionFactory.CreateAndOpen())
@@ -48,7 +48,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     return BadRequest(new Error("No image id was specified."));
                 
                 //Check for duplicate name.
-                if (connection.IsSupervisorVersionNameInUse(request.DeviceArchitectureId, request.Name))
+                if (connection.IsAgentVersionNameInUse(request.DeviceArchitectureId, request.Name))
                 {
                     return Ok(new GetUploadInfoResponse
                     {
@@ -61,7 +61,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                 {
                     CanUpload = true,
                     RegistryHost = _registryConfig.RegistryHost,
-                    Repository = _repositoryNameFactory.Supervisor
+                    Repository = _repositoryNameFactory.Agent
                 };
 
                 return Ok(response);

@@ -7,19 +7,19 @@
     using Contracts;
     using Services.WebApiClient;
 
-    public class SupervisorUploadInfoOperations
+    public class AgentUploadInfoOperations
     {
         private readonly ApiClient _client;
 
-        internal SupervisorUploadInfoOperations(ApiClient client)
+        internal AgentUploadInfoOperations(ApiClient client)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
-        public Task<GetUploadInfoResponse> GetSupervisorUploadInfo(GetSupervisorUploadInfoRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public Task<GetUploadInfoResponse> GetAgentUploadInfo(GetAgentUploadInfoRequest request, CancellationToken cancellationToken = new CancellationToken())
         {
             return _client.MakeJsonRequestAsync<GetUploadInfoResponse>(cancellationToken, HttpMethod.Post,
-                ResourceUrls.SupervisorUploadInfo, request: request);
+                ResourceUrls.AgentUploadInfo, request: request);
         }
     }
 }
