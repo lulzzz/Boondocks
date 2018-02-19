@@ -1,5 +1,7 @@
 ﻿namespace Boondocks.Agent.Model
 {
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Docker.DotNet;
@@ -23,12 +25,23 @@
                 Image = imageId,
                 HostConfig = new HostConfig()
                 {
+                    Mounts = new List<Mount>()
+                    {
+                        new Mount()
+                        {
+                            Type = "bind",
+                            Source = "/mnt/boot/appconfig",
+                            Target = "/appconfig",
+                        },
+                    },
+
                     RestartPolicy = new RestartPolicy
                     {
                         Name = RestartPolicyKind.Always
                     },
                 },
                 Name = DockerConstants.ApplicationContainerName,
+               
             };
 
             Logger.Information("Creating application docker container from image {ImageId}...", imageId);

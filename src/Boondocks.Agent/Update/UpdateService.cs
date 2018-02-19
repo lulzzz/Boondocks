@@ -94,7 +94,7 @@
                 //Perform the prune
                 var response =  await _dockerClient.Images.PruneImagesAsync(null, cancellationToken);
 
-                Logger.Information("{Count} images pruned for a savings of {Size} bytes.", response.ImagesDeleted.Count, response.SpaceReclaimed);
+                Logger.Information("{Count} images pruned for a savings of {Size} bytes.", response?.ImagesDeleted?.Count, response?.SpaceReclaimed);
             }
             catch (Exception ex)
             {
