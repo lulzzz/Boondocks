@@ -33,13 +33,24 @@
         {
             var newVersion = GetVersionFromConfiguration(response);
 
-            if (newVersion != null)
+            if (newVersion == null)
+            {
+                Logger.Verbose("No configuration information available.");                
+            }
+            else
             {
                 //Get the current version
                 var currentVersion = await GetCurrentVersionAsync();
 
-                if (currentVersion != newVersion.ImageId)
+                if (currentVersion == newVersion.ImageId)
                 {
+                    Logger.Verbose("The version is the same: {ImageId}", newVersion.ImageId);
+                }
+                else
+                {
+                    Logger.Verbose("A new version was found: {ImageId}", newVersion.ImageId);
+
+                    //Save this so we can install it.
                     _nextVersion = newVersion;
                 }
             }

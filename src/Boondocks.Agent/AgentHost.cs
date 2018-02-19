@@ -21,7 +21,6 @@
         private readonly IDockerClient _dockerClient;
         private readonly IDeviceConfiguration _deviceConfiguration;
         private readonly DeviceStateProvider _deviceStateProvider;
-        //private readonly OperationalStateProvider _operationalStateProvider;
         private readonly ILogger _logger;
         private readonly IUptimeProvider _uptimeProvider;
 
@@ -31,7 +30,6 @@
             IDeviceConfiguration deviceConfiguration,
             IUptimeProvider uptimeProvider,
             DeviceStateProvider deviceStateProvider,
-          //  OperationalStateProvider operationalStateProvider,
             IEnvironmentConfigurationProvider environmentConfigurationProvider, 
             DeviceApiClient deviceApiClient,
             ApplicationUpdateService applicationUpdateService,
@@ -39,7 +37,6 @@
             IDockerClient dockerClient,
             ILogger logger)
         {
-            //_operationalStateProvider = operationalStateProvider ?? throw new ArgumentNullException(nameof(operationalStateProvider));
             _deviceApiClient = deviceApiClient ?? throw new ArgumentNullException(nameof(deviceApiClient));
             _applicationUpdateService = applicationUpdateService ?? throw new ArgumentNullException(nameof(applicationUpdateService));
             _agentUpdateService = agentUpdateService ?? throw new ArgumentNullException(nameof(agentUpdateService));
@@ -61,14 +58,12 @@
             {
                 //Version information
                 _logger.Information("CurrentAgentVersion: {CurrentAgentVersion}", await _agentUpdateService.GetCurrentVersionAsync());
-              //  _logger.Information("NextAgentVersion: {NextAgentVersion}", _operationalStateProvider.State.NextAgentVersion?.ImageId);
-
                 _logger.Information("CurrentApplicationVersion: {CurrentApplicationVersion}", await _applicationUpdateService.GetCurrentVersionAsync());
-                //_logger.Information("NextApplicationVersion: {NextApplicationVersion}", _operationalStateProvider.State.NextApplicationVersion?.ImageId);
 
-
+                Console.WriteLine();
                 Console.WriteLine("Existing images:");
                 Console.WriteLine("---------------------------------------------------------");
+                Console.WriteLine();
 
                 var images = await _dockerClient.Images.ListImagesAsync(new ImagesListParameters()
                 {
@@ -171,6 +166,9 @@
 
                 //Application
                 await _applicationUpdateService.ProcessConfigurationAsync(configuration);
+
+                //Save this so we don't keep pinging the server.
+                _configurationVersion = configuration.ConfigurationVersion;
             }
             catch (Exception ex)
             {
