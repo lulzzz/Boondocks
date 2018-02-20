@@ -37,6 +37,8 @@
             {
                 const string updateSql = "update DeviceStatus " +
                                          "set " +
+                                         "  AgentVersion = @AgentVersion, " +
+                                         "  ApplicationVersion = @ApplicationVersion, " +
                                          "  UptimeSeconds = @UptimeSeconds, " +
                                          "  LastContactUtc = @Utc, " +
                                          "  State = @State " +
@@ -48,7 +50,9 @@
                     request.UptimeSeconds,
                     Utc = DateTime.UtcNow,
                     DeviceId,
-                    request.State
+                    request.State,
+                    request.AgentVersion,
+                    request.ApplicationVersion
                 });
 
                 const string responseSql = "select ConfigurationVersion from Devices where Id = @Id";

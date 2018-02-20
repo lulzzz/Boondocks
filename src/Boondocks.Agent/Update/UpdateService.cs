@@ -9,6 +9,9 @@
     using Serilog;
     using Services.Device.Contracts;
 
+    /// <summary>
+    /// Base class for update services.
+    /// </summary>
     internal abstract class UpdateService
     {
         private readonly IDockerClient _dockerClient;
@@ -58,6 +61,13 @@
             }
         }
 
+        /// <summary>
+        /// Removes a container (by name) using the Force option.
+        /// </summary>
+        /// <param name="dockerClient"></param>
+        /// <param name="name"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         protected async Task StopAndDestroyApplicationAsync(IDockerClient dockerClient, string name, CancellationToken cancellationToken)
         {
             //Get all of the containers
@@ -87,14 +97,19 @@
             }
         }
 
-        private async Task PruneAsync(CancellationToken cancellationToken)
+        /// <summary>
+        /// Removes images that are no longer referenced by a container.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        private async Task PruneImagesAsync(CancellationToken cancellationToken)
         {
             try
             {
                 //Perform the prune
                 var response =  await _dockerClient.Images.PruneImagesAsync(null, cancellationToken);
 
-                Logger.Information("{Count} images pruned for a savings of {Size} bytes.", response?.ImagesDeleted?.Count, response?.SpaceReclaimed);
+                Logger.Information("{Count} images pruned for a savings of {Size} bytes.", response?.ImagesDeleted?.Count ?? 0, response?.SpaceReclaimed ?? 0);
             }
             catch (Exception ex)
             {
@@ -113,7 +128,7 @@
                     _nextVersion = null;
 
                     //Let's clean up as we work
-                    await PruneAsync(cancellationToken);
+                    await PruneImagesAsync(cancellationToken);
 
                     return result;
                 }

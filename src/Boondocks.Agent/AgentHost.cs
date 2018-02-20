@@ -26,6 +26,8 @@
 
         private Guid? _configurationVersion;
 
+        private readonly UpdateService[] _updateServices;
+
         public AgentHost(
             IDeviceConfiguration deviceConfiguration,
             IUptimeProvider uptimeProvider,
@@ -50,6 +52,13 @@
             _logger.Information("DockerEndpoint: {DockerEndpoint}", environmentConfigurationProvider.DockerEndpoint);
             _logger.Information("DeviceId: {DeviceId}", deviceConfiguration.DeviceId);
             _logger.Information("DeviceApiUrl: {DeviceApiUrl}", deviceConfiguration.DeviceApiUrl);
+
+            //The agent should be updated before the application
+            _updateServices = new UpdateService[]
+            {
+                _agentUpdateService,
+                _applicationUpdateService
+            };
         }
 
         private async Task LogStateAsync(CancellationToken cancellationToken)
@@ -113,6 +122,11 @@
             }
         }
 
+        /// <summary>
+        /// Periodic communication with the service.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns>True if the agent is to exit, false otherwise.</returns>
         private async Task<bool> HeartbeatAsync(CancellationToken cancellationToken)
         {
             //Create the request.
@@ -138,19 +152,17 @@
                 await DownloadAndProcessConfigurationAsync(cancellationToken);
             }
 
-            //Work on getting the next agent.
-            if (await _agentUpdateService.UpdateAsync(cancellationToken))
-                return true;
-
-            //Do this in case we have a "next" application to download / install
-            if (await _applicationUpdateService.UpdateAsync(cancellationToken))
-                return true;
+            foreach (var updateService in _updateServices)
+            {
+                if (await updateService.UpdateAsync(cancellationToken))
+                    return true;
+            }
 
             return false;
         }
 
         /// <summary>
-        ///     Downloads the configuration for this device and saves it.
+        /// Downloads the configuration for this device and saves it.
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
