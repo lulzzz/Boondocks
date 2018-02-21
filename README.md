@@ -4,6 +4,8 @@
 ## Overview
 Boondocks is used for deploying and updating embedded Linux applications in IoT scenarios.
 
+![Arhitecture](content/BoondocksArch.png)
+
 ## Main Components
 - **Device** This is the end device running Linux.
    - **Agent** This is the container that runs on the end device
