@@ -26,3 +26,4 @@ Boondocks uses these great open source projects:
 - [Serilog](https://serilog.net/)
 - [Docker.DotNet](https://github.com/Microsoft/Docker.DotNet)
 - [Swagger](https://swagger.io/)
+- [Json.NET](https://www.newtonsoft.com/json)

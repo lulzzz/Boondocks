@@ -61,7 +61,8 @@
                         Tags = new List<string>
                         {
                             tag
-                        }
+                        },
+                        Dockerfile = "Agent.Dockerfile"
                     };
 
                     BuildResult result;
