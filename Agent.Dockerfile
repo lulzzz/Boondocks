@@ -23,15 +23,6 @@ RUN [ "cross-build-start" ]
 #update it! & install the packages necessary for .NET Core
 RUN apt-get update && apt-get -y install libunwind8 gettext wget
 
-# Download the nightly binaries for .NET Core 2
-# Create a folder to hold the .NET Core 2 installation
-# Unzip the dotnet zip into the dotnet installation folder
-# set up a symbolic link to a directory on the path so we can call dotnet
-#RUN wget https://dotnetcli.blob.core.windows.net/dotnet/Runtime/release/2.0.0/dotnet-runtime-latest-linux-arm.tar.gz \ 
-#	&& mkdir /opt/dotnet \ 
-#	&& tar -xvf dotnet-runtime-latest-linux-arm.tar.gz -C /opt/dotnet \
-#	&& ln -s /opt/dotnet/dotnet /usr/local/bin
-
 # Install .NET Core
 ENV DOTNET_VERSION 2.0.5
 ENV DOTNET_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Runtime/$DOTNET_VERSION/dotnet-runtime-$DOTNET_VERSION-linux-arm.tar.gz

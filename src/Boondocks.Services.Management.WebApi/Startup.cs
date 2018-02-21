@@ -15,6 +15,8 @@ using Swashbuckle.AspNetCore.Swagger;
 
 namespace Boondocks.Services.Management.WebApi
 {
+    using System;
+    using System.Reflection;
     using Base;
     using Services.Contracts;
 
@@ -74,9 +76,15 @@ namespace Boondocks.Services.Management.WebApi
      
         public void ConfigureContainer(ContainerBuilder builder)
         {
+            string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            Console.WriteLine($"Current directory: '{currentDirectory}'");
+
             var configBuilder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
+                //.SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(currentDirectory)
+                .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables();
 
             //Deal with the configuration bits
             var config = configBuilder.Build();
