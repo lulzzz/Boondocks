@@ -51,7 +51,7 @@ ConfgurationVersion - this should be updated whenever the configuration of the d
 These values will be passed to application container running on the device. If the same variable name is used for an application level environment variable, this value takes precedence.
 |Column|Type|Notes|
 |------|----|-----|
-|DeviceId            |Guid||
+|DeviceId|Guid||
 |Name|string||
 |Value|string||
 
@@ -65,20 +65,22 @@ These variables will be presented to all of the devices in the specified applica
 
 ## DeviceEvents : EntityBase
 Events for a given device.
+
 |Column|Type|Notes|
 |------|----|-----|
-|DeviceId            |Guid||
+|DeviceId|Guid||
 |EventType|int||
 |Message|string||
 
 ## Applications : EntityBase
 Devices are grouped into applications.
+
 |Column|Type|Notes|
 |------|----|-----|
 |Name|string||
-|DeviceTypeId|||
-|ApplicationVersionId|||
-|SupervisorVersionId|||
+|DeviceTypeId||
+|ApplicationVersionId||
+|SupervisorVersionId||
 
 ## ApplicationEvents : EntityBase
 |Column|Type|Notes|
