@@ -6,10 +6,12 @@
     using System.Threading.Tasks;
     using Docker.DotNet;
     using Docker.DotNet.Models;
+    using Domain;
     using Model;
     using Serilog;
     using Services.Device.Contracts;
     using Services.Device.WebApiClient;
+    using Shared;
 
     internal class ApplicationUpdateService : UpdateService
     {

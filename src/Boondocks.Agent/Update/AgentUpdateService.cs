@@ -10,6 +10,7 @@
     using Serilog;
     using Services.Device.Contracts;
     using Services.Device.WebApiClient;
+    using Shared;
 
     internal class AgentUpdateService : UpdateService
     {

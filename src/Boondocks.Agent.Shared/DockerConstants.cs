@@ -1,7 +1,10 @@
-﻿namespace Boondocks.Agent.Model
+﻿namespace Boondocks.Agent.Shared
 {
     public static class DockerConstants
     {
+        /// <summary>
+        /// The name of the applicatoin container.
+        /// </summary>
         public const string ApplicationContainerName = "boondocks-application";
 
         /// <summary>

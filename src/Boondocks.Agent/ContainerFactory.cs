@@ -9,6 +9,7 @@
     using Serilog;
     using Services.Contracts.Interfaces;
     using Services.Device.WebApiClient;
+    using Shared;
     using Update;
 
     internal static class ContainerFactory

@@ -1,19 +1,14 @@
-﻿namespace Boondocks.Agent.Model
+﻿namespace Boondocks.Agent.Shared
 {
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Docker.DotNet;
     using Docker.DotNet.Models;
-    using Serilog;
 
-    internal class AgentDockerContainerFactory : DockerContainerFactory
+    public class AgentDockerContainerFactory
     {
-        public AgentDockerContainerFactory(ILogger logger) : base(logger)
-        {
-        }
-
-        public override async Task<CreateContainerResponse> CreateContainerAsync(IDockerClient dockerClient, string imageId, CancellationToken cancellationToken)
+        public async Task<CreateContainerResponse> CreateContainerAsync(IDockerClient dockerClient, string imageId, CancellationToken cancellationToken)
         {
             var createContainerParameters = new CreateContainerParameters()
             {
@@ -48,8 +43,6 @@
                                     {"/data", new EmptyStruct()},
                                 },
             };
-
-            Logger.Information("Creating agent docker container from image {ImageId}...", imageId);
 
             //Create the container
             return await dockerClient.Containers.CreateContainerAsync(createContainerParameters, cancellationToken);
