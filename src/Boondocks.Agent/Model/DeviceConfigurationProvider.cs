@@ -16,6 +16,11 @@
             _pathFactory = pathFactory ?? throw new ArgumentNullException(nameof(pathFactory));
         }
 
+        public bool Exists()
+        {
+            return File.Exists(_pathFactory.DeviceConfigFile);
+        }
+
         public IDeviceConfiguration GetDeviceConfiguration()
         {
             //Get the json

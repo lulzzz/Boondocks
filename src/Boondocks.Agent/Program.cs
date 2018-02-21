@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Autofac;
     using Interfaces;
+    using Model;
 
     internal class Program
     {
@@ -14,25 +15,42 @@
 
             try
             {
-                //Create the container
-                using (var container = ContainerFactory.Create())
+                var platformDetector = new PlatformDetector();
+                var pathFactory = new PathFactory(platformDetector);
+                var deviceConfigurationProvider = new DeviceConfigurationProvider(pathFactory);
+
+                if (deviceConfigurationProvider.Exists())
                 {
-                    //Get the agent host
-                    var host = container.Resolve<IAgentHost>();
+                    //Get the device configuration
+                    var deviceConfiguration = deviceConfigurationProvider.GetDeviceConfiguration();
 
-                    var cancellationTokenSource = new CancellationTokenSource();
-
-                    //We shall cancel on the keypress
-                    Console.CancelKeyPress += (sender, eventArgs) => cancellationTokenSource.Cancel();
-
-                    try
+                    //Create the container
+                    using (var container = ContainerFactory.Create(pathFactory, deviceConfiguration))
                     {
-                        //Run the host
-                        host.RunAsync(cancellationTokenSource.Token).GetAwaiter().GetResult();
+                        //Get the agent host
+                        var host = container.Resolve<IAgentHost>();
+
+                        var cancellationTokenSource = new CancellationTokenSource();
+
+                        //We shall cancel on the keypress
+                        Console.CancelKeyPress += (sender, eventArgs) => cancellationTokenSource.Cancel();
+
+                        try
+                        {
+                            //Run the host
+                            host.RunAsync(cancellationTokenSource.Token).GetAwaiter().GetResult();
+                        }
+                        catch (TaskCanceledException)
+                        {
+                        }
                     }
-                    catch (TaskCanceledException)
-                    {
-                    }
+                }
+                else
+                {
+                    //There is no sense is attempting to run without a configuration.
+                    Console.Error.WriteLine("Unable to find device configuration. Unable to run.");
+                    
+                    Thread.Sleep(Timeout.Infinite);
                 }
             }
             catch (Exception ex)

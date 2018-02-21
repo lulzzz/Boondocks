@@ -2,7 +2,7 @@
 This is the RESTful api that the Agent communicates with.
 
 # 1. Brief Introduction
-
+- This is a REST API. 
 
 # 2. Errors
 The Engine API uses standard HTTP status codes to indicate the success or failure of the API call. The body of the response will be JSON in the following format:

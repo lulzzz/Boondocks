@@ -13,8 +13,11 @@
 
     internal static class ContainerFactory
     {
-        public static IContainer Create()
+        public static IContainer Create(PathFactory pathFactory, IDeviceConfiguration deviceConfiguration)
         {
+            if (pathFactory == null) throw new ArgumentNullException(nameof(pathFactory));
+            if (deviceConfiguration == null) throw new ArgumentNullException(nameof(deviceConfiguration));
+
             var builder = new ContainerBuilder();
 
             builder.Register(context =>
@@ -24,13 +27,15 @@
                 return provider.GetDeviceConfiguration();
             }).SingleInstance();
 
+            builder.RegisterInstance(pathFactory);
+            builder.RegisterInstance(deviceConfiguration);
+
             builder.RegisterType<DeviceStateProvider>().SingleInstance();
-            builder.RegisterType<DeviceConfigurationProvider>().As<IDeviceConfigurationProvider>();
             builder.RegisterType<UptimeProvider>().As<IUptimeProvider>().SingleInstance();
             builder.RegisterType<AgentHost>().As<IAgentHost>().SingleInstance();
             builder.RegisterType<ApplicationDockerContainerFactory>().SingleInstance();
             builder.RegisterType<AgentDockerContainerFactory>().SingleInstance();
-            builder.RegisterType<PathFactory>().SingleInstance();
+            
             builder.RegisterType<PlatformDetector>().As<IPlatformDetector>().SingleInstance();
             builder.RegisterType<EnvironmentConfigurationProvider>().As<IEnvironmentConfigurationProvider>().SingleInstance();
 
@@ -39,16 +44,10 @@
             builder.RegisterType<AgentUpdateService>().SingleInstance();
 
             //Device api
-            builder.Register(context =>
-            {
-                IDeviceConfiguration deviceConfiguration = context.Resolve<IDeviceConfiguration>();
-
-                return new DeviceApiClient(
-                    deviceConfiguration.DeviceId,
-                    deviceConfiguration.DeviceKey,
-                    deviceConfiguration.DeviceApiUrl);
-
-            }).SingleInstance();
+            builder.Register(context => new DeviceApiClient(
+                deviceConfiguration.DeviceId,
+                deviceConfiguration.DeviceKey,
+                deviceConfiguration.DeviceApiUrl)).SingleInstance();
 
             //IDockerClient
             builder.Register(context =>

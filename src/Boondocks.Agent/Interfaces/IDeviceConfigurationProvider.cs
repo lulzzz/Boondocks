@@ -4,6 +4,8 @@
 
     internal interface IDeviceConfigurationProvider
     {
+        bool Exists();
+
         IDeviceConfiguration GetDeviceConfiguration();
     }
 }

@@ -39,6 +39,7 @@
             IDockerClient dockerClient,
             ILogger logger)
         {
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
             _deviceApiClient = deviceApiClient ?? throw new ArgumentNullException(nameof(deviceApiClient));
             _applicationUpdateService = applicationUpdateService ?? throw new ArgumentNullException(nameof(applicationUpdateService));
             _agentUpdateService = agentUpdateService ?? throw new ArgumentNullException(nameof(agentUpdateService));
@@ -46,12 +47,12 @@
             _logger = logger.ForContext(GetType());
             _deviceStateProvider = deviceStateProvider ?? throw new ArgumentNullException(nameof(deviceStateProvider));
             _uptimeProvider = uptimeProvider ?? throw new ArgumentNullException(nameof(uptimeProvider));
-            _deviceConfiguration = deviceConfiguration ?? throw new ArgumentNullException(nameof(deviceConfiguration));
+            _deviceConfiguration = deviceConfiguration;
 
             //Config
             _logger.Information("DockerEndpoint: {DockerEndpoint}", environmentConfigurationProvider.DockerEndpoint);
-            _logger.Information("DeviceId: {DeviceId}", deviceConfiguration.DeviceId);
-            _logger.Information("DeviceApiUrl: {DeviceApiUrl}", deviceConfiguration.DeviceApiUrl);
+            _logger.Information("DeviceId: {DeviceId}", deviceConfiguration?.DeviceId);
+            _logger.Information("DeviceApiUrl: {DeviceApiUrl}", deviceConfiguration?.DeviceApiUrl);
 
             //The agent should be updated before the application
             _updateServices = new UpdateService[]
