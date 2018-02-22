@@ -43,6 +43,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Management", "Management", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boondocks.Agent.Shared", "Boondocks.Agent.Shared\Boondocks.Agent.Shared.csproj", "{7EAFB6DD-BF2D-4F91-BD1D-F203A413DD7F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boondocs.Agent.Tests", "Boondocs.Agent.Tests\Boondocs.Agent.Tests.csproj", "{BC40EECC-BFC8-4B10-BA5E-BAC41B602643}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{7EAFB6DD-BF2D-4F91-BD1D-F203A413DD7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7EAFB6DD-BF2D-4F91-BD1D-F203A413DD7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7EAFB6DD-BF2D-4F91-BD1D-F203A413DD7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC40EECC-BFC8-4B10-BA5E-BAC41B602643}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC40EECC-BFC8-4B10-BA5E-BAC41B602643}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC40EECC-BFC8-4B10-BA5E-BAC41B602643}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC40EECC-BFC8-4B10-BA5E-BAC41B602643}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -126,6 +132,7 @@ Global
 		{DC0251C0-61DA-405E-9280-8B8C1689EB10} = {1CBA6859-2A56-4F66-AEC1-2A3893D1B365}
 		{CA0A7584-007B-4FA8-AEB7-A28A805E5C0A} = {1CBA6859-2A56-4F66-AEC1-2A3893D1B365}
 		{7EAFB6DD-BF2D-4F91-BD1D-F203A413DD7F} = {EAED4170-1E29-4BA3-B2B4-1DEBD136C61F}
+		{BC40EECC-BFC8-4B10-BA5E-BAC41B602643} = {EAED4170-1E29-4BA3-B2B4-1DEBD136C61F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C1BE404-502A-44E6-9CC7-34B3066B0DE5}

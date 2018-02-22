@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using Docker.DotNet;
     using Docker.DotNet.Models;
+    using Domain;
     using Model;
     using Serilog;
     using Services.Device.Contracts;
@@ -29,53 +30,54 @@
             _deviceApiClient = deviceApiClient ?? throw new ArgumentNullException(nameof(deviceApiClient));
         }
 
-        public override async Task<string> GetCurrentVersionAsync()
+        public async Task<string> GetCurrentVersionAsync()
         {
             var container = await _dockerClient.GetContainerByName(DockerConstants.AgentContainerName, new CancellationToken());
 
             return container?.ImageID;
         }
 
-        public override VersionReference GetVersionFromConfiguration(GetDeviceConfigurationResponse response)
-        {
-            return response?.AgentVersion;
-        }
-
         /// <summary>
         /// If true, the caller should exit
         /// </summary>
-        /// <param name="version"></param>
+        /// <param name="configuration"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public override async Task<bool> UpdateCoreAsync(VersionReference version, CancellationToken cancellationToken)
+        public override async Task<bool> UpdateCoreAsync(GetDeviceConfigurationResponse configuration, CancellationToken cancellationToken)
         {
-            //It shouldn't already be downloaded, but check anyway.
-            if (!await _dockerClient.DoesImageExistAsync(version.ImageId, cancellationToken))
-            {
-                //Download the application
-                await DownloadAgentImageAsync(_dockerClient, version, cancellationToken);
-            }
+            string currentVersion = await GetCurrentVersionAsync();
+            VersionReference nextVersion = configuration.AgentVersion;
+
+            if (nextVersion == null)
+                return false;
+
+            if (currentVersion == nextVersion.ImageId)
+                return false;
 
             var renameParameters = new ContainerRenameParameters()
             {
                 NewName = DockerConstants.AgentContainerOutgoingName
             };
 
-            //TODO: Check for the existence of an outgoing agent container (and destroy it????)
+            //Remove the outgoing application (just in case)
+            await StopAndDestroyApplicationAsync(_dockerClient, DockerConstants.AgentContainerOutgoingName, cancellationToken);
 
+            //Get the existing container
             var existingContainer = await _dockerClient.GetContainerByName(DockerConstants.AgentContainerName, cancellationToken);
 
+            //Rename to a temporary container name
             if (existingContainer != null)
             {
                 await _dockerClient.Containers.RenameContainerAsync(existingContainer.ID, renameParameters, cancellationToken);
             }
 
-            //Create the container
+            //Create the new updated container
             var createContainerResponse = await _dockerContainerFactory.CreateContainerAsync(
                 _dockerClient,
-                version.ImageId,
+                nextVersion.ImageId,
                 cancellationToken);
 
+            //Show the warnings
             if (createContainerResponse.Warnings != null && createContainerResponse.Warnings.Any())
             {
                 string formattedWarnings = string.Join(",", createContainerResponse.Warnings);
@@ -83,7 +85,7 @@
                 Logger.Warning("Warnings during container creation: {Warnings}", formattedWarnings);
             }
 
-            Logger.Information("Container {ContainerId} created for agent {ImageId}. Starting...", createContainerResponse.ID, version.ImageId);
+            Logger.Information("Container {ContainerId} created for agent {ImageId}. Starting...", createContainerResponse.ID, nextVersion.ImageId);
 
             //Attempt to start the container
             var started = await _dockerClient.Containers.StartContainerAsync(
@@ -113,7 +115,7 @@
             return false;
         }
 
-        private async Task DownloadAgentImageAsync(IDockerClient dockerClient, VersionReference versionReference, CancellationToken cancellationToken)
+        private async Task DownloadImageAsync(IDockerClient dockerClient, VersionReference versionReference, CancellationToken cancellationToken)
         {
             var versionRequest = new GetImageDownloadInfoRequest()
             {

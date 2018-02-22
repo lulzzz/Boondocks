@@ -150,13 +150,8 @@
             else
             {
                 _logger.Information("Downloading new configuration...");
-                await DownloadAndProcessConfigurationAsync(cancellationToken);
-            }
 
-            foreach (var updateService in _updateServices)
-            {
-                if (await updateService.UpdateAsync(cancellationToken))
-                    return true;
+                return await DownloadAndProcessConfigurationAsync(cancellationToken);
             }
 
             return false;
@@ -167,18 +162,18 @@
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private async Task DownloadAndProcessConfigurationAsync(CancellationToken cancellationToken)
+        private async Task<bool> DownloadAndProcessConfigurationAsync(CancellationToken cancellationToken)
         {
             try
             {
                 //Get the configuration from the device api
                 var configuration = await _deviceApiClient.Configuration.GetConfigurationAsync(cancellationToken);
 
-                //Agent
-                await _agentUpdateService.ProcessConfigurationAsync(configuration);
-
-                //Application
-                await _applicationUpdateService.ProcessConfigurationAsync(configuration);
+                foreach (var updateService in _updateServices)
+                {
+                    if (await updateService.UpdateAsync(configuration, cancellationToken))
+                        return true;
+                }
 
                 //Save this so we don't keep pinging the server.
                 _configurationVersion = configuration.ConfigurationVersion;
@@ -187,6 +182,8 @@
             {
                 _logger.Warning(ex, "Error getting the current configuration: {ex}", ex.ToString());
             }
+
+            return false;
         }
     }
 }

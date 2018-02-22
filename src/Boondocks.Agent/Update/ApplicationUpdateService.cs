@@ -30,36 +30,60 @@
             _deviceApiClient = deviceApiClient ?? throw new ArgumentNullException(nameof(deviceApiClient));
         }
 
-        public override async Task<string> GetCurrentVersionAsync()
+        public async Task<string> GetCurrentVersionAsync()
         {
             var container = await _dockerClient.GetContainerByName(DockerConstants.ApplicationContainerName, new CancellationToken());
 
             return container?.ImageID;
         }
 
-        public override VersionReference GetVersionFromConfiguration(GetDeviceConfigurationResponse response)
+        public override async Task<bool> UpdateCoreAsync(GetDeviceConfigurationResponse configuration, CancellationToken cancellationToken)
         {
-            return response?.ApplicationVersion;
-        }
+            //Get the current and next version
+            string currentVersion = await GetCurrentVersionAsync();
+            VersionReference nextVersion = configuration.ApplicationVersion;
 
-        public override async Task<bool> UpdateCoreAsync(VersionReference version, CancellationToken cancellationToken)
-        {   
-            //It shouldn't already be downloaded, but check anyway.
-            if (!await _dockerClient.DoesImageExistAsync(version.ImageId, cancellationToken))
+            if (nextVersion == null)
+                return false;
+
+            bool update = currentVersion != nextVersion.ImageId;
+
+            //Get the container
+            var container = await _dockerClient.GetContainerByImageId(nextVersion.ImageId, cancellationToken);
+
+            if (container == null)
             {
+                update = true;
+
                 //Download the application
-                await DownloadApplicationImageAsync(_dockerClient, version, cancellationToken);
+                await DownloadImageAsync(_dockerClient, nextVersion, cancellationToken);
             }
+            else
+            {
+                //Inspect the container to get its environment variables
+                var inspection = await _dockerClient.Containers.InspectContainerAsync(container.ID, cancellationToken);
+
+                var comparer = new EnvironmentVariableComparer(ApplicationDockerContainerFactory.ReservedEnvironmentVariables);
+
+                if (!comparer.AreSame(inspection.Config.Env, configuration.EnvironmentVariables))
+                {
+                    update = true;
+                }
+            }
+
+            if (!update)
+                return false;
 
             //Ditch the current applications
             await StopAndDestroyApplicationAsync(_dockerClient, DockerConstants.ApplicationContainerName, cancellationToken);
 
-            Logger.Information("Create the container for {ImageId} ...", version.ImageId);
+            Logger.Information("Create the container for {ImageId} ...", nextVersion.ImageId);
 
             //Create the container
             var createContainerResponse = await _dockerContainerFactory.CreateContainerAsync(
                 _dockerClient,
-                version.ImageId,
+                nextVersion.ImageId,
+                configuration.EnvironmentVariables,
                 cancellationToken);
 
             if (createContainerResponse.Warnings != null && createContainerResponse.Warnings.Any())
@@ -69,7 +93,7 @@
                 Logger.Warning("Warnings during container creation: {Warnings}", formattedWarnings);
             }
 
-            Logger.Information("Container {ContainerId} created for application {}. Starting...", createContainerResponse.ID, version.ImageId);
+            Logger.Information("Container {ContainerId} created for application {}. Starting...", createContainerResponse.ID, nextVersion.ImageId);
 
             //Attempt to start the container
             var started = await _dockerClient.Containers.StartContainerAsync(
@@ -87,7 +111,7 @@
             return false;
         }
 
-        private async Task DownloadApplicationImageAsync(IDockerClient dockerClient, VersionReference versionReference,
+        private async Task DownloadImageAsync(IDockerClient dockerClient, VersionReference versionReference,
             CancellationToken cancellationToken)
         {
             var versionRequest = new GetImageDownloadInfoRequest()

@@ -11,10 +11,12 @@
             var client = new ApiClient(new Uri(baseUri), defaultTimeout);
 
             Applications = new ApplicationOperations(client);
+            ApplicationEnvironmentVariables = new ApplicationEnvironmentVariableOperations(client);
             ApplicationVersions = new ApplicationVersionOperations(client);
             ApplicationUpload = new ApplicationUploadInfoOperations(client);
             Devices = new DeviceOperations(client);
             DeviceConfiguration = new DeviceConfigurationOperations(client);
+            DeviceEnvironmentVariables = new DeviceEnvironmentVariableOperations(client);
             DeviceTypes = new DeviceTypeOperations(client);
             DeviceArchitectures = new DeviceArchitectureOperations(client);
             AgentVersions = new AgentVersionOperations(client);
@@ -23,6 +25,8 @@
 
         public ApplicationOperations Applications { get; }
 
+        public ApplicationEnvironmentVariableOperations ApplicationEnvironmentVariables { get; }
+
         public ApplicationVersionOperations ApplicationVersions { get; }
 
         public ApplicationUploadInfoOperations ApplicationUpload { get; }
@@ -30,6 +34,8 @@
         public DeviceOperations Devices { get; }
 
         public DeviceConfigurationOperations DeviceConfiguration { get; }
+
+        public DeviceEnvironmentVariableOperations DeviceEnvironmentVariables { get; }
 
         public DeviceTypeOperations DeviceTypes { get; }
 

@@ -1,10 +1,13 @@
 ﻿namespace Boondocks.Agent.Domain
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Dapper;
     using Docker.DotNet;
     using Docker.DotNet.Models;
+    using Services.Device.Contracts;
     using Shared;
 
     /// <summary>
@@ -12,8 +15,26 @@
     /// </summary>
     public class ApplicationDockerContainerFactory
     {
-        public async Task<CreateContainerResponse> CreateContainerAsync(IDockerClient dockerClient, string imageId, CancellationToken cancellationToken)
+        public static readonly IList<string> ReservedEnvironmentVariables;
+
+        static ApplicationDockerContainerFactory()
         {
+            //TODO: Add reserved environment variables as we start using them.
+
+            ReservedEnvironmentVariables = new List<string>()
+            {
+            }.AsReadOnly();
+        }
+
+        public async Task<CreateContainerResponse> CreateContainerAsync(
+            IDockerClient dockerClient, 
+            string imageId, 
+            EnvironmentVariable[] environmentVariables, 
+            CancellationToken cancellationToken)
+        {
+            string[] formattedEnvironmentVariables = environmentVariables
+                .FormatForDevice();
+
             var createContainerParameters = new CreateContainerParameters()
             {
                 Image = imageId,
@@ -35,7 +56,7 @@
                     },
                 },
                 Name = DockerConstants.ApplicationContainerName,
-               
+                Env = formattedEnvironmentVariables,
             };
 
             //Create the container

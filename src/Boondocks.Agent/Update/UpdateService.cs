@@ -15,7 +15,6 @@
     internal abstract class UpdateService
     {
         private readonly IDockerClient _dockerClient;
-        private VersionReference _nextVersion;
 
         protected UpdateService(ILogger logger, IDockerClient dockerClient)
         {
@@ -23,43 +22,43 @@
             Logger = logger.ForContext(GetType());
         }
 
-        public abstract Task<string> GetCurrentVersionAsync();
+//        public abstract Task<string> GetCurrentVersionAsync();
        
         protected ILogger Logger { get; }
 
-        public abstract VersionReference GetVersionFromConfiguration(GetDeviceConfigurationResponse response);
+       // public abstract VersionReference GetVersionFromConfiguration(GetDeviceConfigurationResponse response);
 
-        /// <summary>
-        /// Compare this version to the current one to see if we need to update.
-        /// </summary>
-        /// <param name="response"></param>
-        /// <returns></returns>
-        public async Task ProcessConfigurationAsync(GetDeviceConfigurationResponse response)
-        {
-            var newVersion = GetVersionFromConfiguration(response);
+        ///// <summary>
+        ///// Compare this version to the current one to see if we need to update.
+        ///// </summary>
+        ///// <param name="response"></param>
+        ///// <returns></returns>
+        //public async Task ProcessConfigurationAsync(GetDeviceConfigurationResponse response)
+        //{
+        //    var newVersion = GetVersionFromConfiguration(response);
 
-            if (newVersion == null)
-            {
-                Logger.Verbose("No configuration information available.");                
-            }
-            else
-            {
-                //Get the current version
-                var currentVersion = await GetCurrentVersionAsync();
+        //    if (newVersion == null)
+        //    {
+        //        Logger.Verbose("No configuration information available.");                
+        //    }
+        //    else
+        //    {
+        //        //Get the current version
+        //        var currentVersion = await GetCurrentVersionAsync();
 
-                if (currentVersion == newVersion.ImageId)
-                {
-                    Logger.Verbose("The version is the same: {ImageId}", newVersion.ImageId);
-                }
-                else
-                {
-                    Logger.Verbose("A new version was found: {ImageId}", newVersion.ImageId);
+        //        if (currentVersion == newVersion.ImageId)
+        //        {
+        //            Logger.Verbose("The version is the same: {ImageId}", newVersion.ImageId);
+        //        }
+        //        else
+        //        {
+        //            Logger.Verbose("A new version was found: {ImageId}", newVersion.ImageId);
 
-                    //Save this so we can install it.
-                    _nextVersion = newVersion;
-                }
-            }
-        }
+        //            //Save this so we can install it.
+        //            _nextVersion = newVersion;
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Removes a container (by name) using the Force option.
@@ -102,7 +101,7 @@
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private async Task PruneImagesAsync(CancellationToken cancellationToken)
+        protected async Task PruneImagesAsync(CancellationToken cancellationToken)
         {
             try
             {
@@ -117,21 +116,12 @@
             }
         }
 
-        public async Task<bool> UpdateAsync(CancellationToken cancellationToken)
+        public async Task<bool> UpdateAsync(GetDeviceConfigurationResponse configuration, CancellationToken cancellationToken)
         {
             try
             {
-                if (_nextVersion != null)
-                {
-                    var result = await UpdateCoreAsync(_nextVersion, cancellationToken);
-
-                    _nextVersion = null;
-
-                    //Let's clean up as we work
-                    await PruneImagesAsync(cancellationToken);
-
-                    return result;
-                }
+                return await UpdateCoreAsync(configuration, cancellationToken);
+                
             }
             catch (Exception ex)
             {
@@ -141,6 +131,6 @@
             return false;
         }
 
-        public abstract Task<bool> UpdateCoreAsync(VersionReference imageId, CancellationToken cancellationToken);
+        public abstract Task<bool> UpdateCoreAsync(GetDeviceConfigurationResponse configuration, CancellationToken cancellationToken);
     }
 }
