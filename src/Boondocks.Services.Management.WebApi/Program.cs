@@ -23,7 +23,7 @@ namespace Boondocks.Services.Management.WebApi
             return WebHost.CreateDefaultBuilder(args)
                 .ConfigureServices(services => services.AddAutofac())
                 .UseStartup<Startup>()
-                .UseUrls("http://*:5050")
+                .UseUrls("http://*:80")
                 .Build();
         }
     }

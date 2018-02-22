@@ -16,6 +16,7 @@
             return WebHost.CreateDefaultBuilder(args)
                 .ConfigureServices(services => services.AddAutofac())
                 .UseStartup<Startup>()
+                .UseUrls("http://*:80")
                 .Build();
         }
     }

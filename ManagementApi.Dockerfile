@@ -22,7 +22,7 @@ FROM microsoft/dotnet:runtime
 COPY --from=core-build-step /build/Boondocks.Services.Management.WebApi/bin/Debug/netcoreapp2.0/ubuntu.16.04-x64/publish/ /opt/boondocks/
 
 #Expose the web port
-EXPOSE 5050
+EXPOSE 80
 
 #move to our application folder
 WORKDIR /opt/boondocks/

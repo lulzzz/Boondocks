@@ -1,6 +1,7 @@
 ﻿namespace Boondocks.Services.Device.WebApi
 {
     using System.IO;
+    using System.Reflection;
     using Authentication;
     using Autofac;
     using Base;
@@ -78,9 +79,12 @@
 
         public void ConfigureContainer(ContainerBuilder builder)
         {
+            string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
             var configBuilder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
+                .SetBasePath(currentDirectory)
+                .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables();
 
             //Deal with the configuration bits
             var config = configBuilder.Build();
