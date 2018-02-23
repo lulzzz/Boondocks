@@ -2,7 +2,7 @@
   "profiles": {
     "BoondocksCli": {
       "commandName": "Project",
-      "commandLineArgs": "build-agent -s \"C:\\testbuild\" -n \"1.2.6\" -d -a \"armv7hf\""
+      "commandLineArgs": "app-var-set -a SCADADevelopment -n Foo -v Next"
     }
   }
 }

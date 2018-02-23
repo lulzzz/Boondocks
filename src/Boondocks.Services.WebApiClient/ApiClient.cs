@@ -186,6 +186,11 @@
 
             request.Headers.Add("User-Agent", UserAgent);
 
+            if (headers != null && !headers.ContainsKey("Content-Type"))
+            {
+                request.Headers.Add("Content-Type", "application/json");
+            }
+
             if (headers != null)
             {
                 foreach (var header in headers)

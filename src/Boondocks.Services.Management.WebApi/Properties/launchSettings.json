@@ -13,7 +13,7 @@
   },
   "profiles": {
     "IIS": {
-      "commandName": "Project",
+      "commandName": "IIS",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
