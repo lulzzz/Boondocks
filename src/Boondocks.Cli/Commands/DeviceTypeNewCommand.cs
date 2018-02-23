@@ -5,7 +5,6 @@
     using System.Threading.Tasks;
     using CommandLine;
     using Services.Management.Contracts;
-    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("device-type-new", HelpText = "Create a new device type.")]
     public class DeviceTypeNewCommand : CommandBase
@@ -13,7 +12,7 @@
         [Option('n', "Name", Required = true, HelpText = "The name of the device type to create.")]
         public string Name { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
+        protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             var request = new CreateDeviceTypeRequest
             {

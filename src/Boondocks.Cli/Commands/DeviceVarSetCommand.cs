@@ -6,7 +6,6 @@
     using CommandLine;
     using ExtensionMethods;
     using Services.Management.Contracts;
-    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("device-var-set", HelpText = "Sets an device environment variable.")]
     public class DeviceVarSetCommand : CommandBase
@@ -20,7 +19,7 @@
         [Option('d', "device", Required = true, HelpText = "The device to update.")]
         public string Device { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
+        protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             //Get the device
             var device = await context.FindDeviceAsync(Device, cancellationToken);

@@ -6,7 +6,6 @@
     using CommandLine;
     using Services.DataAccess.Domain;
     using Services.Management.Contracts;
-    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("device-arch-new", HelpText = "Creates a new device architecture")]
     public class DeviceArchNewCommand : CommandBase
@@ -14,7 +13,7 @@
         [Option('n', "name", Required = true, HelpText = "The name of the architecture.")]
         public string Name { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
+        protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             var request = new CreateDeviceArchitectureRequest
             {

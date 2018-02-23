@@ -6,7 +6,6 @@
     using System.Threading.Tasks;
     using CommandLine;
     using ExtensionMethods;
-    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("app-var-delete", HelpText = "Delete an application environment variable.")]
     public class AppVarDeleteCommand : CommandBase
@@ -17,7 +16,7 @@
         [Option('n', "name", Required = true, HelpText = "The name of the variable.")]
         public string Name { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
+        protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             // Get the application
             var application = await context.FindApplicationAsync(Application, cancellationToken);

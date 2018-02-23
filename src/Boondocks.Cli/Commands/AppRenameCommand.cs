@@ -3,11 +3,8 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Base;
     using CommandLine;
     using ExtensionMethods;
-    using Services.Management.WebApiClient;
-    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("app-rename", HelpText = "Rename an application")]
     public class AppRenameCommand : CommandBase
@@ -18,7 +15,7 @@
         [Option('n', "name", Required = true, HelpText = "The new name of the application.")]
         public string Name { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
+        protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             //Get the application
             var application = await context.FindApplicationAsync(Application, cancellationToken);

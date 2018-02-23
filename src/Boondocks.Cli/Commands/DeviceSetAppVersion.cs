@@ -1,14 +1,10 @@
 ﻿namespace Boondocks.Cli.Commands
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Base;
     using CommandLine;
     using ExtensionMethods;
-    using Services.Contracts;
     using Services.DataAccess.Domain;
-    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("device-set-app-version", HelpText = "Sets the current application version for a given device.")]
     public class DeviceSetAppVersion : CommandBase
@@ -19,7 +15,7 @@
         [Option('v', "app-version-id", HelpText = "The application version to use. Leave blank to use the value specfied at the application level.")]
         public string ApplicationVersion { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
+        protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             //Get the device
             var device = await context.FindDeviceAsync(Device, cancellationToken);

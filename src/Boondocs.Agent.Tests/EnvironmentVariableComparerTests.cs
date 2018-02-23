@@ -103,10 +103,6 @@ namespace Boondocs.Agent.Tests
             };
         }
 
-        public static void Main()
-        {
-        }
+       
     }
-
-
 }

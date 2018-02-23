@@ -4,16 +4,13 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Net.Sockets;
     using System.Threading;
     using System.Threading.Tasks;
     using CommandLine;
     using Docker.DotNet;
     using Docker.DotNet.Models;
     using ExtensionMethods;
-    using Newtonsoft.Json.Linq;
     using Services.Management.Contracts;
-    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("build", HelpText = "Builds an application.")]
     public class BuildCommand : CommandBase
@@ -36,7 +33,7 @@
         [Option('c', "make-current", HelpText = "Make this the current version of the application.", Default = true)]
         public bool MakeCurrent { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
+        protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(Name))
             {
@@ -97,7 +94,7 @@
             }
         }
 
-        private async Task<int> DeployAsync(ExecutionContext context, DockerClient dockerClient, BuildResult result,
+        private async Task<int> DeployAsync(CommandContext context, DockerClient dockerClient, BuildResult result,
             string tag, CancellationToken cancellationToken)
         {
             //Get the last id

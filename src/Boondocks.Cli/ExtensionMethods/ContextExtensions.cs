@@ -8,11 +8,10 @@
     using Services.Contracts;
     using Services.DataAccess.Domain;
     using Services.Management.WebApiClient;
-    using ExecutionContext = Cli.ExecutionContext;
 
     internal static  class ContextExtensions
     {
-        public static async Task<Application> FindApplicationAsync(this ExecutionContext context, string search, CancellationToken cancellationToken)
+        public static async Task<Application> FindApplicationAsync(this CommandContext context, string search, CancellationToken cancellationToken)
         {
             //Get the applications
             var entities = await context.Client.Applications.GetApplicationsAsync(new GetApplicationsRequest(), cancellationToken);
@@ -28,7 +27,7 @@
             return entity;
         }
 
-        public static async Task<DeviceArchitecture> FindDeviceArchitecture(this ExecutionContext context,
+        public static async Task<DeviceArchitecture> FindDeviceArchitecture(this CommandContext context,
             string search, CancellationToken cancellationToken)
         {
             //Get the applications
@@ -45,7 +44,7 @@
             return entity;
         }
 
-        public static async Task<ApplicationVersion> FindApplicationVersionAsync(this ExecutionContext context, string search,  CancellationToken cancellationToken)
+        public static async Task<ApplicationVersion> FindApplicationVersionAsync(this CommandContext context, string search,  CancellationToken cancellationToken)
         {
             //Get the applications
             var entities = await context.Client.ApplicationVersions.GetApplicationVersionsAsync(new GetApplicationVersionsRequest(), cancellationToken);
@@ -61,7 +60,7 @@
             return entity;
         }
 
-        public static async Task<Device> FindDeviceAsync(this ExecutionContext context, string search, CancellationToken cancellationToken)
+        public static async Task<Device> FindDeviceAsync(this CommandContext context, string search, CancellationToken cancellationToken)
         {
             Guid? deviceId = search.TryParseGuid(false);
 

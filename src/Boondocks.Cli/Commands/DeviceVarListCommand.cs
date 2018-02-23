@@ -4,7 +4,6 @@
     using System.Threading.Tasks;
     using CommandLine;
     using ExtensionMethods;
-    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("device-var-list", HelpText = "Lists the device environment variables.")]
     public class DeviceVarListCommand : CommandBase
@@ -12,7 +11,7 @@
         [Option('d', "device", Required = true, HelpText = "The device to update.")]
         public string Device { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
+        protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             //Get the device
             var device = await context.FindDeviceAsync(Device, cancellationToken);

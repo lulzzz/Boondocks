@@ -7,7 +7,6 @@
     using CommandLine;
     using ExtensionMethods;
     using Services.Management.Contracts;
-    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("device-new", HelpText = "Create a new device.")]
     public class DeviceNewCommand : CommandBase
@@ -21,7 +20,7 @@
         [Option('k', "dev-key", HelpText = "Specify a device key for this device.")]
         public string DeviceKey { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
+        protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             //Get the application
             var application = await context.FindApplicationAsync(Application, cancellationToken);

@@ -5,9 +5,7 @@
     using System.Threading.Tasks;
     using CommandLine;
     using ExtensionMethods;
-    using Services.DataAccess.Domain;
     using Services.Management.Contracts;
-    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("app-var-set", HelpText = "Sets an application environment variable.")]
     public class AppVarSetCommand : CommandBase
@@ -21,7 +19,7 @@
         [Option('a', "app", Required = true, HelpText = "The name or id of the application.")]
         public string Application { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
+        protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             // Get the application
             var application = await context.FindApplicationAsync(Application, cancellationToken);

@@ -11,7 +11,6 @@
     using Docker.DotNet.Models;
     using ExtensionMethods;
     using Services.Management.Contracts;
-    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("build-agent", HelpText = "Builds a agent and optionally uploads it.")]
     public class BuildAgentCommand : CommandBase
@@ -34,7 +33,7 @@
         [Option('c', "make-current", HelpText = "Make this the current version of the application.", Default = true)]
         public bool MakeCurrent { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
+        protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(Name))
             {
@@ -96,7 +95,7 @@
             }
         }
 
-        private async Task<int> DeployAsync(ExecutionContext context, DockerClient dockerClient, BuildResult result,
+        private async Task<int> DeployAsync(CommandContext context, DockerClient dockerClient, BuildResult result,
            string tag, CancellationToken cancellationToken)
         {
             //Get the last id

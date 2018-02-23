@@ -8,7 +8,6 @@
     using CommandLine;
     using Docker.DotNet;
     using Docker.DotNet.Models;
-    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("deploy-agent", HelpText = "Deploys an agent directly to a device.")]
     public class DeployAgentCommand : CommandBase
@@ -24,7 +23,7 @@
         [Option('t', "target", Required = true, HelpText = "The target device docker endpoint.")]
         public string Target { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
+        protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             using (IDockerClient sourceDockerClient = new DockerClientConfiguration(new Uri(Source)).CreateClient())
             using (IDockerClient targetDockerClient = new DockerClientConfiguration(new Uri(Target)).CreateClient())

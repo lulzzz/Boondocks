@@ -5,7 +5,6 @@
     using System.Threading.Tasks;
     using CommandLine;
     using ExtensionMethods;
-    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("device-config", HelpText = "Download the configuration file for a given device.")]
     public class DeviceConfigurationCommand : CommandBase
@@ -16,7 +15,7 @@
         [Option('o', "output", Required = true, HelpText = "The name of the file to output the configuration to.")]
         public string Output { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
+        protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             //Get the device
             var device = await context.FindDeviceAsync(Device, cancellationToken);

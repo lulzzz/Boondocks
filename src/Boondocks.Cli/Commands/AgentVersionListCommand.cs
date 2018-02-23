@@ -7,7 +7,6 @@
     using CommandLine;
     using ExtensionMethods;
     using Services.Management.WebApiClient;
-    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("agent-version-list", HelpText = "Lists the agent versions for a given architecture.")]
     public class AgentVersionListCommand : CommandBase
@@ -15,7 +14,7 @@
         [Option('a', "arch", Required = true, HelpText="The device architecture.")]
         public string DeviceArchitecture { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
+        protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             Guid? deviceArchitectureId = DeviceArchitecture.TryParseGuid(false);
 

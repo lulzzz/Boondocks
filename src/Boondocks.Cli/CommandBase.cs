@@ -11,11 +11,11 @@
             Default = "http://localhost/Boondocks.Services.Management.WebApi/")]
         public string EndpointUrl { get; set; }
 
-        protected abstract Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken);
+        protected abstract Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken);
 
         public Task<int> ExecuteAsync(CancellationToken cancellationToken)
         {
-            var context = new ExecutionContext(EndpointUrl);
+            var context = new CommandContext(EndpointUrl);
 
             return ExecuteAsync(context, cancellationToken);
         }

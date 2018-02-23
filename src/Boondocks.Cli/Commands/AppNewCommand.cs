@@ -1,15 +1,12 @@
 ﻿namespace Boondocks.Cli.Commands
 {
     using System;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using CommandLine;
     using ExtensionMethods;
-    using Services.Contracts;
     using Services.DataAccess.Domain;
     using Services.Management.Contracts;
-    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("app-new", HelpText = "Create a new application.")]
     public class AppNewCommand : CommandBase
@@ -20,7 +17,7 @@
         [Option('n', "Name", Required = true, HelpText = "The name of the application.")]
         public string Name { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
+        protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             //Get all of the device types
             DeviceType[] deviceTypes = await context.Client.DeviceTypes.GetDeviceTypesAsync(cancellationToken);

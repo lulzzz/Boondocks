@@ -6,7 +6,6 @@
     using System.Threading.Tasks;
     using CommandLine;
     using ExtensionMethods;
-    using ExecutionContext = Cli.ExecutionContext;
 
     [Verb("device-var-delete", HelpText = "Delete an application environment variable.")]
     public class DeviceVarDeleteCommand : CommandBase
@@ -18,7 +17,7 @@
         [Option('n', "name", Required = true, HelpText = "The name of the variable.")]
         public string Name { get; set; }
 
-        protected override async Task<int> ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken)
+        protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             //Get the device
             var device = await context.FindDeviceAsync(Device, cancellationToken);
@@ -38,11 +37,10 @@
                 Console.WriteLine($"Unable to find variable '{Name}' for device '{device.Name}'.");
                 return 1;
             }
-            else
-            {
-                //Update the existing one
-                await context.Client.DeviceEnvironmentVariables.DeleteEnvironmentVariable(variable.Id, cancellationToken);
-            }
+            
+            //Update the existing one
+            await context.Client.DeviceEnvironmentVariables.DeleteEnvironmentVariable(variable.Id, cancellationToken);
+            
 
             return 0;
         }
