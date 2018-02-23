@@ -6,21 +6,23 @@
     using Docker.DotNet;
     using Docker.DotNet.Models;
     using Serilog;
+    using Services.Contracts;
     using Shared;
 
 
     public class ApplicationLogSucker
     {
         private readonly IDockerClient _dockerClient;
+        private readonly LogBatchCollector _batchCollector;
         private readonly ILogger _logger;
 
         private const int RetrySeconds = 5;
         private const double LogSlewSeconds = 1.0;
-        private readonly LogBatchCollector _batchCollector = new LogBatchCollector();
 
-        public ApplicationLogSucker(IDockerClient dockerClient, ILogger logger)
+        public ApplicationLogSucker(IDockerClient dockerClient, ILogger logger, LogBatchCollector batchCollector)
         {
             _dockerClient = dockerClient ?? throw new ArgumentNullException(nameof(dockerClient));
+            _batchCollector = batchCollector ?? throw new ArgumentNullException(nameof(batchCollector));
             _logger = logger.ForContext(GetType());
         }
 

@@ -8,9 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
-using MongoDB.Driver;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Boondocks.Services.Management.WebApi

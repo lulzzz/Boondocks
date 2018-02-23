@@ -5,6 +5,7 @@
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using Services.Contracts;
 
     public class LogStreamReader : IDisposable
     {
@@ -78,7 +79,7 @@
             DateTime timestampLocal = DateTime.Parse(timestampString);
             DateTime timestampUtc = timestampLocal.ToUniversalTime();
 
-            return new DockerLogEvent(timestampUtc, timestampLocal, (StreamType)_header[0], line.Substring(30));
+            return new DockerLogEvent(timestampUtc, timestampLocal, (DockerLogEventType)_header[0], line.Substring(30));
         }
 
         public void Dispose()

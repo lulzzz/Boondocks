@@ -3,18 +3,15 @@
     using System;
     using Newtonsoft.Json;
 
-    public class ConsoleLog
+    public class ApplicationLog : EntityBase
     {
-        [JsonProperty("id")]
-        public int Id { get; set; }
-
         [JsonProperty("deviceId")]
         public Guid DeviceId { get; set; }
 
         [JsonProperty("message")]
         public string Message { get; set; }
 
-        [JsonProperty("createdUtc")]
-        public DateTime CreatedUtc { get; set; }
+        [JsonProperty("createdLocal")]
+        public DateTime CreatedLocal { get; set; }
     }
 }

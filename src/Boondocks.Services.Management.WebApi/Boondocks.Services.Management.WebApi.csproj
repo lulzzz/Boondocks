@@ -19,8 +19,6 @@
     <PackageReference Include="Dapper.Contrib" Version="1.50.4" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.2" />
-    <PackageReference Include="MongoDB.Driver" Version="2.5.0" />
-    <PackageReference Include="MongoDB.Driver.GridFS" Version="2.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="1.1.0" />
   </ItemGroup>
 

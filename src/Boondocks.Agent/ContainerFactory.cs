@@ -41,6 +41,7 @@
             builder.RegisterType<PlatformDetector>().As<IPlatformDetector>().SingleInstance();
             builder.RegisterType<EnvironmentConfigurationProvider>().As<IEnvironmentConfigurationProvider>().SingleInstance();
             builder.RegisterType<ApplicationLogSucker>().SingleInstance();
+            builder.RegisterType<LogBatchCollector>().SingleInstance();
 
             //Update services
             builder.RegisterType<ApplicationUpdateService>().SingleInstance();

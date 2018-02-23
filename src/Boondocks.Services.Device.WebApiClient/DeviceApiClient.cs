@@ -12,12 +12,15 @@
             var tokenFactory = new TokenFactory(deviceId, deviceKey);
 
             ApplicationDownloadInfo = new ApplicationDownloadInfoOperations(client, tokenFactory);
+            ApplicationLogs = new ApplicationLogOperations(client, tokenFactory);
             Configuration = new ConfigurationOperations(client, tokenFactory);
             Heartbeat = new HeartbeatOperations(client, tokenFactory);
             AgentDownloadInfo = new AgentDownloadInfoOperations(client, tokenFactory);
         }
 
         public ApplicationDownloadInfoOperations ApplicationDownloadInfo { get; }
+
+        public ApplicationLogOperations ApplicationLogs { get; }
 
         public ConfigurationOperations Configuration { get; }
 

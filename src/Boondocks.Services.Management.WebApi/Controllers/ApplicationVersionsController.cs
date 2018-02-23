@@ -6,10 +6,7 @@ using Boondocks.Services.DataAccess.Interfaces;
 using Boondocks.Services.Management.Contracts;
 using Boondocks.Services.Management.WebApi.Model;
 using Dapper.Contrib.Extensions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson.IO;
-
 
 namespace Boondocks.Services.Management.WebApi.Controllers
 {
