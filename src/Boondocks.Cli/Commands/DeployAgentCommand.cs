@@ -12,8 +12,6 @@
     [Verb("deploy-agent", HelpText = "Deploys an agent directly to a device.")]
     public class DeployAgentCommand : CommandBase
     {
-
-
         [Option('i', "image", Required = true, HelpText = "The id of the image to deploy.")]
         public string Image { get; set; }
 
@@ -48,6 +46,10 @@
                     await targetDockerClient.Images.LoadImageAsync(new ImageLoadParameters(), sourceImageStream,
                         new Progress<JSONMessage>(p => Console.WriteLine(p.Status)), cancellationToken);
                 }
+
+                //Ditch the containers that might cause a problem.
+                await targetDockerClient.ObliterateContainerAsync(DockerConstants.AgentContainerName, cancellationToken: cancellationToken);
+                await targetDockerClient.ObliterateContainerAsync(DockerConstants.AgentContainerOutgoingName, cancellationToken: cancellationToken);
 
                 //Create the container factory
                 var containerFactory = new AgentDockerContainerFactory();

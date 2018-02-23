@@ -186,10 +186,11 @@
 
             request.Headers.Add("User-Agent", UserAgent);
 
-            if (headers != null && !headers.ContainsKey("Content-Type"))
-            {
-                request.Headers.Add("Content-Type", "application/json");
-            }
+            //Don't do this. This bad.
+            //if (headers != null && !headers.ContainsKey("Content-Type"))
+            //{
+            //    request.Headers.Add("Content-Type", "application/json");
+            //}
 
             if (headers != null)
             {

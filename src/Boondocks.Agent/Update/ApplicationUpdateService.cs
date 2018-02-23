@@ -46,36 +46,50 @@
             if (nextVersion == null)
                 return false;
 
-            bool update = currentVersion != nextVersion.ImageId;
+            bool versionChanged = currentVersion != nextVersion.ImageId;
 
-            //Get the container
-            var container = await _dockerClient.GetContainerByImageId(nextVersion.ImageId, cancellationToken);
-
-            if (container == null)
+            if (versionChanged)
             {
-                update = true;
-
-                //Download the application
-                await DownloadImageAsync(_dockerClient, nextVersion, cancellationToken);
+                Logger.Information($"The application version has changed from {currentVersion} to {nextVersion.ImageId}.");
             }
             else
             {
-                //Inspect the container to get its environment variables
-                var inspection = await _dockerClient.Containers.InspectContainerAsync(container.ID, cancellationToken);
+                Logger.Verbose($"The application version has stayed {currentVersion}.");
+            }
 
-                var comparer = new EnvironmentVariableComparer(ApplicationDockerContainerFactory.ReservedEnvironmentVariables);
+            if (!versionChanged)
+            {
+                //Get the container
+                var container = await _dockerClient.GetContainerByImageId(nextVersion.ImageId, cancellationToken);
 
-                if (!comparer.AreSame(inspection.Config.Env, configuration.EnvironmentVariables))
+                if (container != null)
                 {
-                    update = true;
+                    //Inspect the container to get its environment variables
+                    var inspection =
+                        await _dockerClient.Containers.InspectContainerAsync(container.ID, cancellationToken);
+
+                    var comparer =
+                        new EnvironmentVariableComparer(ApplicationDockerContainerFactory.ReservedEnvironmentVariables);
+
+                    if (comparer.AreSame(inspection.Config.Env, configuration.EnvironmentVariables))
+                    {
+                        Logger.Verbose("The environment variables have stayed the same.");
+                        return false;
+                    }
+
+                    Logger.Information("The environment variables have changed.");
                 }
             }
 
-            if (!update)
-                return false;
+            //Make sure that the image is downloaded
+            if (!await _dockerClient.DoesImageExistAsync(nextVersion.ImageId, cancellationToken))
+            {
+                //Download the application
+                await DownloadImageAsync(_dockerClient, nextVersion, cancellationToken);
+            }
 
             //Ditch the current applications
-            await StopAndDestroyApplicationAsync(_dockerClient, DockerConstants.ApplicationContainerName, cancellationToken);
+            await _dockerClient.ObliterateContainerAsync(DockerConstants.ApplicationContainerName, Logger, cancellationToken);
 
             Logger.Information("Create the container for {ImageId} ...", nextVersion.ImageId);
 
@@ -93,7 +107,7 @@
                 Logger.Warning("Warnings during container creation: {Warnings}", formattedWarnings);
             }
 
-            Logger.Information("Container {ContainerId} created for application {}. Starting...", createContainerResponse.ID, nextVersion.ImageId);
+            Logger.Information("Container {ContainerId} created for application {Application}. Starting...", createContainerResponse.ID, nextVersion.ImageId);
 
             //Attempt to start the container
             var started = await _dockerClient.Containers.StartContainerAsync(

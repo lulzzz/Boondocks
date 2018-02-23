@@ -12,6 +12,7 @@
     using Services.Device.Contracts;
     using Services.Device.WebApiClient;
     using Shared;
+    using Boondocks.Agent.Shared;
 
     internal class AgentUpdateService : UpdateService
     {
@@ -60,7 +61,7 @@
             };
 
             //Remove the outgoing application (just in case)
-            await StopAndDestroyApplicationAsync(_dockerClient, DockerConstants.AgentContainerOutgoingName, cancellationToken);
+            await _dockerClient.ObliterateContainerAsync(DockerConstants.AgentContainerOutgoingName, Logger, cancellationToken);
 
             //Get the existing container
             var existingContainer = await _dockerClient.GetContainerByName(DockerConstants.AgentContainerName, cancellationToken);

@@ -34,4 +34,10 @@
     <ProjectReference Include="..\Boondocks.Services.Device.Contracts\Boondocks.Services.Device.Contracts.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
