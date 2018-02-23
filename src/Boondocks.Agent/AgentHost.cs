@@ -6,6 +6,7 @@
     using Docker.DotNet;
     using Docker.DotNet.Models;
     using Interfaces;
+    using Logs;
     using Model;
     using Serilog;
     using Services.Contracts.Interfaces;
@@ -19,6 +20,7 @@
         private readonly ApplicationUpdateService _applicationUpdateService;
         private readonly AgentUpdateService _agentUpdateService;
         private readonly IDockerClient _dockerClient;
+        private readonly ApplicationLogSucker _applicationLogSucker;
         private readonly IDeviceConfiguration _deviceConfiguration;
         private readonly DeviceStateProvider _deviceStateProvider;
         private readonly ILogger _logger;
@@ -37,6 +39,7 @@
             ApplicationUpdateService applicationUpdateService,
             AgentUpdateService agentUpdateService,
             IDockerClient dockerClient,
+            ApplicationLogSucker applicationLogSucker,
             ILogger logger)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
@@ -44,6 +47,7 @@
             _applicationUpdateService = applicationUpdateService ?? throw new ArgumentNullException(nameof(applicationUpdateService));
             _agentUpdateService = agentUpdateService ?? throw new ArgumentNullException(nameof(agentUpdateService));
             _dockerClient = dockerClient ?? throw new ArgumentNullException(nameof(dockerClient));
+            _applicationLogSucker = applicationLogSucker ?? throw new ArgumentNullException(nameof(applicationLogSucker));
             _logger = logger.ForContext(GetType());
             _deviceStateProvider = deviceStateProvider ?? throw new ArgumentNullException(nameof(deviceStateProvider));
             _uptimeProvider = uptimeProvider ?? throw new ArgumentNullException(nameof(uptimeProvider));
@@ -86,7 +90,6 @@
 
                     Console.WriteLine($"{image.ID} {tags} {image.Created}");
                 }
-               
             }
             catch (Exception ex)
             {
@@ -97,6 +100,9 @@
         public async Task RunAsync(CancellationToken cancellationToken)
         {
             await LogStateAsync(cancellationToken);
+
+            //Start up the application log sucker
+            Task logSuckerTask = _applicationLogSucker.SuckAsync(cancellationToken);
 
             //This is how long we'll wait inbetween heartbeats.
             var pollTime = TimeSpan.FromSeconds(_deviceConfiguration.PollSeconds);

@@ -7,6 +7,7 @@
     using Docker.DotNet;
     using Docker.DotNet.Models;
 
+
     internal static class DockerExtensions
     {
         public static async Task StartAllContainers(this IDockerClient client)

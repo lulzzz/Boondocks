@@ -5,6 +5,7 @@
     using Docker.DotNet;
     using Domain;
     using Interfaces;
+    using Logs;
     using Model;
     using Serilog;
     using Services.Contracts.Interfaces;
@@ -31,14 +32,15 @@
             builder.RegisterInstance(pathFactory);
             builder.RegisterInstance(deviceConfiguration);
 
+            //Types
             builder.RegisterType<DeviceStateProvider>().SingleInstance();
             builder.RegisterType<UptimeProvider>().As<IUptimeProvider>().SingleInstance();
             builder.RegisterType<AgentHost>().As<IAgentHost>().SingleInstance();
             builder.RegisterType<ApplicationDockerContainerFactory>().SingleInstance();
-            builder.RegisterType<AgentDockerContainerFactory>().SingleInstance();
-            
+            builder.RegisterType<AgentDockerContainerFactory>().SingleInstance();            
             builder.RegisterType<PlatformDetector>().As<IPlatformDetector>().SingleInstance();
             builder.RegisterType<EnvironmentConfigurationProvider>().As<IEnvironmentConfigurationProvider>().SingleInstance();
+            builder.RegisterType<ApplicationLogSucker>().SingleInstance();
 
             //Update services
             builder.RegisterType<ApplicationUpdateService>().SingleInstance();

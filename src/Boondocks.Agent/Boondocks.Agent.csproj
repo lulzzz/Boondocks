@@ -24,8 +24,4 @@
     <ProjectReference Include="..\Boondocks.Services.Device.WebApiClient\Boondocks.Services.Device.WebApiClient.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Logs\" />
-  </ItemGroup>
-
 </Project>
