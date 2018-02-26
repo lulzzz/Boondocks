@@ -18,7 +18,7 @@
             _tokenFactory = tokenFactory ?? throw new ArgumentNullException(nameof(tokenFactory));
         }
 
-        public Task UploadLogsAsync(SubmitApplicationLogsRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public Task SubmitLogsAsync(SubmitApplicationLogsRequest request, CancellationToken cancellationToken = new CancellationToken())
         {
             return _client.MakeRequestAsync(
                 cancellationToken,

@@ -44,6 +44,27 @@
             return entity;
         }
 
+        public static async Task<AgentVersion> FindAgentVersion(this CommandContext context,
+            Guid deviceArchitectureId,
+            string search, CancellationToken cancellationToken)
+        {
+            //Get the applications
+            var entities = await context.Client.AgentVersions.GetAgentVersions(new GetAgentVersionsRequest()
+            {
+                DeviceArchitectureId = deviceArchitectureId
+            } ,cancellationToken);
+
+            //Find the application
+            var entity = entities.FindEntity(search);
+
+            if (entity == null)
+            {
+                Console.WriteLine($"Unable to find agent version '{search}'.");
+            }
+
+            return entity;
+        }
+
         public static async Task<ApplicationVersion> FindApplicationVersionAsync(this CommandContext context, string search,  CancellationToken cancellationToken)
         {
             //Get the applications

@@ -8,12 +8,17 @@
     using CommandLine;
     using Docker.DotNet;
     using Docker.DotNet.Models;
+    using ExtensionMethods;
+    using Services.Management.WebApiClient;
 
     [Verb("deploy-agent", HelpText = "Deploys an agent directly to a device.")]
     public class DeployAgentCommand : CommandBase
     {
-        [Option('i', "image", Required = true, HelpText = "The id of the image to deploy.")]
-        public string Image { get; set; }
+        [Option('a', "arhitecture", HelpText = "The device architecture. Required if deplopying.")]
+        public string DeviceArchitecture { get; set; }
+
+        [Option('v', "Version", Required = true, HelpText = "The version of the agent to deploy.")]
+        public string Version { get; set; }
 
         [Option('s', "source", Default = "http://localhost:2375/", HelpText = "The source docker instance where the agent image resides.")]
         public string Source { get; set; }
@@ -23,39 +28,45 @@
 
         protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
+            var deviceArchitecture = await context.FindDeviceArchitecture(DeviceArchitecture, cancellationToken);
+
+            if (deviceArchitecture == null)
+            {
+                return 1;
+            }
+
+            var agentVersion = await context.FindAgentVersion(deviceArchitecture.Id, Version, cancellationToken);
+
+            if (agentVersion == null)
+            {
+                return 1;
+            }
+
             using (IDockerClient sourceDockerClient = new DockerClientConfiguration(new Uri(Source)).CreateClient())
             using (IDockerClient targetDockerClient = new DockerClientConfiguration(new Uri(Target)).CreateClient())
             {
-                //Find the image.
-                var sourceImages = await sourceDockerClient.Images.ListImagesAsync(new ImagesListParameters() {All = true}, cancellationToken);
-
-                var sourceImage = sourceImages
-                    .FirstOrDefault(i => i.ID.Contains(Image));
-
-                if (sourceImage == null)
-                {
-                    Console.Error.WriteLine($"Unable to find source image '{Image}' at '{Source}'.");
-                    return 1;
-                }
-
-                Console.WriteLine($"Found image '{sourceImage.ID}'. Copying to target...");
+                Console.WriteLine("Saving image to target...");
 
                 //Copy the image.
-                using (var sourceImageStream = await sourceDockerClient.Images.SaveImageAsync(sourceImage.ID, cancellationToken))
+                using (var sourceImageStream = await sourceDockerClient.Images.SaveImageAsync(agentVersion.ImageId, cancellationToken))
                 {
                     await targetDockerClient.Images.LoadImageAsync(new ImageLoadParameters(), sourceImageStream,
                         new Progress<JSONMessage>(p => Console.WriteLine(p.Status)), cancellationToken);
                 }
 
+                Console.WriteLine("Removing target agent container(s)...");
+
                 //Ditch the containers that might cause a problem.
                 await targetDockerClient.ObliterateContainerAsync(DockerConstants.AgentContainerName, cancellationToken: cancellationToken);
                 await targetDockerClient.ObliterateContainerAsync(DockerConstants.AgentContainerOutgoingName, cancellationToken: cancellationToken);
+
+                Console.WriteLine("Creating agent container...");
 
                 //Create the container factory
                 var containerFactory = new AgentDockerContainerFactory();
 
                 //Create the container itself
-                var createContainerResponse = await containerFactory.CreateContainerAsync(targetDockerClient, sourceImage.ID, cancellationToken);
+                var createContainerResponse = await containerFactory.CreateContainerAsync(targetDockerClient, agentVersion.ImageId, cancellationToken);
 
                 Console.WriteLine($"Container '{createContainerResponse.ID}' created. Starting container...");
 

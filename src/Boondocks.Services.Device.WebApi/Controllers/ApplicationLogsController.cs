@@ -8,6 +8,7 @@ namespace Boondocks.Services.Device.WebApi.Controllers
     using Contracts;
     using Dapper;
     using Dapper.Contrib.Extensions;
+    using DataAccess;
     using DataAccess.Domain;
     using DataAccess.Interfaces;
     using Microsoft.AspNetCore.Authorization;
@@ -32,7 +33,7 @@ namespace Boondocks.Services.Device.WebApi.Controllers
         [HttpPost]
         public void Post([FromBody]SubmitApplicationLogsRequest request)
         {
-            using (var connection = _connectionFactory.Create())
+            using (var connection = _connectionFactory.CreateAndOpen())
             using (var transaction = connection.BeginTransaction())
             {
                 //If this is the first batch, we'll go ahead and kill the existing entries.
@@ -48,6 +49,7 @@ namespace Boondocks.Services.Device.WebApi.Controllers
                     .Select(e => new ApplicationLog
                     {
                         Id = Guid.NewGuid(),
+                        Type = e.Type,
                         Message = e.Content,
                         DeviceId = DeviceId,
                         CreatedLocal = e.TimestampLocal,
@@ -55,7 +57,10 @@ namespace Boondocks.Services.Device.WebApi.Controllers
                     });
 
                 //Insert these guys
-                connection.Insert(entries, transaction);
+                foreach (var entry in entries)
+                {
+                    connection.Insert(entry, transaction);
+                }
 
                 transaction.Commit();
             }

@@ -14,8 +14,12 @@
     {
         private readonly DeviceApiClient _deviceApiClient;
         private readonly ILogger _logger;
+
+        //The maximum amount of time to go before sending all held messages.
         private const int TimerInterval = 10 * 1000;
-        private const int EmitBatchMaximumSize = 5;
+
+        //The maximum number of items to allow in a batch.
+        private const int EmitBatchMaximumSize = 100;
 
         private readonly List<DockerLogEvent> _events = new List<DockerLogEvent>();
         private readonly Timer _timer;
@@ -72,8 +76,10 @@
             {
                 using (await _lock.LockAsync())
                 {
+                    //Check to see if we have any held events
                     if (_events.Count > 0)
                     {
+                        //Create a request
                         var request = new SubmitApplicationLogsRequest
                         {
                             Events = _events.ToArray(),
@@ -87,6 +93,8 @@
 
                         _isFirstBatch = false;
 
+                        //Clear out the events that we just sent. Keep the same list instance so that we
+                        // don't keep allocating memory.
                         _events.Clear();
                     }
                     else

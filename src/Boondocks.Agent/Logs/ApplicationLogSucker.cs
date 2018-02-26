@@ -9,14 +9,16 @@
     using Services.Contracts;
     using Shared;
 
-
+    /// <summary>
+    /// Sucks application logs out of docker.
+    /// </summary>
     public class ApplicationLogSucker
     {
         private readonly IDockerClient _dockerClient;
         private readonly LogBatchCollector _batchCollector;
         private readonly ILogger _logger;
 
-        private const int RetrySeconds = 5;
+        private const int RetrySeconds = 10;
         private const double LogSlewSeconds = 1.0;
 
         public ApplicationLogSucker(IDockerClient dockerClient, ILogger logger, LogBatchCollector batchCollector)
