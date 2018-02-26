@@ -4,6 +4,7 @@
     {
         public const string ApplicationEnvironmentVariables = "v1/applicationEnvironmentVariables";
         public const string Applications = "v1/applications";
+        public const string ApplicationLogs = "v1/applicationLogs";
         public const string ApplicationUploadInfo = "v1/applicationUploadInfo";
         public const string ApplicationVersions = "v1/applicationVersions";
         public const string DeviceArchitectures = "v1/deviceArchitectures";

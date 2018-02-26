@@ -11,6 +11,7 @@
             var client = new ApiClient(new Uri(baseUri), defaultTimeout);
 
             Applications = new ApplicationOperations(client);
+            ApplicationLogs = new ApplicationLogOperations(client);
             ApplicationEnvironmentVariables = new ApplicationEnvironmentVariableOperations(client);
             ApplicationVersions = new ApplicationVersionOperations(client);
             ApplicationUpload = new ApplicationUploadInfoOperations(client);
@@ -24,6 +25,8 @@
         }
 
         public ApplicationOperations Applications { get; }
+
+        public ApplicationLogOperations ApplicationLogs { get; }
 
         public ApplicationEnvironmentVariableOperations ApplicationEnvironmentVariables { get; }
 
