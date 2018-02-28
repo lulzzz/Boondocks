@@ -19,7 +19,7 @@ services:
       dockerfile: DeviceApi.Dockerfile
     image: boondocks-device-api
     environment:
-      - DEVICEAPI_CONNSTRING=Server=desktop-richq.captiveaire.com\\sqlexpress;Database=Boondocks;User Id=boondocks;Password=#Px@S:w_j+V97ngz;
+      - DEVICEAPI_CONNSTRING=Server=desktop-richq.captiveaire.com\sqlexpress;Database=Boondocks;User Id=boondocks;Password=#Px@S:w_j+V97ngz;
       - DEVICEAPI_REGISTRYHOST=10.0.4.44:5000
     ports:
       - 8080:80
@@ -31,7 +31,7 @@ services:
       dockerfile: ManagementApi.Dockerfile
     image: boondocks-management-api
     environment:
-      - MANAGEMENTAPI_CONNSTRING=Server=desktop-richq.captiveaire.com\\sqlexpress;Database=Boondocks;User Id=boondocks;Password=#Px@S:w_j+V97ngz;
+      - MANAGEMENTAPI_CONNSTRING=Server=desktop-richq.captiveaire.com\sqlexpress;Database=Boondocks;User Id=boondocks;Password=#Px@S:w_j+V97ngz;
       - MANAGEMENTAPI_REGISTRYHOST=10.0.4.44:5000
       - MANAGEMENTAPI_DEVICEAPIURL=http://desktop-richq.captiveaire.com:8080/Boondocks.Services.Management.WebApi/
     ports:
@@ -60,4 +60,5 @@ volumes:
   auth_certs:
 
 networks:
-  
+  default:
+    
