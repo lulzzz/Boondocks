@@ -91,16 +91,19 @@
 
             builder.RegisterInstance(config);
 
-            string dbConnectionString = config["DbConnectionString"];
+            string dbConnectionString = config["DEVICEAPI_CONNSTRING"];
+
+            
 
             // Add things to the Autofac ContainerBuilder.
             builder.RegisterInstance(new SqlServerDbConnectionFactory(dbConnectionString))
                 .As<IDbConnectionFactory>()
                 .SingleInstance();
 
-            var registryConfig = new RegistryConfig();
-
-            config.GetSection("registry").Bind(registryConfig);
+            var registryConfig = new RegistryConfig()
+            {
+                RegistryHost = config["DEVICEAPI_REGISTRYHOST"]
+            };
 
             builder.RegisterInstance(registryConfig);
             

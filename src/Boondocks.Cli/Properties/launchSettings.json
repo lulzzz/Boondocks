@@ -2,7 +2,7 @@
   "profiles": {
     "BoondocksCli": {
       "commandName": "Project",
-      "commandLineArgs": "app-var-set -a SCADADevelopment -n Foo -v Next"
+      "commandLineArgs": "app-logs-list -d Prototype1"
     }
   }
 }

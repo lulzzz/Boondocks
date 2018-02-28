@@ -89,13 +89,17 @@ namespace Boondocks.Services.Management.WebApi
 
             builder.RegisterInstance(config);
 
-            string dbConnectionString = config["DbConnectionString"];
+            string dbConnectionString = config["MANAGEMENTAPI_CONNSTRING"];
 
-            var registryConfig = new RegistryConfig();
-            var provisioningConfig = new ProvisioningConfig();
+            var registryConfig = new RegistryConfig()
+            {
+                RegistryHost = config["MANAGEMENTAPI_REGISTRYHOST"]
+            };
 
-            config.GetSection("registry").Bind(registryConfig);
-            config.GetSection("provisioningConfig").Bind(provisioningConfig);
+            var provisioningConfig = new ProvisioningConfig()
+            { 
+                DeviceApiUrl  = config["MANAGEMENTAPI_DEVICEAPIURL"]
+            };
 
             builder.RegisterInstance(registryConfig);
             builder.RegisterInstance(provisioningConfig);

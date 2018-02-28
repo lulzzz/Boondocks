@@ -1,0 +1,63 @@
+version: '3.1'
+
+services: 
+
+  # Database server
+  # boondocks-db:
+  #   image: microsoft/mssql-server-linux
+  #   environment: 
+  #     - ACCEPT_EULA=Y
+  #     - SA_PASSWORD=987ysnskaFsf 
+  #   ports:
+  #     -  1500:1433 
+  #     -  1501:1434 
+
+  # device api
+  boondocks-device-api:
+    build:
+      context: .
+      dockerfile: DeviceApi.Dockerfile
+    image: boondocks-device-api
+    environment:
+      - DEVICEAPI_CONNSTRING=Server=desktop-richq.captiveaire.com\\sqlexpress;Database=Boondocks;User Id=boondocks;Password=#Px@S:w_j+V97ngz;
+      - DEVICEAPI_REGISTRYHOST=10.0.4.44:5000
+    ports:
+      - 8080:80
+
+  # management api
+  boondocks-management-api:
+    build:
+      context: .
+      dockerfile: ManagementApi.Dockerfile
+    image: boondocks-management-api
+    environment:
+      - MANAGEMENTAPI_CONNSTRING=Server=desktop-richq.captiveaire.com\\sqlexpress;Database=Boondocks;User Id=boondocks;Password=#Px@S:w_j+V97ngz;
+      - MANAGEMENTAPI_REGISTRYHOST=10.0.4.44:5000
+      - MANAGEMENTAPI_DEVICEAPIURL=http://desktop-richq.captiveaire.com:8080/Boondocks.Services.Management.WebApi/
+    ports:
+      - 8081:80
+
+  # # management web site
+
+  # # Docker Registry
+  # boondocks-registry:
+  #   image: registry:2
+  #   environment:
+  #     - REGISTRY_LOG_LEVEL=debug
+  #     - REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry
+  #     - REGISTRY_AUTH=token
+  #     - REGISTRY_AUTH_TOKEN_REALM=http://desktop-richq.captiveaire.com/AuthTest/token
+  #     - REGISTRY_AUTH_SERVICE="Docker registry"
+  #     - REGISTRY_AUTH_ISSUER="issuer"
+  #     - REGISTRY_AUTH_ROOTCERTBUNDLE=/ssl/registry-auth-cert.pem
+  #   volumes:
+  #     - auth_certs:/ssl
+  #     - /root/docker_registry/data:/var/lib/registry
+  #   ports:
+  #     - 5000:5000
+
+volumes:
+  auth_certs:
+
+networks:
+  
