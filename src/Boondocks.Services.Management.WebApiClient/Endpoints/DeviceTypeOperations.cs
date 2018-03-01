@@ -30,5 +30,10 @@
             return _client.MakeJsonRequestAsync<DeviceType[]>(cancellationToken, HttpMethod.Get,
                 ResourceUrls.DeviceTypes);
         }
+
+        public Task<DeviceType> GetDeviceTypeAsync(Guid id, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return _client.MakeJsonRequestAsync<DeviceType>(cancellationToken, HttpMethod.Get, ResourceUrls.DeviceTypes, new { id });
+        }
     }
 }

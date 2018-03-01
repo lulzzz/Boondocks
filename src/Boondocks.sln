@@ -39,7 +39,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Device", "Device", "{DC0251
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Management", "Management", "{CA0A7584-007B-4FA8-AEB7-A28A805E5C0A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Agent.Tests", "Boondocs.Agent.Tests\Boondocks.Agent.Tests.csproj", "{BC40EECC-BFC8-4B10-BA5E-BAC41B602643}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Agent.Base.Tests", "Boondocs.Agent.Tests\Boondocks.Agent.Base.Tests.csproj", "{BC40EECC-BFC8-4B10-BA5E-BAC41B602643}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boondocks.Agent.Base", "Boondocks.Agent.Base\Boondocks.Agent.Base.csproj", "{EE337B1A-AB5B-4C3C-AED3-56D89DD15891}"
 EndProject

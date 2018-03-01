@@ -33,6 +33,9 @@
         [Option('c', "make-current", HelpText = "Make this the current version of the application.", Default = true)]
         public bool MakeCurrent { get; set; }
 
+        [Option('t', "device-type", Required = true, HelpText = "The device type to use (e.g. 'RaspberryPi3')")]
+        public string DeviceType { get; set; }
+
         protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(Name))
@@ -41,7 +44,7 @@
                 return 1;
             }
 
-            var tag = Name.Trim().ToLower();
+            var tag =$"{DeviceType.ToLower()}-agent-{Name.Trim().ToLower()}";
 
             using (var temporaryFile = new TemporaryFile())
             {
@@ -61,7 +64,7 @@
                         {
                             tag
                         },
-                        Dockerfile = "Agent.Dockerfile"
+                        Dockerfile = $"{DeviceType}.Agent.Dockerfile"
                     };
 
                     BuildResult result;
@@ -115,6 +118,12 @@
                 return 1;
             }
 
+            if (string.IsNullOrWhiteSpace(DeviceType))
+            {
+                Console.Error.WriteLine("No device type was specified.");
+                return 1;
+            }
+
             var deviceArchitecture = await context.FindDeviceArchitecture(DeviceArchitecture, cancellationToken);
 
             if (deviceArchitecture == null)
@@ -134,7 +143,7 @@
 
             if (applicationUploadInfo.CanUpload)
             {
-                Console.WriteLine($"Deploying with imageid '{imageId}'...");
+                Console.WriteLine($"Deploying '{tag}' with imageid '{imageId}'...");
 
                 var parameters = new ImagePushParameters
                 {

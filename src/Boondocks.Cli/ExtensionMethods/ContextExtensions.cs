@@ -108,5 +108,31 @@
 
             return device;
         }
+
+        public static async Task<DeviceType> FindDeviceTypeAsync(this CommandContext context, string search,
+            CancellationToken cancellationToken)
+        {
+            Guid? entityId = search.TryParseGuid(false);
+
+            DeviceType entity;
+
+            if (entityId == null)
+            {
+                var entities = await context.Client.DeviceTypes.GetDeviceTypesAsync(cancellationToken);
+
+                entity = entities.FindEntity(search);
+            }
+            else
+            {
+                entity = await context.Client.DeviceTypes.GetDeviceTypeAsync(entityId.Value, cancellationToken);
+            }
+
+            if (entity == null)
+            {
+                Console.Error.WriteLine($"Unable to find device type '{search}'.");
+            }
+
+            return entity;
+        }
     }
  }

@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace Boondocs.Agent.Tests
+﻿namespace Boondocks.Agent.Base.Tests
 {
     using System.Collections.Generic;
-    using Boondocks.Agent.Base.Model;
-    using Boondocks.Services.Device.Contracts;
+    using Model;
+    using Services.Device.Contracts;
     using Xunit;
 
     public class EnvironmentVariableComparerTests
