@@ -8,7 +8,7 @@
         /// <summary>
         ///     Creates and opens a connection.
         /// </summary>
-        /// <param name="factory"></param>
+        /// <param name="factory"></param>ConnectionFac
         /// <returns></returns>
         public static IDbConnection CreateAndOpen(this IDbConnectionFactory factory)
         {

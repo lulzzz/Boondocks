@@ -93,8 +93,6 @@
 
             string dbConnectionString = config["DEVICEAPI_CONNSTRING"];
 
-            
-
             // Add things to the Autofac ContainerBuilder.
             builder.RegisterInstance(new SqlServerDbConnectionFactory(dbConnectionString))
                 .As<IDbConnectionFactory>()

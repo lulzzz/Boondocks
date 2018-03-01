@@ -13,6 +13,11 @@
 
         public SqlServerDbConnectionFactory(string connectionString)
         {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new System.ArgumentException("connectionString is null or whitespace.", nameof(connectionString));
+            }
+
             _connectionString = connectionString;
         }
 

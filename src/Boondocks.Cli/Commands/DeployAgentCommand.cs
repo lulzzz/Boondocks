@@ -14,10 +14,10 @@
     [Verb("deploy-agent", HelpText = "Deploys an agent directly to a device.")]
     public class DeployAgentCommand : CommandBase
     {
-        [Option('a', "arhitecture", HelpText = "The device architecture. Required if deplopying.")]
+        [Option('a', "arch", Required = true, HelpText = "The device architecture.")]
         public string DeviceArchitecture { get; set; }
 
-        [Option('v', "Version", Required = true, HelpText = "The version of the agent to deploy.")]
+        [Option('v', "version", Required = true, HelpText = "The version of the agent to deploy.")]
         public string Version { get; set; }
 
         [Option('s', "source", Default = "http://localhost:2375/", HelpText = "The source docker instance where the agent image resides.")]

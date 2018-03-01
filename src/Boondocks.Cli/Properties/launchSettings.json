@@ -2,7 +2,7 @@
   "profiles": {
     "BoondocksCli": {
       "commandName": "Project",
-      "commandLineArgs": "app-logs-list -d Prototype1"
+      "commandLineArgs": "deploy-agent --target http://10.0.4.114:2375/ -v 1.2.20 -a armv7hf"
     }
   }
 }
