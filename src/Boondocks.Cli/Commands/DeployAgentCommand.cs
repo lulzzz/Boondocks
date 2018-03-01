@@ -4,11 +4,11 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Agent.Shared;
     using CommandLine;
     using Docker.DotNet;
     using Docker.DotNet.Models;
     using ExtensionMethods;
+    using Boondocks.Agent.Base;
     using Services.Management.WebApiClient;
 
     [Verb("deploy-agent", HelpText = "Deploys an agent directly to a device.")]

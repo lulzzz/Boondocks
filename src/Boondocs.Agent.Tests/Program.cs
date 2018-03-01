@@ -1,4 +1,4 @@
-﻿namespace Boondocs.Agent.Tests
+﻿namespace Boondocks.Agent.Tests
 {
     public static class Program
     {

@@ -3,21 +3,18 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <AssemblyName>Boondocks</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.2.1" />
-    <PackageReference Include="Docker.DotNet" Version="3.125.1" />
-    <PackageReference Include="SharpZipLib" Version="1.0.0-alpha2" />
+    <PackageReference Include="Autofac" Version="4.6.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Boondocks.Agent.Base\Boondocks.Agent.Base.csproj" />
     <ProjectReference Include="..\Boondocks.Base\Boondocks.Base.csproj" />
     <ProjectReference Include="..\Boondocks.Services.Contracts\Boondocks.Services.Contracts.csproj" />
-    <ProjectReference Include="..\Boondocks.Services.Management.Contracts\Boondocks.Services.Management.Contracts.csproj" />
-    <ProjectReference Include="..\Boondocks.Services.Management.WebApiClient\Boondocks.Services.Management.WebApiClient.csproj" />
+    <ProjectReference Include="..\Boondocks.Services.Device.Contracts\Boondocks.Services.Device.Contracts.csproj" />
+    <ProjectReference Include="..\Boondocks.Services.Device.WebApiClient\Boondocks.Services.Device.WebApiClient.csproj" />
   </ItemGroup>
 
 </Project>

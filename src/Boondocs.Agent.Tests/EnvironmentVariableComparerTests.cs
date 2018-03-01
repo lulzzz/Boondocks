@@ -3,7 +3,7 @@
 namespace Boondocs.Agent.Tests
 {
     using System.Collections.Generic;
-    using Boondocks.Agent.Model;
+    using Boondocks.Agent.Base.Model;
     using Boondocks.Services.Device.Contracts;
     using Xunit;
 

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.6.2" />
+    <PackageReference Include="Docker.DotNet" Version="3.125.1" />
+    <PackageReference Include="Serilog" Version="2.6.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Boondocks.Services.DataAccess.Domain\Boondocks.Services.DataAccess.Domain.csproj" />
+    <ProjectReference Include="..\Boondocks.Services.Device.Contracts\Boondocks.Services.Device.Contracts.csproj" />
+    <ProjectReference Include="..\Boondocks.Services.Device.WebApiClient\Boondocks.Services.Device.WebApiClient.csproj" />
+    <ProjectReference Include="..\Boondocks.Services.Management.Contracts\Boondocks.Services.Management.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>
