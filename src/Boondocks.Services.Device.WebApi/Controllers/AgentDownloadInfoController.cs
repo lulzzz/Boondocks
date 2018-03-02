@@ -66,9 +66,6 @@
                 if (deviceType == null)
                     return NotFound(new Error($"Unable to find device type '{application.DeviceTypeId}'."));
 
-                if (deviceType.DeviceArchitectureId != agentVersion.DeviceArchitectureId)
-                    return BadRequest(new Error($"Invalid device architecture."));
-
                 var response = new ImageDownloadInfo()
                 {
                     ImageId = agentVersion.ImageId,

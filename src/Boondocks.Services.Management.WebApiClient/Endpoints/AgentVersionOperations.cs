@@ -22,8 +22,8 @@
         {
             dynamic query = new ExpandoObject();
 
-            if (request.DeviceArchitectureId != null)
-                query.deviceTypeId = request.DeviceArchitectureId.Value;
+            if (request.DeviceTypeId != null)
+                query.deviceTypeId = request.DeviceTypeId.Value;
 
             return _client.MakeJsonRequestAsync<AgentVersion[]>(
                 cancellationToken, 

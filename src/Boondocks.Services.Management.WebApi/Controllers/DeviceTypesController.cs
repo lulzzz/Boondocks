@@ -74,16 +74,16 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(Guid id)
-        {
-            using (var connection = _connectionFactory.CreateAndOpen())
-            {
-                connection.Execute("delete DeviceTypes where Id = @id", new {id})
-                    .HandleUpdateResult();
-            }
+        //[HttpDelete("{id}")]
+        //public IActionResult Delete(Guid id)
+        //{
+        //    using (var connection = _connectionFactory.CreateAndOpen())
+        //    {
+        //        connection.Execute("delete DeviceTypes where Id = @id", new {id})
+        //            .HandleUpdateResult();
+        //    }
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
     }
 }

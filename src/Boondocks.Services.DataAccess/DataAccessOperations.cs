@@ -249,14 +249,14 @@
             return connection.ExecuteScalar<bool>(sql, new {applicationId, name});
         }
 
-        public static bool IsAgentVersionNameInUse(this IDbConnection connection, Guid deviceArhitectureId, string name)
+        public static bool IsAgentVersionNameInUse(this IDbConnection connection, Guid deviceTypeId, string name)
         {
             //https://stackoverflow.com/a/39023427/232566
 
             const string sql =
-                "select count(1) from AgentVersions where DeviceArchitectureId = @deviceArhitectureId and Name = @name";
+                "select count(1) from AgentVersions where DeviceType = @deviceTypeId and Name = @name";
 
-            return connection.ExecuteScalar<bool>(sql, new { deviceArhitectureId, name });
+            return connection.ExecuteScalar<bool>(sql, new { deviceTypeId, name });
         }
 
         public static bool IsApplicationVersionImageIdInUse(this IDbConnection connection, Guid applicationId,

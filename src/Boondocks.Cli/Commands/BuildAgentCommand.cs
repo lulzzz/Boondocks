@@ -10,6 +10,7 @@
     using Docker.DotNet;
     using Docker.DotNet.Models;
     using ExtensionMethods;
+    using Services.DataAccess.Domain;
     using Services.Management.Contracts;
 
     [Verb("build-agent", HelpText = "Builds a agent and optionally uploads it.")]
@@ -23,9 +24,6 @@
 
         [Option('d', "deploy", Default = true, HelpText = "True to deploy, false to skip.")]
         public bool Deploy { get; set; }
-
-        [Option('a', "arhitecture", HelpText = "The device architecture. Required if deplopying.")]
-        public string DeviceArchitecture { get; set; }
 
         [Option('n', "name", HelpText = "The name to give this version.")]
         public string Name { get; set; }
@@ -111,30 +109,21 @@
                 return 1;
             }
 
-            //Make sure we have an application name
-            if (string.IsNullOrWhiteSpace(DeviceArchitecture))
-            {
-                Console.Error.WriteLine("No application was specified.");
-                return 1;
-            }
-
             if (string.IsNullOrWhiteSpace(DeviceType))
             {
                 Console.Error.WriteLine("No device type was specified.");
                 return 1;
             }
 
-            var deviceArchitecture = await context.FindDeviceArchitecture(DeviceArchitecture, cancellationToken);
+            DeviceType deviceType = await context.FindDeviceTypeAsync(DeviceType, cancellationToken);
 
-            if (deviceArchitecture == null)
-            {
+            if (deviceType == null)
                 return 1;
-            }
 
             //Create the request
             var uploadInforRequest = new GetAgentUploadInfoRequest()
             {
-                DeviceArchitectureId = deviceArchitecture.Id,
+                DeviceTypeId = deviceType.Id,
                 ImageId = imageId,
                 Name = tag
             };
@@ -173,7 +162,7 @@
                 //Let the service now about the new application version.
                 var uploadRequest = new CreateAgentVersionRequest()
                 {
-                    DeviceArchitectureId = deviceArchitecture.Id,
+                    DeviceTypeId = deviceType.Id,
                     Name = tag,
                     ImageId = imageId,
                     Logs = result.ToString(),

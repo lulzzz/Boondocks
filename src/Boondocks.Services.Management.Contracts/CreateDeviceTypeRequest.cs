@@ -7,8 +7,5 @@
     {
         [JsonProperty("name")]
         public string Name { get; set; }
-
-        [JsonProperty("deviceArchitectureId")]
-        public Guid DeviceArchitectureId { get; set; }
     }
 }

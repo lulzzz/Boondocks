@@ -36,10 +36,10 @@ namespace Boondocks.Services.Management.WebApi.Controllers
             //Make sure we can find the application
             using (var connection = _connectionFactory.CreateAndOpen())
             {
-                var deviceArchitecture = connection.Get<DeviceArchitecture>(request.DeviceArchitectureId);
+                var deviceType = connection.Get<DeviceType>(request.DeviceTypeId);
 
-                if (deviceArchitecture == null)
-                    return NotFound(new Error($"Unable to find device architecture '{request.DeviceArchitectureId}'."));
+                if (deviceType == null)
+                    return NotFound(new Error($"Unable to find device device type '{request.DeviceTypeId}'."));
 
                 if (string.IsNullOrWhiteSpace(request.Name) )
                     return BadRequest(new Error("No name was specified."));
@@ -48,11 +48,11 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     return BadRequest(new Error("No image id was specified."));
                 
                 //Check for duplicate name.
-                if (connection.IsAgentVersionNameInUse(request.DeviceArchitectureId, request.Name))
+                if (connection.IsAgentVersionNameInUse(request.DeviceTypeId, request.Name))
                 {
                     return Ok(new GetUploadInfoResponse
                     {
-                        Reason = $"Name '{request.Name}' is already in use for device architecture '{deviceArchitecture.Name}'. Specify a new name."
+                        Reason = $"Name '{request.Name}' is already in use for device architecture '{deviceType.Name}'. Specify a new name."
                     });
                 }
 

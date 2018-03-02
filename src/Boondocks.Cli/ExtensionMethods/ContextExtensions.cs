@@ -27,31 +27,14 @@
             return entity;
         }
 
-        public static async Task<DeviceArchitecture> FindDeviceArchitecture(this CommandContext context,
-            string search, CancellationToken cancellationToken)
-        {
-            //Get the applications
-            var entities = await context.Client.DeviceArchitectures.GetDeviceArchitectures(cancellationToken);
-
-            //Find the application
-            var entity = entities.FindEntity(search);
-
-            if (entity == null)
-            {
-                Console.WriteLine($"Unable to find device architecture '{search}'.");
-            }
-
-            return entity;
-        }
-
         public static async Task<AgentVersion> FindAgentVersion(this CommandContext context,
-            Guid deviceArchitectureId,
+            Guid deviceTypeId,
             string search, CancellationToken cancellationToken)
         {
             //Get the applications
             var entities = await context.Client.AgentVersions.GetAgentVersions(new GetAgentVersionsRequest()
             {
-                DeviceArchitectureId = deviceArchitectureId
+                DeviceTypeId = deviceTypeId
             } ,cancellationToken);
 
             //Find the application
@@ -112,6 +95,9 @@
         public static async Task<DeviceType> FindDeviceTypeAsync(this CommandContext context, string search,
             CancellationToken cancellationToken)
         {
+            if (string.IsNullOrWhiteSpace(search))
+                return null;
+
             Guid? entityId = search.TryParseGuid(false);
 
             DeviceType entity;

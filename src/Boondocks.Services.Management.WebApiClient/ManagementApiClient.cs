@@ -19,7 +19,6 @@
             DeviceConfiguration = new DeviceConfigurationOperations(client);
             DeviceEnvironmentVariables = new DeviceEnvironmentVariableOperations(client);
             DeviceTypes = new DeviceTypeOperations(client);
-            DeviceArchitectures = new DeviceArchitectureOperations(client);
             AgentVersions = new AgentVersionOperations(client);
             AgentUploadInfo = new AgentUploadInfoOperations(client);
         }
@@ -41,8 +40,6 @@
         public DeviceEnvironmentVariableOperations DeviceEnvironmentVariables { get; }
 
         public DeviceTypeOperations DeviceTypes { get; }
-
-        public DeviceArchitectureOperations DeviceArchitectures { get; }
 
         public AgentVersionOperations AgentVersions { get; }
 

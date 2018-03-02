@@ -4,6 +4,6 @@
 
     public class GetAgentVersionsRequest
     {
-        public Guid? DeviceArchitectureId { get; set; }
+        public Guid? DeviceTypeId { get; set; }
     }
 }

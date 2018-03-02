@@ -37,7 +37,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                     new SortableColumn("createdUtc", "CreatedUtc"),
                 });
 
-            queryBuilder.TryAddGuidParameter("deviceArchitectureId", "DeviceArchitectureId");
+            queryBuilder.TryAddGuidParameter("deviceTypeId", "DeviceTypeId");
 
             using (var connection = _connectionFactory.CreateAndOpen())
             {
@@ -56,7 +56,7 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                 {
                     Name = request.Name,
                     ImageId = request.ImageId,
-                    DeviceArchitectureId = request.DeviceArchitectureId,
+                    DeviceTypeId = request.DeviceTypeId,
                     Logs = request.Logs,
                 }.SetNew();
 

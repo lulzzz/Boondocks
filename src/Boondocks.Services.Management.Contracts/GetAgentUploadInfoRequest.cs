@@ -5,8 +5,8 @@
 
     public class GetAgentUploadInfoRequest
     {
-        [JsonProperty("deviceArchitectureId")]
-        public Guid DeviceArchitectureId { get; set; }
+        [JsonProperty("deviceTypeId")]
+        public Guid DeviceTypeId { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }

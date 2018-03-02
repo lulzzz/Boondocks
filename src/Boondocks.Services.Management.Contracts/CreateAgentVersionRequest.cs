@@ -8,9 +8,12 @@
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("deviceArchitectureId")]
-        public Guid DeviceArchitectureId { get; set; }
+        [JsonProperty("deviceTypeId")]
+        public Guid DeviceTypeId { get; set; }
 
+        /// <summary>
+        /// Image
+        /// </summary>
         [JsonProperty("imageId")]
         public string ImageId { get; set; }
 

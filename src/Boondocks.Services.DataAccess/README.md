@@ -10,18 +10,11 @@ A device type (e.g. Raspberry Pi 2, Raspberry Pi 3)
 |Id|Guid|
 |CreatedUtc|DateTime|
 
-## DeviceArchitecture : EntityBase
-
-| Column | Type | Notes |
-| ------ | ---- | ----- |
-|Name|string|The name of the architecture.|
-
 ## DeviceType : EntityBase
 A device type (e.g. Raspberry Pi 2, Raspberry Pi 3)
 
 | Column | Type | Notes |
 | ------ | ---- | ----- |
-|DeviceArhictectureId|Guid|
 |Name|string| |
 
 ## Devices : EntityBase
@@ -97,10 +90,20 @@ Application specific events.
 |EventType|int||
 |Message|string||
 
+## ApplicationLogs : EntityBase
+
+| Column | Type | Notes |
+| ------ | ---- | ----- |
+|DeviceId|Guid||
+|Type|int||
+|Message|string|
+|CreatedLocal|The local time at which the log event was created.|
+
+
 ## AgentVersions : EntityBase
 Agent versions.
 
 | Column | Type | Notes |
 | ------ | ---- | ----- |
-|DeviceArchitectureId|Guid||
+|DeviceTypeId|Guid||
 |Name|string||

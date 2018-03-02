@@ -5,8 +5,8 @@
 
     public class AgentVersion : NamedEntityBase
     {
-        [JsonProperty("deviceArchitectureId")]
-        public Guid DeviceArchitectureId { get; set; }
+        [JsonProperty("deviceTypeId")]
+        public Guid DeviceTypeId { get; set; }
 
         [JsonProperty("imageId")]
         public string ImageId { get; set; }

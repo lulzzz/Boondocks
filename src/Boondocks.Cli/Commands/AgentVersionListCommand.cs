@@ -6,35 +6,23 @@
     using Base;
     using CommandLine;
     using ExtensionMethods;
+    using Services.DataAccess.Domain;
     using Services.Management.WebApiClient;
 
     [Verb("agent-version-list", HelpText = "Lists the agent versions for a given architecture.")]
     public class AgentVersionListCommand : CommandBase
     {
-        [Option('a', "arch", Required = true, HelpText="The device architecture.")]
-        public string DeviceArchitecture { get; set; }
+        [Option('t', "device-type", Required = true, HelpText="The device type.")]
+        public string DeviceType { get; set; }
 
         protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
-            Guid? deviceArchitectureId = DeviceArchitecture.TryParseGuid(false);
+            DeviceType deviceType = await context.FindDeviceTypeAsync(DeviceType, cancellationToken);
 
-            var request = new GetAgentVersionsRequest();
-
-            if (deviceArchitectureId == null)
+            var request = new GetAgentVersionsRequest()
             {
-                var deviceArchitecture = await context.FindDeviceArchitecture(DeviceArchitecture, cancellationToken);
-
-                if (deviceArchitecture == null)
-                {
-                    return 1;
-                }
-
-                request.DeviceArchitectureId = deviceArchitecture.Id;
-            }
-            else
-            {
-                request.DeviceArchitectureId = deviceArchitectureId.Value;
-            }
+                DeviceTypeId = deviceType?.Id
+            };
 
             var versions = await context.Client.AgentVersions.GetAgentVersions(request, cancellationToken);
 

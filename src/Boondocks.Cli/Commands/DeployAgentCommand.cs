@@ -14,8 +14,8 @@
     [Verb("deploy-agent", HelpText = "Deploys an agent directly to a device.")]
     public class DeployAgentCommand : CommandBase
     {
-        [Option('a', "arch", Required = true, HelpText = "The device architecture.")]
-        public string DeviceArchitecture { get; set; }
+        [Option('d', "device-type", Required = true, HelpText = "The device type to use (e.g. 'RaspberryPi3')")]
+        public string DeviceType { get; set; }
 
         [Option('v', "version", Required = true, HelpText = "The version of the agent to deploy.")]
         public string Version { get; set; }
@@ -26,21 +26,19 @@
         [Option('t', "target", Required = true, HelpText = "The target device docker endpoint.")]
         public string Target { get; set; }
 
+
+
         protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
-            var deviceArchitecture = await context.FindDeviceArchitecture(DeviceArchitecture, cancellationToken);
+            var deviceType = await context.FindDeviceTypeAsync(DeviceType, cancellationToken);
 
-            if (deviceArchitecture == null)
-            {
+            if (deviceType == null)
                 return 1;
-            }
 
-            var agentVersion = await context.FindAgentVersion(deviceArchitecture.Id, Version, cancellationToken);
+            var agentVersion = await context.FindAgentVersion(deviceType.Id, Version, cancellationToken);
 
             if (agentVersion == null)
-            {
                 return 1;
-            }
 
             using (IDockerClient sourceDockerClient = new DockerClientConfiguration(new Uri(Source)).CreateClient())
             using (IDockerClient targetDockerClient = new DockerClientConfiguration(new Uri(Target)).CreateClient())
