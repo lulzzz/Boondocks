@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Boondocks.Base\Boondocks.Base.csproj" />
-    <ProjectReference Include="..\Boondocks.Services.Contracts\Boondocks.Services.Contracts.csproj" />
     <ProjectReference Include="..\Boondocks.Services.DataAccess.Domain\Boondocks.Services.DataAccess.Domain.csproj" />
   </ItemGroup>
 
