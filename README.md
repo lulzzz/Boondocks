@@ -21,7 +21,7 @@ This is a work in progress.
 
 ## Third Party
 Boondocks uses these great open source projects:
-- [resin.io](http://resin.io)
+- [resin.os](http://resin.os)
 - [.NET Core](https://github.com/dotnet/core)
 - [Dapper.NET](https://github.com/StackExchange/Dapper)
 - [Autofac](https://autofac.org/)

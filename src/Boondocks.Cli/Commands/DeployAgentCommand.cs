@@ -26,8 +26,6 @@
         [Option('t', "target", Required = true, HelpText = "The target device docker endpoint.")]
         public string Target { get; set; }
 
-
-
         protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             var deviceType = await context.FindDeviceTypeAsync(DeviceType, cancellationToken);

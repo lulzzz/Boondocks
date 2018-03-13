@@ -20,8 +20,14 @@
                                         new Mount()
                                         {
                                             Type = "bind",
-                                            Source = "/mnt/boot/device.config",
-                                            Target = "/mnt/boot/device.config",
+                                            Source = "/mnt/boot/",
+                                            Target = "/mnt/boot/",
+                                        },
+                                        new Mount()
+                                        {
+                                            Type="bind",
+                                            Source="/mnt/data/resin-data/resin-supervisor",
+                                            Target = "/data"
                                         }
                                     },
                     Binds = new List<string>()
@@ -38,10 +44,10 @@
                                 {
                                     "DOCKER_ENDPOINT=unix://var/run/balena.sock"
                                 },
-                Volumes = new Dictionary<string, EmptyStruct>()
-                                {
-                                    {"/data", new EmptyStruct()},
-                                },
+                //Volumes = new Dictionary<string, EmptyStruct>()
+                //                {
+                //                    {"/data", new EmptyStruct()},
+                //                },
             };
 
             //Create the container
