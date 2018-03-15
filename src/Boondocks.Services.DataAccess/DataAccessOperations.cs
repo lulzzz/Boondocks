@@ -254,7 +254,7 @@
             //https://stackoverflow.com/a/39023427/232566
 
             const string sql =
-                "select count(1) from AgentVersions where DeviceType = @deviceTypeId and Name = @name";
+                "select count(1) from AgentVersions where deviceTypeId = @deviceTypeId and Name = @name";
 
             return connection.ExecuteScalar<bool>(sql, new { deviceTypeId, name });
         }

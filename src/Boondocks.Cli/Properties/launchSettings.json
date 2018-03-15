@@ -2,7 +2,7 @@
   "profiles": {
     "BoondocksCli": {
       "commandName": "Project",
-      "commandLineArgs": "import-agent-ver --device-type=raspberrypi3 --tag=boondocks-agent-raspberrypi31.3.2 --from-\"repo=boondocks/boondocks-agent-raspberrypi3\" --to-repo=\"dockerhub.captiveaire.com:5000/agents\""
+      "commandLineArgs": "import-agent-ver --device-type=raspberrypi3 --tag=boondocks-agent-raspberrypi31.3.2 --from-repo=\"boondocks/boondocks-agent-raspberrypi3\" "
     }
   }
 }

@@ -6,6 +6,8 @@
     using CommandLine;
     using Docker.DotNet.Models;
     using ExtensionMethods;
+    using Services.DataAccess.Domain;
+    using Services.Management.Contracts;
 
     [Verb("import-agent-ver", HelpText = "Imports an agent version from hub.docker.com.")]
     public class ImportAgentVersionCommand : DockerCommandBase
@@ -18,9 +20,6 @@
 
         [Option("from-repo", Required = true, HelpText = "(e.g. boondocks/boondocks-agent-raspberrypi3")]
         public string FromRepository { get; set; }
-
-        [Option("to-repo", Required = true, HelpText = "The repo to push to")]
-        public string ToRepository { get; set; }
 
         protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
@@ -40,9 +39,6 @@
                 var imageCreateParameters = new ImagesCreateParameters
                 { 
                     FromImage = fromImage,
-                    //FromSrc = "https://registry-1.docker.io/",
-                    //Repo = "boondocks/boondocks-agent-raspberrypi3",
-                    //Tag = Tag
                 };
 
                 var localAuthConfig = new AuthConfig
@@ -56,10 +52,35 @@
                     localAuthConfig,
                     new Progress<JSONMessage>(m => Console.WriteLine(m.ProgressMessage)), cancellationToken);
 
+                var imageInspection = await dockerClient.Images.InspectImageAsync(fromImage, cancellationToken);
+
+                if (imageInspection == null)
+                {
+                    Console.WriteLine($"Unable to find image '{fromImage}' for inspection.");
+                    return 1;
+                }
+
+                var getAgentUploadInfoRequest = new GetAgentUploadInfoRequest
+                {
+                    ImageId = imageInspection.ID,
+                    DeviceTypeId = deviceType.Id,
+                    Name = Tag
+                };
+
+                var agentUploadInfo =
+                    await context.Client.AgentUploadInfo.GetAgentUploadInfo(getAgentUploadInfoRequest,
+                        cancellationToken);
+
+                if (!agentUploadInfo.CanUpload)
+                {
+                    Console.WriteLine($"Unable to upload: {agentUploadInfo.Reason}");
+                    return 1;
+                }
+
                 //Create the image tag paramters
                 var imageTagParameters = new ImageTagParameters
                 {
-                    RepositoryName = ToRepository,
+                    RepositoryName = $"{agentUploadInfo.RegistryHost}/{agentUploadInfo.Repository}",
                     Tag = Tag,
                 };
 
@@ -68,31 +89,35 @@
                 //Tag the image
                 await dockerClient.Images.TagImageAsync(fromImage, imageTagParameters, cancellationToken);
 
-                string toImage = $"{ToRepository}:{Tag}";
-
-                //Get docker information from the management service
-                var imagePushParameters = new ImagePushParameters
-                { 
-                   // Tag = toImage
-                };
+                string toImage = $"{agentUploadInfo.RegistryHost}/{agentUploadInfo.Repository}:{Tag}";
 
                 Console.WriteLine($"Pushing '{toImage}'...");
 
                 //Push to our registry
                 await dockerClient.Images.PushImageAsync(
                     toImage,
-                    imagePushParameters,
+                    new ImagePushParameters(),
                     localAuthConfig,
                     new Progress<JSONMessage>(m => Console.WriteLine(m.ProgressMessage)),
                     cancellationToken);
 
                 //TODO: Let the management service know that we uploaded it
+                var createAgentVersionRequest = new CreateAgentVersionRequest
+                {
+                    DeviceTypeId = deviceType.Id,
+                    ImageId = imageInspection.ID,
+                    MakeCurrent = false,
+                    Name = Tag,
+                    Logs = "Imported"
+                };
 
-                Console.WriteLine("Done.");
+                //Create the version
+                AgentVersion agentVersion = await context.Client.AgentVersions.CreateAgentVersion(createAgentVersionRequest, cancellationToken);
 
+                //And we're done
+                Console.WriteLine($"Version {agentVersion.Id} created.");
             }
-
-
+    
             return 0;
         }
     }
