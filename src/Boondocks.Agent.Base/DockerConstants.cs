@@ -15,6 +15,6 @@
         /// <summary>
         /// The name of the main agent instance.
         /// </summary>
-        public const string AgentContainerName = "boondocks-agent";
+        public const string AgentContainerName = "resin_supervisor";
     }
 }

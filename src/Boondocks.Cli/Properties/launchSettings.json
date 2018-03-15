@@ -2,7 +2,7 @@
   "profiles": {
     "BoondocksCli": {
       "commandName": "Project",
-      "commandLineArgs": "deploy-agent --target http://10.0.4.114:2375/ -v 1.2.20 -a armv7hf"
+      "commandLineArgs": "import-agent-ver --device-type=raspberrypi3 --tag=boondocks-agent-raspberrypi31.3.2 --from-\"repo=boondocks/boondocks-agent-raspberrypi3\" --to-repo=\"dockerhub.captiveaire.com:5000/agents\""
     }
   }
 }

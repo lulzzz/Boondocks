@@ -13,11 +13,8 @@
     using Services.Management.Contracts;
 
     [Verb("build", HelpText = "Builds an application.")]
-    public class BuildCommand : CommandBase
+    public class BuildCommand : DockerCommandBase
     {
-        [Option('h', "dockerHost", Default= "http://localhost:2375", HelpText = "The docker endpoint to use for building.")]
-        public string DockerEndpoint { get; set; }
-
         [Option('s', "source", Required = true, HelpText = "The source directory to build from.")]
         public string Source { get; set; }
 
@@ -49,52 +46,55 @@
                 TarUtil.CreateTarGZ(temporaryFile.Path, Source);
 
                 //Create the docker client
-                var dockerClient = new DockerClientConfiguration(new Uri(DockerEndpoint)).CreateClient();
-
-                //Open up the temp file
-                using (var tarStream = File.OpenRead(temporaryFile.Path))
+                using (var dockerClient = CreateDockerClient())
                 {
-                    //Set up the build
-                    var imageBuildParmeters = new ImageBuildParameters
+
+                    //Open up the temp file
+                    using (var tarStream = File.OpenRead(temporaryFile.Path))
                     {
-                        Tags = new List<string>
+                        //Set up the build
+                        var imageBuildParmeters = new ImageBuildParameters
                         {
-                            tag
+                            Tags = new List<string>
+                            {
+                                tag
+                            }
+                        };
+
+                        BuildResult result;
+
+                        //Build it!!!!!
+                        using (var resultStream =
+                            await dockerClient.Images.BuildImageFromDockerfileAsync(tarStream, imageBuildParmeters,
+                                cancellationToken))
+                        {
+                            //Deal with the result
+                            result = await resultStream.ProcessBuildStreamAsync();
                         }
-                    };
 
-                    BuildResult result;
+                        //Check to see if we have any errors
+                        if (result.Errors.Any())
+                        {
+                            Console.WriteLine($"Build completed with {result.Errors.Count} errors.");
 
-                    //Build it!!!!!
-                    using (var resultStream =
-                        await dockerClient.Images.BuildImageFromDockerfileAsync(tarStream, imageBuildParmeters, cancellationToken))
-                    {
-                        //Deal with the result
-                        result = await resultStream.ProcessBuildStreamAsync();
+                            return 1;
+                        }
+
+                        //Let us deploy
+                        if (Deploy)
+                        {
+                            return await DeployAsync(context, dockerClient, result, tag, cancellationToken);
+                        }
+
+                        await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+
+                        return 0;
                     }
-
-                    //Check to see if we have any errors
-                    if (result.Errors.Any())
-                    {
-                        Console.WriteLine($"Build completed with {result.Errors.Count} errors.");
-
-                        return 1;
-                    }
-
-                    //Let us deploy
-                    if (Deploy)
-                    {
-                        return await DeployAsync(context, dockerClient, result, tag, cancellationToken);
-                    }
-
-                    await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
-
-                    return 0;
                 }
             }
         }
 
-        private async Task<int> DeployAsync(CommandContext context, DockerClient dockerClient, BuildResult result,
+        private async Task<int> DeployAsync(CommandContext context, IDockerClient dockerClient, BuildResult result,
             string tag, CancellationToken cancellationToken)
         {
             //Get the last id

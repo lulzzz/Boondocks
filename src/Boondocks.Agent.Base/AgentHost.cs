@@ -21,6 +21,7 @@
         private readonly AgentUpdateService _agentUpdateService;
         private readonly IDockerClient _dockerClient;
         private readonly ApplicationLogSucker _applicationLogSucker;
+        private readonly IRootFileSystemVersionProvider _rootFileSystemVersionProvider;
         private readonly IDeviceConfiguration _deviceConfiguration;
         private readonly DeviceStateProvider _deviceStateProvider;
         private readonly ILogger _logger;
@@ -40,6 +41,7 @@
             AgentUpdateService agentUpdateService,
             IDockerClient dockerClient,
             ApplicationLogSucker applicationLogSucker,
+            IRootFileSystemVersionProvider rootFileSystemVersionProvider,
             ILogger logger)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
@@ -48,6 +50,7 @@
             _agentUpdateService = agentUpdateService ?? throw new ArgumentNullException(nameof(agentUpdateService));
             _dockerClient = dockerClient ?? throw new ArgumentNullException(nameof(dockerClient));
             _applicationLogSucker = applicationLogSucker ?? throw new ArgumentNullException(nameof(applicationLogSucker));
+            _rootFileSystemVersionProvider = rootFileSystemVersionProvider ?? throw new ArgumentNullException(nameof(rootFileSystemVersionProvider));
             _logger = logger.ForContext(GetType());
             _deviceStateProvider = deviceStateProvider ?? throw new ArgumentNullException(nameof(deviceStateProvider));
             _uptimeProvider = uptimeProvider ?? throw new ArgumentNullException(nameof(uptimeProvider));
@@ -143,6 +146,7 @@
                 State = _deviceStateProvider.State,
                 AgentVersion = await _agentUpdateService.GetCurrentVersionAsync(),
                 ApplicationVersion = await _applicationUpdateService.GetCurrentVersionAsync(),
+                RootFileSystemVersion = await _rootFileSystemVersionProvider.GetCurrentVersionAsync()
             };
 
             //Send the request.

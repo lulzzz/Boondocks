@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Boondocks.Services.Device.WebApi.Controllers
@@ -14,7 +10,7 @@ namespace Boondocks.Services.Device.WebApi.Controllers
     using Services.Contracts;
 
     [Produces("application/json")]
-    [Route("api/Health")]
+    [Route("v1/health")]
     public class HealthController : Controller
     {
         private readonly IDbConnectionFactory _connectionFactory;
