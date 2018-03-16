@@ -34,10 +34,10 @@
 
             dynamic query = new ExpandoObject();
 
-            if (request.ApplicationId != null) query.applicationId = request.ApplicationId.Value;
+            if (request?.ApplicationId != null) query.applicationId = request.ApplicationId.Value;
 
             return _client.MakeJsonRequestAsync<Device[]>(cancellationToken, HttpMethod.Get, ResourceUrls.Devices,
-                (object) query, request: request);
+                (object) query);
         }
 
         public Task<Device> GetDeviceAsync(Guid id, CancellationToken cancellationToken = new CancellationToken())
