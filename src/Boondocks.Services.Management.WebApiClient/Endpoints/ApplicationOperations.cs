@@ -32,15 +32,14 @@
         {
             dynamic query = new ExpandoObject();
 
-            if (request.DeviceTypeId != null)
+            if (request?.DeviceTypeId != null)
                 query.deviceTypeId = request.DeviceTypeId.Value;
 
             return _client.MakeJsonRequestAsync<Application[]>(
                 cancellationToken, 
                 HttpMethod.Get,
                 ResourceUrls.Applications, 
-                (object) query, 
-                request: request);
+                (object) query);
         }
 
         public Task<Application> GetApplicationAsync(Guid id,
