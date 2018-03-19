@@ -33,13 +33,13 @@
 
                 }).As<IDockerClient>().SingleInstance();
 
-                //Configuration provider
-                builder.Register(context =>
-                {
-                    var provider = context.Resolve<IDeviceConfigurationProvider>();
+                ////Configuration provider
+                //builder.Register(context =>
+                //{
+                //    var provider = context.Resolve<IDeviceConfigurationProvider>();
 
-                    return provider.GetDeviceConfiguration();
-                }).SingleInstance();
+                //    return provider.GetDeviceConfiguration();
+                //}).SingleInstance();
                 
                 Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Verbose()
