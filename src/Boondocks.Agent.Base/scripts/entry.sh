@@ -1,4 +1,4 @@
-#!/bion/bash
+#!/bin/bash
 echo "bash script: Agent starting..."
 
 #start up the agent
