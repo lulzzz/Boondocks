@@ -11,11 +11,8 @@
         /// <summary>
         /// How to connect to the docker (balena) endpoint
         /// </summary>
-        public string DockerEndpoint => Environment.GetEnvironmentVariable("DOCKER_ENDPOINT");
+        public string DockerSocket => Environment.GetEnvironmentVariable("DOCKER_SOCKET") ?? "/var/run/balena.sock";
 
-        /// <summary>
-        /// The version of the boondocks agent installed.
-        /// </summary>
-        public string AgentVersion => Environment.GetEnvironmentVariable("BOONDOCKS_AGENT_VERSION");
+        public string BootMountpoint => Environment.GetEnvironmentVariable("BOOT_MOUNTPOINT") ?? "/mnt/boot" ;
     }
 }

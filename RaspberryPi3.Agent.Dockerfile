@@ -41,6 +41,9 @@ COPY --from=core-build-step /build/Boondocks.Agent.RaspberryPi3/bin/Debug/netcor
 #copy the entry file
 COPY ./src/Boondocks.Agent.Base/scripts/entry.sh /usr/bin/entry.sh
 
+#mark this as executable
+RUN chmod +x /usr/bin/entry.sh
+
 #start up the application
 #CMD ["dotnet", "/opt/boondocks/Boondocks.Agent.dll"]
 

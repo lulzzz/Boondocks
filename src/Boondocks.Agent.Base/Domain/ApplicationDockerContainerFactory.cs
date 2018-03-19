@@ -39,12 +39,7 @@
                 {
                     Mounts = new List<Mount>()
                     {
-                        new Mount()
-                        {
-                            Type = "bind",
-                            Source = "/mnt/boot/appconfig",
-                            Target = "/appconfig",
-                        },
+                        
                     },
 
                     RestartPolicy = new RestartPolicy

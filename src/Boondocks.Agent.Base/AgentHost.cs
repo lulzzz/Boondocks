@@ -57,7 +57,7 @@
             _deviceConfiguration = deviceConfiguration;
 
             //Config
-            _logger.Information("DockerEndpoint: {DockerEndpoint}", environmentConfigurationProvider.DockerEndpoint);
+            _logger.Information("DockerSocket: {DockerSocket}", environmentConfigurationProvider.DockerSocket);
             _logger.Information("DeviceId: {DeviceId}", deviceConfiguration?.DeviceId);
             _logger.Information("DeviceApiUrl: {DeviceApiUrl}", deviceConfiguration?.DeviceApiUrl);
 

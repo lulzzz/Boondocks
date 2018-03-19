@@ -2,8 +2,8 @@
 {
     public interface IEnvironmentConfigurationProvider
     {
-        string AgentVersion { get; }
+        string DockerSocket { get; }
 
-        string DockerEndpoint { get; }
+        string BootMountpoint { get; }
     }
 }

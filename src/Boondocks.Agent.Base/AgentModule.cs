@@ -25,7 +25,9 @@
                 {
                     IEnvironmentConfigurationProvider environmentConfigurationProvider = context.Resolve<IEnvironmentConfigurationProvider>();
 
-                    var dockerClientConfiguration = new DockerClientConfiguration(new Uri(environmentConfigurationProvider.DockerEndpoint));
+                    string endpoint = $"unix:/{environmentConfigurationProvider.DockerSocket}";
+
+                    var dockerClientConfiguration = new DockerClientConfiguration(new Uri(endpoint));
 
                     return dockerClientConfiguration.CreateClient();
 
