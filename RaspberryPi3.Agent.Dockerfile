@@ -39,7 +39,7 @@ RUN curl -SL $DOTNET_DOWNLOAD_URL --output dotnet.tar.gz \
 COPY --from=core-build-step /build/Boondocks.Agent.RaspberryPi3/bin/Debug/netcoreapp2.0/linux-arm/publish/ /opt/boondocks/
 
 #copy the entry file
-COPY ./src/Boondocks.Agent/scripts/entry.sh /usr/bin/entry.sh
+COPY ./src/Boondocks.Agent.Base/scripts/entry.sh /usr/bin/entry.sh
 
 #start up the application
 #CMD ["dotnet", "/opt/boondocks/Boondocks.Agent.dll"]
