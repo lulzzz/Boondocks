@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using Docker.DotNet;
     using Docker.DotNet.Models;
+    using Interfaces;
     using Serilog;
     using Services.Device.Contracts;
     using Services.Device.WebApiClient;
@@ -15,16 +16,19 @@
         private readonly IDockerClient _dockerClient;
         private readonly AgentDockerContainerFactory _dockerContainerFactory;
         private readonly DeviceApiClient _deviceApiClient;
+        private readonly IPlatformDetector _platformDetecter;
 
         public AgentUpdateService(
             IDockerClient dockerClient,
             AgentDockerContainerFactory dockerContainerFactory,
             DeviceApiClient deviceApiClient,
+            IPlatformDetector platformDetecter,
             ILogger logger) : base(logger, dockerClient)
         {
             _dockerClient = dockerClient ?? throw new ArgumentNullException(nameof(dockerClient));
             _dockerContainerFactory = dockerContainerFactory ?? throw new ArgumentNullException(nameof(dockerContainerFactory));
             _deviceApiClient = deviceApiClient ?? throw new ArgumentNullException(nameof(deviceApiClient));
+            _platformDetecter = platformDetecter;
         }
 
         public async Task<string> GetCurrentVersionAsync(CancellationToken cancellationToken = new CancellationToken())
@@ -52,6 +56,10 @@
             if (currentVersion == nextVersion.ImageId)
                 return false;
 
+            //We don't support updating on linux
+            if (!_platformDetecter.IsLinux)
+                return false;
+
             var renameParameters = new ContainerRenameParameters()
             {
                 NewName = DockerConstants.AgentContainerOutgoingName
@@ -70,7 +78,7 @@
             }
 
             //Create the new updated container
-            var createContainerResponse = await _dockerContainerFactory.CreateContainerAsync(
+            var createContainerResponse = await _dockerContainerFactory.CreateContainerForUpdateAsync(
                 _dockerClient,
                 nextVersion.ImageId,
                 cancellationToken);

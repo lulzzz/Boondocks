@@ -3,7 +3,6 @@
     using System;
     using Autofac;
     using Docker.DotNet;
-    using Domain;
     using Interfaces;
     using Logs;
     using Model;
@@ -23,9 +22,9 @@
                 //IDockerClient
                 builder.Register(context =>
                 {
-                    IEnvironmentConfigurationProvider environmentConfigurationProvider = context.Resolve<IEnvironmentConfigurationProvider>();
+                    IPathFactory pathFactory = context.Resolve<IPathFactory>();
 
-                    string endpoint = $"unix:/{environmentConfigurationProvider.DockerSocket}";
+                    string endpoint = pathFactory.DockerEndpoint;
 
                     var dockerClientConfiguration = new DockerClientConfiguration(new Uri(endpoint));
 
@@ -33,14 +32,6 @@
 
                 }).As<IDockerClient>().SingleInstance();
 
-                ////Configuration provider
-                //builder.Register(context =>
-                //{
-                //    var provider = context.Resolve<IDeviceConfigurationProvider>();
-
-                //    return provider.GetDeviceConfiguration();
-                //}).SingleInstance();
-                
                 Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Verbose()
                     .WriteTo.Console()
@@ -55,7 +46,6 @@
                 builder.RegisterType<ApplicationDockerContainerFactory>().SingleInstance();
                 builder.RegisterType<AgentDockerContainerFactory>().SingleInstance();
                 builder.RegisterType<PlatformDetector>().As<IPlatformDetector>().SingleInstance();
-                builder.RegisterType<EnvironmentConfigurationProvider>().As<IEnvironmentConfigurationProvider>().SingleInstance();
                 builder.RegisterType<ApplicationLogSucker>().SingleInstance();
                 builder.RegisterType<LogBatchCollector>().SingleInstance();
 

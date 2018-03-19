@@ -24,6 +24,7 @@
         private readonly ApplicationLogSucker _applicationLogSucker;
         private readonly IDeviceConfiguration _deviceConfiguration;
         private readonly DeviceStateProvider _deviceStateProvider;
+        private readonly IPathFactory _pathFactory;
         private readonly ILogger _logger;
         private readonly IUptimeProvider _uptimeProvider;
 
@@ -35,7 +36,7 @@
             IDeviceConfiguration deviceConfiguration,
             IUptimeProvider uptimeProvider,
             DeviceStateProvider deviceStateProvider,
-            IEnvironmentConfigurationProvider environmentConfigurationProvider, 
+            IPathFactory pathFactory, 
             DeviceApiClient deviceApiClient,
             ApplicationUpdateService applicationUpdateService,
             IRootFileSystemUpdateService rootFileSystemUpdateService,
@@ -53,13 +54,14 @@
             _applicationLogSucker = applicationLogSucker ?? throw new ArgumentNullException(nameof(applicationLogSucker));
             _logger = logger.ForContext(GetType());
             _deviceStateProvider = deviceStateProvider ?? throw new ArgumentNullException(nameof(deviceStateProvider));
+            _pathFactory = pathFactory ?? throw new ArgumentNullException(nameof(pathFactory));
             _uptimeProvider = uptimeProvider ?? throw new ArgumentNullException(nameof(uptimeProvider));
             _deviceConfiguration = deviceConfiguration;
 
             //Config
-            _logger.Information("DockerSocket: {DockerSocket}", environmentConfigurationProvider.DockerSocket);
+            _logger.Information("Docker Endpoint: {DockerSocket}", _pathFactory.DockerEndpoint);
             _logger.Information("DeviceId: {DeviceId}", deviceConfiguration?.DeviceId);
-            _logger.Information("DeviceApiUrl: {DeviceApiUrl}", deviceConfiguration?.DeviceApiUrl);
+            _logger.Information("DeviceAp iUrl: {DeviceApiUrl}", deviceConfiguration?.DeviceApiUrl);
 
             //The agent should be updated before the application
             _updateServices = new UpdateService[]
@@ -145,9 +147,9 @@
             {
                 UptimeSeconds = _uptimeProvider.Ellapsed.TotalSeconds,
                 State = _deviceStateProvider.State,
-                AgentVersion = await _agentUpdateService.GetCurrentVersionAsync(),
-                ApplicationVersion = await _applicationUpdateService.GetCurrentVersionAsync(),
-                RootFileSystemVersion = await _rootFileSystemUpdateService.GetCurrentVersionAsync()
+                AgentVersion = await _agentUpdateService.GetCurrentVersionAsync(cancellationToken),
+                ApplicationVersion = await _applicationUpdateService.GetCurrentVersionAsync(cancellationToken),
+                RootFileSystemVersion = await _rootFileSystemUpdateService.GetCurrentVersionAsync(cancellationToken)
             };
 
             //Send the request.

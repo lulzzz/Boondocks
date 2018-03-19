@@ -62,7 +62,7 @@
                 var containerFactory = new AgentDockerContainerFactory();
 
                 //Create the container itself
-                var createContainerResponse = await containerFactory.CreateContainerAsync(targetDockerClient, agentVersion.ImageId, cancellationToken);
+                var createContainerResponse = await containerFactory.CreateContainerForDirectAsync(targetDockerClient, agentVersion.ImageId, cancellationToken);
 
                 Console.WriteLine($"Container '{createContainerResponse.ID}' created. Starting container...");
 

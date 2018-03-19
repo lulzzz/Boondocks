@@ -1,4 +1,4 @@
-﻿namespace Boondocks.Agent.Base.Domain
+﻿namespace Boondocks.Agent.Base.Model
 {
     using System.Collections.Generic;
     using System.Threading;

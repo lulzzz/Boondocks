@@ -15,7 +15,7 @@
         /// <param name="deviceConfiguration"></param>
         /// <param name="customModule">Must provide IRootFileSysteUpdateService.</param>
         /// <returns></returns>
-        public static IContainer Create(PathFactory pathFactory, IDeviceConfiguration deviceConfiguration, Module customModule)
+        public static IContainer Create(IPathFactory pathFactory, IDeviceConfiguration deviceConfiguration, Module customModule)
         {
             if (pathFactory == null) throw new ArgumentNullException(nameof(pathFactory));
             if (deviceConfiguration == null) throw new ArgumentNullException(nameof(deviceConfiguration));

@@ -19,13 +19,21 @@ namespace Boondocks.Agent.RaspberryPi3
             {
                 var platformDetector = new PlatformDetector();
 
-                if (!platformDetector.IsLinux)
+                IPathFactory pathFactory;
+
+                if (platformDetector.IsLinux)
                 {
-                    Console.Error.WriteLine("The Boondocks agent can only run under Linux at this time.");
-                    Thread.Sleep(Timeout.Infinite);
+                    pathFactory = new LinuxPathFactory();
+                }
+                else
+                {
+                    Console.WriteLine("WARNING: Running on Windows.");
+                    pathFactory = new WindowsPathFactory();
                 }
 
-                var pathFactory = new PathFactory();
+                Console.WriteLine($"Device config path: {pathFactory.DeviceConfigFile}");
+                Console.WriteLine($"Docker endpoint: {pathFactory.DockerEndpoint}");
+
                 var deviceConfigurationProvider = new DeviceConfigurationProvider(pathFactory);
 
                 if (deviceConfigurationProvider.Exists())
@@ -57,8 +65,7 @@ namespace Boondocks.Agent.RaspberryPi3
                 else
                 {
                     //There is no sense is attempting to run without a configuration.
-                    Console.Error.WriteLine("Unable to find device configuration. Unable to run.");
-                    Thread.Sleep(Timeout.Infinite);
+                    SleepForever("Unable to find device configuration.");
                 }
             }
             catch (Exception ex)
@@ -73,6 +80,17 @@ namespace Boondocks.Agent.RaspberryPi3
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// Print a message to the console and sleep with da fishes.
+        /// </summary>
+        /// <param name="reason"></param>
+        private static void SleepForever(string reason)
+        {
+            //There is no sense is attempting to run without a configuration.
+            Console.Error.WriteLine($"Unable to run: {reason}" );
+            Thread.Sleep(Timeout.Infinite);
         }
     }
 }

@@ -9,9 +9,9 @@
 
     public class DeviceConfigurationProvider : IDeviceConfigurationProvider
     {
-        private readonly PathFactory _pathFactory;
+        private readonly IPathFactory _pathFactory;
 
-        public DeviceConfigurationProvider(PathFactory pathFactory)
+        public DeviceConfigurationProvider(IPathFactory pathFactory)
         {
             _pathFactory = pathFactory ?? throw new ArgumentNullException(nameof(pathFactory));
         }
