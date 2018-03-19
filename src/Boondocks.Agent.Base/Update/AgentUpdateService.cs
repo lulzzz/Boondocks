@@ -27,9 +27,9 @@
             _deviceApiClient = deviceApiClient ?? throw new ArgumentNullException(nameof(deviceApiClient));
         }
 
-        public async Task<string> GetCurrentVersionAsync()
+        public async Task<string> GetCurrentVersionAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            var container = await _dockerClient.GetContainerByName(DockerConstants.AgentContainerName, new CancellationToken());
+            var container = await _dockerClient.GetContainerByName(DockerConstants.AgentContainerName, cancellationToken);
 
             return container?.ImageID;
         }
@@ -42,7 +42,8 @@
         /// <returns></returns>
         public override async Task<bool> UpdateCoreAsync(GetDeviceConfigurationResponse configuration, CancellationToken cancellationToken)
         {
-            string currentVersion = await GetCurrentVersionAsync();
+            string currentVersion = await GetCurrentVersionAsync(cancellationToken);
+
             VersionReference nextVersion = configuration.AgentVersion;
 
             if (nextVersion == null)
@@ -110,45 +111,6 @@
             Logger.Warning("Warning: Agent not started.");
 
             return false;
-        }
-
-        private async Task DownloadImageAsync(IDockerClient dockerClient, VersionReference versionReference, CancellationToken cancellationToken)
-        {
-            var versionRequest = new GetImageDownloadInfoRequest()
-            {
-                Id = versionReference.Id
-            };
-
-            Logger.Information("Getting agent download information for version {ImageId}...", versionReference.ImageId);
-
-            //Get the download info
-            var downloadInfo =
-                await _deviceApiClient.AgentDownloadInfo.GetAgentVersionDownloadInfo(versionRequest,
-                    cancellationToken);
-
-            string fromImage = $"{downloadInfo.Registry}/{downloadInfo.Repository}:{downloadInfo.Name}";
-
-            //Dowlnoad it!
-            Logger.Information("Downloading with fromImage = '{FromImage}'...", fromImage);
-
-            var imageCreateParameters = new ImagesCreateParameters
-            {
-                FromImage = fromImage
-            };
-
-            var authConfig = new AuthConfig()
-            {
-
-            };
-
-            //Do the donwload!!!!!
-            await dockerClient.Images.CreateImageAsync(
-                imageCreateParameters,
-                authConfig,
-                new Progress<JSONMessage>(m => Console.WriteLine($"\tCreateImageProgress: {m.ProgressMessage}")),
-                cancellationToken);
-
-            Logger.Information("Agent image {ImageId} downloaded.", versionReference.ImageId);
         }
     }
 }

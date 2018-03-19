@@ -18,10 +18,10 @@
     {
         private readonly DeviceApiClient _deviceApiClient;
         private readonly ApplicationUpdateService _applicationUpdateService;
+        private readonly IRootFileSystemUpdateService _rootFileSystemUpdateService;
         private readonly AgentUpdateService _agentUpdateService;
         private readonly IDockerClient _dockerClient;
         private readonly ApplicationLogSucker _applicationLogSucker;
-        private readonly IRootFileSystemVersionProvider _rootFileSystemVersionProvider;
         private readonly IDeviceConfiguration _deviceConfiguration;
         private readonly DeviceStateProvider _deviceStateProvider;
         private readonly ILogger _logger;
@@ -38,19 +38,19 @@
             IEnvironmentConfigurationProvider environmentConfigurationProvider, 
             DeviceApiClient deviceApiClient,
             ApplicationUpdateService applicationUpdateService,
+            IRootFileSystemUpdateService rootFileSystemUpdateService,
             AgentUpdateService agentUpdateService,
             IDockerClient dockerClient,
             ApplicationLogSucker applicationLogSucker,
-            IRootFileSystemVersionProvider rootFileSystemVersionProvider,
             ILogger logger)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
             _deviceApiClient = deviceApiClient ?? throw new ArgumentNullException(nameof(deviceApiClient));
             _applicationUpdateService = applicationUpdateService ?? throw new ArgumentNullException(nameof(applicationUpdateService));
+            _rootFileSystemUpdateService = rootFileSystemUpdateService ?? throw new ArgumentNullException(nameof(rootFileSystemUpdateService));
             _agentUpdateService = agentUpdateService ?? throw new ArgumentNullException(nameof(agentUpdateService));
             _dockerClient = dockerClient ?? throw new ArgumentNullException(nameof(dockerClient));
             _applicationLogSucker = applicationLogSucker ?? throw new ArgumentNullException(nameof(applicationLogSucker));
-            _rootFileSystemVersionProvider = rootFileSystemVersionProvider ?? throw new ArgumentNullException(nameof(rootFileSystemVersionProvider));
             _logger = logger.ForContext(GetType());
             _deviceStateProvider = deviceStateProvider ?? throw new ArgumentNullException(nameof(deviceStateProvider));
             _uptimeProvider = uptimeProvider ?? throw new ArgumentNullException(nameof(uptimeProvider));
@@ -74,8 +74,9 @@
             try
             {
                 //Version information
-                _logger.Information("CurrentAgentVersion: {CurrentAgentVersion}", await _agentUpdateService.GetCurrentVersionAsync());
-                _logger.Information("CurrentApplicationVersion: {CurrentApplicationVersion}", await _applicationUpdateService.GetCurrentVersionAsync());
+                _logger.Information("Agent Version: {CurrentAgentVersion}", await _agentUpdateService.GetCurrentVersionAsync(cancellationToken));
+                _logger.Information("Application Version: {CurrentApplicationVersion}", await _applicationUpdateService.GetCurrentVersionAsync(cancellationToken));
+                _logger.Information("Root File System Version: {RootFileSystemVersion}", await _rootFileSystemUpdateService.GetCurrentVersionAsync(cancellationToken));
 
                 Console.WriteLine();
                 Console.WriteLine("Existing images:");
@@ -146,7 +147,7 @@
                 State = _deviceStateProvider.State,
                 AgentVersion = await _agentUpdateService.GetCurrentVersionAsync(),
                 ApplicationVersion = await _applicationUpdateService.GetCurrentVersionAsync(),
-                RootFileSystemVersion = await _rootFileSystemVersionProvider.GetCurrentVersionAsync()
+                RootFileSystemVersion = await _rootFileSystemUpdateService.GetCurrentVersionAsync()
             };
 
             //Send the request.

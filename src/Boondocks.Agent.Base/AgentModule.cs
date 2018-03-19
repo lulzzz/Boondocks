@@ -58,7 +58,6 @@
                 builder.RegisterType<EnvironmentConfigurationProvider>().As<IEnvironmentConfigurationProvider>().SingleInstance();
                 builder.RegisterType<ApplicationLogSucker>().SingleInstance();
                 builder.RegisterType<LogBatchCollector>().SingleInstance();
-                builder.RegisterType<RootFileSystemVersionProvider>().As<IRootFileSystemVersionProvider>().SingleInstance();
 
                 base.Load(builder);
             }

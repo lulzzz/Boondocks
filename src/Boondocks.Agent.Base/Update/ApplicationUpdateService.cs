@@ -29,9 +29,9 @@
             _deviceApiClient = deviceApiClient ?? throw new ArgumentNullException(nameof(deviceApiClient));
         }
 
-        public async Task<string> GetCurrentVersionAsync()
+        public async Task<string> GetCurrentVersionAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            var container = await _dockerClient.GetContainerByName(DockerConstants.ApplicationContainerName, new CancellationToken());
+            var container = await _dockerClient.GetContainerByName(DockerConstants.ApplicationContainerName, cancellationToken);
 
             return container?.ImageID;
         }

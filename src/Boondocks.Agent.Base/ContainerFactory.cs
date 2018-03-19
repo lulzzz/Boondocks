@@ -8,7 +8,14 @@
 
     public static partial class ContainerFactory
     {
-        public static IContainer Create(PathFactory pathFactory, IDeviceConfiguration deviceConfiguration)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pathFactory"></param>
+        /// <param name="deviceConfiguration"></param>
+        /// <param name="customModule">Must provide IRootFileSysteUpdateService.</param>
+        /// <returns></returns>
+        public static IContainer Create(PathFactory pathFactory, IDeviceConfiguration deviceConfiguration, Module customModule)
         {
             if (pathFactory == null) throw new ArgumentNullException(nameof(pathFactory));
             if (deviceConfiguration == null) throw new ArgumentNullException(nameof(deviceConfiguration));
@@ -24,6 +31,8 @@
 
             builder.RegisterInstance(pathFactory);
             builder.RegisterInstance(deviceConfiguration);
+
+            builder.RegisterModule(customModule);
 
             builder.RegisterModule<AgentModule>();
 

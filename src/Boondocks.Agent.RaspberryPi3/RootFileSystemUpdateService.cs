@@ -2,29 +2,29 @@
 {
     using System;
     using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Base.Interfaces;
     using Serilog;
 
-    public class RootFileSystemUpdater
+    public class RootFileSystemUpdateService : IRootFileSystemUpdateService
     {
         private readonly ILogger _logger;
+
         private const string PartitionA = "/dev/mmcblk0p2";
         private const string PartitionB = "/dev/mmcblk0p3";
 
         private const string CommandLinePath = "/mnt/boot/cmdline.txt";
 
-        private const string ImageVersionInfoPath = "/mnt/boot/image-version-info";
-
-        //private static readonly string[] Partitions = new string[]
-        //{
-        //    PartitionA,
-        //    PartitionB
-        //};
-
-        public RootFileSystemUpdater(ILogger logger)
+        public RootFileSystemUpdateService(ILogger logger)
         {
             _logger = logger.ForContext(GetType());
         }
 
+        /// <summary>
+        /// Returns the zero based index of the current root file system partition. (e.g. A = 0, B = 1)
+        /// </summary>
+        /// <returns></returns>
         public int? GetCurrentPartition()
         {
             if (!File.Exists(CommandLinePath))
@@ -56,15 +56,9 @@
         /// e.g. "resin-image-raspberrypi3-20180123113228"
         /// </summary>
         /// <returns></returns>
-        public string GetImageVersionInfo()
+        public Task<string> GetCurrentVersionAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            if (!File.Exists(ImageVersionInfoPath))
-            {
-                _logger.Error("Unable to find image-version-info at {ImgVerInfoPath}.", ImageVersionInfoPath);
-                return null;
-            }
-
-            return File.ReadAllText(ImageVersionInfoPath);
+            return Task.FromResult(Environment.OSVersion.VersionString);
         }
 
         public void Update()

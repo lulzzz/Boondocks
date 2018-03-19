@@ -28,10 +28,8 @@ namespace Boondocks.Agent.RaspberryPi3
                     var deviceConfiguration = deviceConfigurationProvider.GetDeviceConfiguration();
 
                     //Create the container
-                    using (var container = ContainerFactory.Create(pathFactory, deviceConfiguration))
+                    using (var container = ContainerFactory.Create(pathFactory, deviceConfiguration, new RaspberryPiModule()))
                     {
-                        LogRootFileSystemInfo(container);
-
                         //Get the agent host
                         var host = container.Resolve<IAgentHost>();
 
@@ -70,29 +68,6 @@ namespace Boondocks.Agent.RaspberryPi3
             }
 
             return 0;
-        }
-
-        private static void LogRootFileSystemInfo(ILifetimeScope lifetimeScope)
-        {
-            try
-            {
-                var logger = lifetimeScope.Resolve<ILogger>();
-
-                var rootFileSysteUpdater = new RootFileSystemUpdater(logger);
-
-                int? partition = rootFileSysteUpdater.GetCurrentPartition();
-
-                Console.WriteLine($" Patition: {partition}");
-
-                string rootFileSystemVersion = rootFileSysteUpdater.GetImageVersionInfo();
-
-                Console.WriteLine($" Root file syste version: {rootFileSystemVersion}");
-
-            }
-            catch (Exception e)
-            {
-                Console.Error.WriteLine(e.Message);
-            }
         }
     }
 }
