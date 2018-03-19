@@ -8,7 +8,6 @@ namespace Boondocks.Agent.RaspberryPi3
     using Base;
     using Base.Interfaces;
     using Base.Model;
-    using Serilog;
 
     class Program
     {
@@ -19,7 +18,14 @@ namespace Boondocks.Agent.RaspberryPi3
             try
             {
                 var platformDetector = new PlatformDetector();
-                var pathFactory = new PathFactory(platformDetector);
+
+                if (!platformDetector.IsLinux)
+                {
+                    Console.Error.WriteLine("The Boondocks agent can only run under Linux at this time.");
+                    Thread.Sleep(Timeout.Infinite);
+                }
+
+                var pathFactory = new PathFactory();
                 var deviceConfigurationProvider = new DeviceConfigurationProvider(pathFactory);
 
                 if (deviceConfigurationProvider.Exists())
@@ -52,7 +58,6 @@ namespace Boondocks.Agent.RaspberryPi3
                 {
                     //There is no sense is attempting to run without a configuration.
                     Console.Error.WriteLine("Unable to find device configuration. Unable to run.");
-
                     Thread.Sleep(Timeout.Infinite);
                 }
             }
