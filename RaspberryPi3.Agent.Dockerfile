@@ -44,6 +44,7 @@ COPY ./src/Boondocks.Agent.Base/scripts/entry.sh /usr/bin/entry.sh
 #mark this as executable
 RUN chmod +x /usr/bin/entry.sh
 
+ENTRYPOINT [ "/usr/bin/entry.sh" ]
 #start up the application
 #CMD ["dotnet", "/opt/boondocks/Boondocks.Agent.dll"]
 
