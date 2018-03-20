@@ -25,6 +25,6 @@
         /// <summary>
         /// The path of the device configuration file.
         /// </summary>
-        public override string DeviceConfigFile => Path.Combine(HostRoot, BootMountpoint, DeviceConfigFilename);       
+        public override string DeviceConfigFile => HostRoot + BootMountpoint + DeviceConfigFilename;       
     }
 }

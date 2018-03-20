@@ -18,6 +18,8 @@
 
         public bool Exists()
         {
+            Console.WriteLine($"Looking for device configuration at '{_pathFactory.DeviceConfigFile}'...");
+
             return File.Exists(_pathFactory.DeviceConfigFile);
         }
 

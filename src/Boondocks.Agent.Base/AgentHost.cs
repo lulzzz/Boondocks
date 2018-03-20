@@ -24,7 +24,6 @@
         private readonly ApplicationLogSucker _applicationLogSucker;
         private readonly IDeviceConfiguration _deviceConfiguration;
         private readonly DeviceStateProvider _deviceStateProvider;
-        private readonly IPathFactory _pathFactory;
         private readonly ILogger _logger;
         private readonly IUptimeProvider _uptimeProvider;
 
@@ -54,12 +53,12 @@
             _applicationLogSucker = applicationLogSucker ?? throw new ArgumentNullException(nameof(applicationLogSucker));
             _logger = logger.ForContext(GetType());
             _deviceStateProvider = deviceStateProvider ?? throw new ArgumentNullException(nameof(deviceStateProvider));
-            _pathFactory = pathFactory ?? throw new ArgumentNullException(nameof(pathFactory));
+            var pathFactory1 = pathFactory ?? throw new ArgumentNullException(nameof(pathFactory));
             _uptimeProvider = uptimeProvider ?? throw new ArgumentNullException(nameof(uptimeProvider));
             _deviceConfiguration = deviceConfiguration;
 
             //Config
-            _logger.Information("Docker Endpoint: {DockerSocket}", _pathFactory.DockerEndpoint);
+            _logger.Information("Docker Endpoint: {DockerSocket}", pathFactory1.DockerEndpoint);
             _logger.Information("DeviceId: {DeviceId}", deviceConfiguration?.DeviceId);
             _logger.Information("DeviceAp iUrl: {DeviceApiUrl}", deviceConfiguration?.DeviceApiUrl);
 
