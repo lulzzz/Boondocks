@@ -24,7 +24,18 @@
 
             _isDisposed = true;
 
-            if (File.Exists(Path)) File.Delete(Path);
+            if (File.Exists(Path))
+            {
+                try
+                {
+                    File.Delete(Path);
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"Unable to delete temp file: {ex.Message}");
+                }
+                
+            }
         }
     }
 }

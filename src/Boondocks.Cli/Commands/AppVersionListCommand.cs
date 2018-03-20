@@ -6,7 +6,7 @@
     using ExtensionMethods;
     using Services.Management.WebApiClient;
 
-    [Verb("app-version-list", HelpText = "Lists the available application versions.")]
+    [Verb("app-ver-list", HelpText = "Lists the available application versions.")]
     public class AppVersionListCommand : CommandBase
     {
         [Option('a', "app", Required = true, HelpText = "The name or id of the application.")]

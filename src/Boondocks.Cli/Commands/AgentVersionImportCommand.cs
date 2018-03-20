@@ -9,18 +9,18 @@
     using Services.DataAccess.Domain;
     using Services.Management.Contracts;
 
-    [Verb("import-agent-ver", HelpText = "Imports an agent version from hub.docker.com.")]
-    public class ImportAgentVersionCommand : DockerCommandBase
+    [Verb("agent-ver-import", HelpText = "Imports an agent version from hub.docker.com.")]
+    public class AgentVersionImportCommand : DockerCommandBase
     {
         [Option('d', "device-type", Required = true, HelpText = "The device type")]
         public string DeviceType { get; set; }
 
-        [Option('t', "tag", Required = true, HelpText = "The tag of the agent version (e.g. boondocks-agent-raspberrypi31.3.2)")]
-        public string Tag { get; set; }
-
-        [Option("from-repo", Required = true, HelpText = "(e.g. boondocks/boondocks-agent-raspberrypi3")]
+        [Value(0, Required = true, HelpText = "(e.g. boondocks/boondocks-agent-raspberrypi3")]
         public string FromRepository { get; set; }
 
+        [Value(1, Required = true, HelpText = "The tag of the agent version (e.g. boondocks-agent-raspberrypi31.3.2)")]
+        public string Tag { get; set; }
+        
         protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             //Look up the device type

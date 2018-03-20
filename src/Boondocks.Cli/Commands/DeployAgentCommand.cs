@@ -1,7 +1,6 @@
 ﻿namespace Boondocks.Cli.Commands
 {
     using System;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using CommandLine;
@@ -9,10 +8,9 @@
     using Docker.DotNet.Models;
     using ExtensionMethods;
     using Boondocks.Agent.Base;
-    using Services.Management.WebApiClient;
 
-    [Verb("deploy-agent", HelpText = "Deploys an agent directly to a device.")]
-    public class DeployAgentCommand : CommandBase
+    [Verb("agent-deploy", HelpText = "Deploys an agent directly to a device.")]
+    public class AgentDeployCommand : CommandBase
     {
         [Option('d', "device-type", Required = true, HelpText = "The device type to use (e.g. 'RaspberryPi3')")]
         public string DeviceType { get; set; }

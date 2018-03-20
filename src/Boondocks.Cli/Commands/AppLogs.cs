@@ -5,8 +5,8 @@
     using CommandLine;
     using ExtensionMethods;
 
-    [Verb("app-logs-list", HelpText = "Displays the console log for the application on the specified device.")]
-    public class AppLogsListCommand : CommandBase
+    [Verb("app-logs", HelpText = "Displays the console log for the application on the specified device.")]
+    public class AppLogs : CommandBase
     {
         [Option('d', "device", Required = true, HelpText = "The device to update.")]
         public string Device { get; set; }

@@ -10,26 +10,27 @@
     using Docker.DotNet;
     using Docker.DotNet.Models;
     using ExtensionMethods;
+    using Services.DataAccess.Domain;
     using Services.Management.Contracts;
 
-    [Verb("build", HelpText = "Builds an application.")]
-    public class BuildCommand : DockerCommandBase
+    [Verb("agent-build", HelpText = "Builds a agent and optionally uploads it.")]
+    public class AgentBuildCommand : DockerCommandBase
     {
-        [Option('s', "source", Required = true, HelpText = "The source directory to build from.")]
+        [Value(0, Required = true, HelpText = "The source directory to build from.")]
         public string Source { get; set; }
+
+        [Value(1, Required = true, HelpText = "The device type to use (e.g. 'RaspberryPi3')")]
+        public string DeviceType { get; set; }
+
+        [Value(2, HelpText = "The name to give this version.")]
+        public string Name { get; set; }
 
         [Option('d', "deploy", Default = true, HelpText = "True to deploy, false to skip.")]
         public bool Deploy { get; set; }
 
-        [Option('a', "application", HelpText = "The application to deploy this build to. Required if deploy=true.")]
-        public string Application { get; set; }
-
-        [Option('n', "name", HelpText = "The name to give this version.")]
-        public string Name { get; set; }
-
         [Option('c', "make-current", HelpText = "Make this the current version of the application.", Default = true)]
         public bool MakeCurrent { get; set; }
-
+        
         protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(Name))
@@ -38,7 +39,7 @@
                 return 1;
             }
 
-            var tag = Name.Trim().ToLower();
+            var tag =$"{DeviceType.ToLower()}-agent-{Name.Trim().ToLower()}";
 
             using (var temporaryFile = new TemporaryFile())
             {
@@ -58,7 +59,8 @@
                             Tags = new List<string>
                             {
                                 tag
-                            }
+                            },
+                            Dockerfile = $"{DeviceType}.Agent.Dockerfile"
                         };
 
                         BuildResult result;
@@ -95,7 +97,7 @@
         }
 
         private async Task<int> DeployAsync(CommandContext context, IDockerClient dockerClient, BuildResult result,
-            string tag, CancellationToken cancellationToken)
+           string tag, CancellationToken cancellationToken)
         {
             //Get the last id
             var imageId = result.Ids.LastOrDefault();
@@ -107,33 +109,30 @@
                 return 1;
             }
 
-            //Make sure we have an application name
-            if (string.IsNullOrWhiteSpace(Application))
+            if (string.IsNullOrWhiteSpace(DeviceType))
             {
-                Console.Error.WriteLine("No application was specified.");
+                Console.Error.WriteLine("No device type was specified.");
                 return 1;
             }
 
-            var application = await context.FindApplicationAsync(Application, cancellationToken);
+            DeviceType deviceType = await context.FindDeviceTypeAsync(DeviceType, cancellationToken);
 
-            if (application == null)
-            {
+            if (deviceType == null)
                 return 1;
-            }
 
             //Create the request
-            var applicationUploadInfoRequest = new GetApplicationUploadInfoRequest()
+            var uploadInforRequest = new GetAgentUploadInfoRequest()
             {
-                ApplicationId = application.Id,
+                DeviceTypeId = deviceType.Id,
                 ImageId = imageId,
                 Name = tag
             };
 
-            var applicationUploadInfo = await context.Client.ApplicationUpload.GetApplicationUploadInfo(applicationUploadInfoRequest, cancellationToken);
+            var applicationUploadInfo = await context.Client.AgentUploadInfo.GetAgentUploadInfo(uploadInforRequest, cancellationToken);
 
             if (applicationUploadInfo.CanUpload)
             {
-                Console.WriteLine($"Deploying with imageid '{imageId}'...");
+                Console.WriteLine($"Deploying '{tag}' with imageid '{imageId}'...");
 
                 var parameters = new ImagePushParameters
                 {
@@ -161,9 +160,9 @@
                     new Progress<JSONMessage>(p => { }), cancellationToken);
 
                 //Let the service now about the new application version.
-                var uploadRequest = new CreateApplicationVersionRequest
+                var uploadRequest = new CreateAgentVersionRequest()
                 {
-                    ApplicationId = application.Id,
+                    DeviceTypeId = deviceType.Id,
                     Name = tag,
                     ImageId = imageId,
                     Logs = result.ToString(),
@@ -171,7 +170,7 @@
                 };
 
                 //Upload the application version
-                await context.Client.ApplicationVersions.UploadApplicationVersionAsync(uploadRequest, cancellationToken);               
+                await context.Client.AgentVersions.CreateAgentVersion(uploadRequest, cancellationToken);
             }
             else
             {
@@ -180,11 +179,5 @@
 
             return 0;
         }
-
-        
-
-        
-
-        
     }
 }

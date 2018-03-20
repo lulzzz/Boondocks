@@ -6,7 +6,7 @@
     using ExtensionMethods;
     using Services.DataAccess.Domain;
 
-    [Verb("device-set-app-version", HelpText = "Sets the current application version for a given device.")]
+    [Verb("device-set-app-ver", HelpText = "Sets the current application version for a given device.")]
     public class DeviceSetAppVersion : CommandBase
     {
         [Option('d', "device", Required = true, HelpText = "The device to update.")]

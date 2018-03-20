@@ -79,7 +79,6 @@ namespace Boondocks.Services.Management.WebApi
             Console.WriteLine($"Current directory: '{currentDirectory}'");
 
             var configBuilder = new ConfigurationBuilder()
-                //.SetBasePath(Directory.GetCurrentDirectory())
                 .SetBasePath(currentDirectory)
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables();

@@ -2,7 +2,7 @@
   "profiles": {
     "BoondocksCli": {
       "commandName": "Project",
-      "commandLineArgs": "import-agent-ver --device-type=raspberrypi3 --tag=boondocks-agent-raspberrypi31.3.2 --from-repo=\"boondocks/boondocks-agent-raspberrypi3\" "
+      "commandLineArgs": "build --source C:\\git\\Scada\\CasCom -a CommModule -c -e http://dockerhub.captiveaire.com:5060  --name \"v1.0.1\""
     }
   }
 }
