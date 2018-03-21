@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170628-02" />
+    <PackageReference Include="xunit" Version="2.2.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Boondocks.Device.Api\Boondocks.Device.Api.csproj" />
+    <ProjectReference Include="..\Boondocks.Device.App\Boondocks.Device.App.csproj" />
+    <ProjectReference Include="..\Boondocks.Device.Infra\Boondocks.Device.Infra.csproj" />
+    <ProjectReference Include="..\Boondocks.Device.Domain\Boondocks.Device.Domain.csproj" />
+    <ProjectReference Include="..\Boondocks.Device.WebApi\Boondocks.Device.WebApi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NetFusion.Common" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Base" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Bootstrap" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Settings" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Test" Version="3.0.15" />
+  </ItemGroup>
+
+</Project>

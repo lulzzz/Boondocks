@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Boondocks.Device.Domain\Boondocks.Device.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NetFusion.Common" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Base" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Bootstrap" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Mapping" Version="3.0.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NetFusion.Rest.Resources" Version="3.0.10" />
+  </ItemGroup>
+
+</Project>
