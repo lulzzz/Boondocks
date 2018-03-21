@@ -37,7 +37,17 @@
                 Image = imageId,
                 HostConfig = new HostConfig()
                 {
+                    Privileged = true,
                     Mounts = new List<Mount>()
+                    {
+                        new Mount()
+                        {
+                            Type = "bind",
+                            Source = "/",
+                            Target = "/mnt/root"
+                        }    
+                    },
+                    Binds = new List<string>()
                     {
                         
                     },
