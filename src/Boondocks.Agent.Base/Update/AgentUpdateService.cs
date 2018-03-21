@@ -10,22 +10,26 @@
     using Model;
     using Serilog;
     using Services.Device.Contracts;
+    using Services.Device.WebApiClient;
 
     internal class AgentUpdateService : UpdateService
     {
         private readonly IDockerClient _dockerClient;
         private readonly AgentDockerContainerFactory _dockerContainerFactory;
         private readonly IPlatformDetector _platformDetecter;
+        private readonly DeviceApiClient _deviceApiClient;
 
         public AgentUpdateService(
             IDockerClient dockerClient,
             AgentDockerContainerFactory dockerContainerFactory,
             IPlatformDetector platformDetecter,
+            DeviceApiClient deviceApiClient,
             ILogger logger) : base(logger, dockerClient)
         {
             _dockerClient = dockerClient ?? throw new ArgumentNullException(nameof(dockerClient));
             _dockerContainerFactory = dockerContainerFactory ?? throw new ArgumentNullException(nameof(dockerContainerFactory));
             _platformDetecter = platformDetecter;
+            _deviceApiClient = deviceApiClient ?? throw new ArgumentNullException(nameof(deviceApiClient));
         }
 
         public async Task<string> GetCurrentVersionAsync(CancellationToken cancellationToken = new CancellationToken())
@@ -67,6 +71,12 @@
             {
                 Logger.Error("Unable to find the existing container {ContainerName}", DockerContainerNames.Agent);
                 throw new Exception("Unable to find the running agent container.");
+            }
+
+            //Make sure that the image is downloaded
+            if (! await _dockerClient.DoesImageExistAsync(nextVersion.ImageId, cancellationToken))
+            {
+                await DownloadImageAsync(_dockerClient, nextVersion, cancellationToken);
             }
 
             //Remove the outgoing / incoming agent (just in case)
@@ -132,6 +142,46 @@
                     
             Logger.Warning("Warning: New agent not started. Not entirely sure why.");
             return false;
+        }
+
+        private async Task DownloadImageAsync(IDockerClient dockerClient, VersionReference versionReference,
+            CancellationToken cancellationToken)
+        {
+            var versionRequest = new GetImageDownloadInfoRequest()
+            {
+                Id = versionReference.Id
+            };
+
+            Logger.Information("Getting agent download information for version {ImageId}...", versionReference.ImageId);
+
+            //Get the download info
+            var downloadInfo =
+                await _deviceApiClient.AgentDownloadInfo.GetAgentVersionDownloadInfo(versionRequest,
+                    cancellationToken);
+
+            string fromImage = $"{downloadInfo.Registry}/{downloadInfo.Repository}:{downloadInfo.Name}";
+
+            //Dowlnoad it!
+            Logger.Information("Downloading with fromImage = '{FromImage}'...", fromImage);
+
+            var imageCreateParameters = new ImagesCreateParameters
+            {
+                FromImage = fromImage
+            };
+
+            var authConfig = new AuthConfig()
+            {
+
+            };
+
+            //Do the donwload!!!!!
+            await dockerClient.Images.CreateImageAsync(
+                imageCreateParameters,
+                authConfig,
+                new Progress<JSONMessage>(m => Console.WriteLine($"\tCreateImageProgress: {m.ProgressMessage}")),
+                cancellationToken);
+
+            Logger.Information("Application image {ImageId} downloaded.", versionReference.ImageId);
         }
     }
 }

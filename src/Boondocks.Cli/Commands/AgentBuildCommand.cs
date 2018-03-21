@@ -30,6 +30,10 @@
 
         [Option('c', "make-current", HelpText = "Make this the current version of the application.", Default = true)]
         public bool MakeCurrent { get; set; }
+
+        [Option('r', "registry-host", HelpText = "Allows the registry info from the server to be overridden.")]
+        public string RegistryHost { get; set; }
+
         
         protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
@@ -140,7 +144,9 @@
                     Tag = tag
                 };
 
-                var target = $"{applicationUploadInfo.RegistryHost}/{applicationUploadInfo.Repository}";
+                string registryHost = RegistryHost ?? applicationUploadInfo.RegistryHost;
+
+                var target = $"{registryHost}/{applicationUploadInfo.Repository}";
 
                 //Tag it!
                 await dockerClient.Images.TagImageAsync(imageId, new ImageTagParameters
@@ -152,8 +158,10 @@
                 //Auth config (will have to include the token)
                 var authConfig = new AuthConfig
                 {
-                    ServerAddress = applicationUploadInfo.RegistryHost
+                    ServerAddress = registryHost
                 };
+
+                Console.WriteLine($"Pushing to '{target}:{tag}'...");
 
                 //Push it to the application registry!
                 await dockerClient.Images.PushImageAsync(target, parameters, authConfig,

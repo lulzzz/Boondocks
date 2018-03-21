@@ -18,8 +18,11 @@
         [Value(0, Required = true, HelpText = "(e.g. boondocks/boondocks-agent-raspberrypi3")]
         public string FromRepository { get; set; }
 
-        [Value(1, Required = true, HelpText = "The tag of the agent version (e.g. boondocks-agent-raspberrypi31.3.2)")]
+        [Value(1, Required = true, HelpText = "The tag of the agent version (e.g. boondocks-agent-raspberrypi3v1.0.0)")]
         public string Tag { get; set; }
+
+        [Option('r', "registry-host", HelpText = "Allows the registry info from the server to be overridden.")]
+        public string RegistryHost { get; set; }
         
         protected override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
         {
@@ -77,10 +80,12 @@
                     return 1;
                 }
 
+                string registryHost = RegistryHost ?? agentUploadInfo.RegistryHost;
+
                 //Create the image tag paramters
                 var imageTagParameters = new ImageTagParameters
                 {
-                    RepositoryName = $"{agentUploadInfo.RegistryHost}/{agentUploadInfo.Repository}",
+                    RepositoryName = $"{registryHost}/{agentUploadInfo.Repository}",
                     Tag = Tag,
                 };
 
@@ -89,7 +94,7 @@
                 //Tag the image
                 await dockerClient.Images.TagImageAsync(fromImage, imageTagParameters, cancellationToken);
 
-                string toImage = $"{agentUploadInfo.RegistryHost}/{agentUploadInfo.Repository}:{Tag}";
+                string toImage = $"{registryHost}/{agentUploadInfo.Repository}:{Tag}";
 
                 Console.WriteLine($"Pushing '{toImage}'...");
 

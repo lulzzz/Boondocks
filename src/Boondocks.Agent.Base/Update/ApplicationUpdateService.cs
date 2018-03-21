@@ -38,7 +38,8 @@
         public override async Task<bool> UpdateCoreAsync(GetDeviceConfigurationResponse configuration, CancellationToken cancellationToken)
         {
             //Get the current and next version
-            string currentVersion = await GetCurrentVersionAsync();
+            string currentVersion = await GetCurrentVersionAsync(cancellationToken);
+
             VersionReference nextVersion = configuration.ApplicationVersion;
 
             if (nextVersion == null)
