@@ -21,6 +21,7 @@
     <ProjectReference Include="..\Boondocks.Device.App\Boondocks.Device.App.csproj" />
     <ProjectReference Include="..\Boondocks.Device.Domain\Boondocks.Device.Domain.csproj" />
     <ProjectReference Include="..\Boondocks.Device.Infra\Boondocks.Device.Infra.csproj" />
+    <ProjectReference Include="..\Boondocks.Base.Data\Boondocks.Base.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>

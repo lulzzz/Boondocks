@@ -15,7 +15,7 @@ namespace Boondocks.Auth.WebApi.Controllers
     /// Web API controller user to authenticate an identity for another
     /// requesting API service.
     /// </summary>
-    [Route("api/boondocks/authentication"), GroupMeta(nameof(AuthenticationController))]
+    [Route("api/v1/boondocks/authentication"), GroupMeta(nameof(AuthenticationController))]
     public class AuthenticationController : Controller
     {
         private readonly IMessagingService _messagingSrv;
