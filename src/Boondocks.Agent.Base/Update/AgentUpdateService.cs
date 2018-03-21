@@ -19,6 +19,8 @@
         private readonly IPlatformDetector _platformDetecter;
         private readonly DeviceApiClient _deviceApiClient;
 
+        private const int StartupLoopLimit = 20;
+
         public AgentUpdateService(
             IDockerClient dockerClient,
             AgentDockerContainerFactory dockerContainerFactory,
@@ -34,9 +36,83 @@
 
         public async Task<string> GetCurrentVersionAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            var container = await _dockerClient.GetContainerByName(DockerContainerNames.Agent, cancellationToken);
+            var container = await _dockerClient.GetContainerByName(DockerContainerNames.AgentA, cancellationToken);
 
             return container?.ImageID;
+        }
+
+        public async Task StartupAsync(CancellationToken cancellationToken)
+        {
+            bool done = false;
+            int count = 0;
+
+            while (!done)
+            {
+                try
+                {
+                    if (count >= StartupLoopLimit)
+                    {
+                        Logger.Error("Startup loop has exceeded {StartupLoopLimit}. Stopping cycle.", StartupLoopLimit);
+                        done = true;
+                    }
+                    else
+                    {
+                        //Get all of the containers
+                        var containers = await _dockerClient.Containers.ListContainersAsync(
+                            new ContainersListParameters()
+                            {
+                                All = true
+                            }, cancellationToken);
+
+                        var a = containers.FirstOrDefault(c => c.Names.Any(n => n.EndsWith(DockerContainerNames.AgentA)));
+                        var b = containers.FirstOrDefault(c => c.Names.Any(n => n.EndsWith(DockerContainerNames.AgentB)));
+
+                        int numberOfAgents = 0;
+
+                        if (a != null)
+                            numberOfAgents++;
+
+                        if (b != null)
+                            numberOfAgents++;
+
+                        if (numberOfAgents == 0)
+                        {
+                            Logger.Fatal("No agent containers were found. This shouldn't happen.");
+                            done = true;
+                        }
+                        else if (numberOfAgents == 1)
+                        {
+                            if (a != null)
+                            {
+                                Logger.Information("Starting up using container 'A'.");
+                            }
+                            else
+                            {
+                                Logger.Information("Starting up using container 'B'.");
+                            }
+
+                            done = true;
+                        }
+                        else
+                        {
+                            //Hmm - it's not safe to start up
+                            Logger.Warning(
+                                "There is more than one application running. Waiting for the other one to exit.");
+
+                            //Wait a while
+                            await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warning(ex, "Problem in AgentUpdateService.StartupAsync: {Message}", ex.Message);
+                }
+                finally
+                {
+                    count++;
+                }
+            }
         }
 
         /// <summary>
@@ -64,14 +140,48 @@
                 return false;
             }
 
-            //Get the existing container
-            var existingContainer = await _dockerClient.GetContainerByName(DockerContainerNames.Agent, cancellationToken);
 
-            if (existingContainer == null)
+            //Get all of the containers
+            var containers = await _dockerClient.Containers.ListContainersAsync(
+                new ContainersListParameters()
+                {
+                    All = true
+                }, cancellationToken);
+
+            var a = containers.FirstOrDefault(c => c.Names.Any(n => n.EndsWith(DockerContainerNames.AgentA)));
+            var b = containers.FirstOrDefault(c => c.Names.Any(n => n.EndsWith(DockerContainerNames.AgentB)));
+
+            if (a == null && b == null)
             {
-                Logger.Error("Unable to find the existing container {ContainerName}", DockerContainerNames.Agent);
-                throw new Exception("Unable to find the running agent container.");
+                Logger.Fatal("Unable to find the agent container.");
+                return false;
             }
+
+            if (a != null && b != null)
+            {
+                Logger.Fatal("Two agent containers found. Unable to continue update.");
+                return false;
+            }
+
+            string existingContainerName;
+            string newContainerName;
+
+            ContainerListResponse existingContainer;
+
+            if (a != null)
+            {
+                existingContainerName = DockerContainerNames.AgentA;
+                newContainerName = DockerContainerNames.AgentB;
+                existingContainer = a;
+            }
+            else
+            {
+                existingContainerName = DockerContainerNames.AgentB;
+                newContainerName = DockerContainerNames.AgentA;
+                existingContainer = b;
+            }
+
+            Logger.Information("The existing agent container is {ExistingContainer}. The new one will be {NewContainer}.", existingContainerName, newContainerName);
 
             //Make sure that the image is downloaded
             if (! await _dockerClient.DoesImageExistAsync(nextVersion.ImageId, cancellationToken))
@@ -79,16 +189,14 @@
                 await DownloadImageAsync(_dockerClient, nextVersion, cancellationToken);
             }
 
-            //Remove the outgoing / incoming agent (just in case)
-            await _dockerClient.ObliterateContainerAsync(DockerContainerNames.AgentOutgoing, Logger, cancellationToken);
-            await _dockerClient.ObliterateContainerAsync(DockerContainerNames.AgentIncoming, Logger, cancellationToken);
+            Logger.Information("Creating new agent container...");
 
             //Create the new updated container
             var createContainerResponse = await _dockerContainerFactory.CreateContainerForUpdateAsync(
                 _dockerClient,
                 nextVersion.ImageId,
-                DockerContainerNames.Agent,
-                DockerContainerNames.AgentIncoming,
+                existingContainerName,
+                newContainerName,
                 cancellationToken);
 
             //Show the warnings
@@ -99,7 +207,7 @@
                 Logger.Warning("Warnings during container creation: {Warnings}", formattedWarnings);
             }
 
-            Logger.Information("Container {ContainerId} created for agent {ImageId}. Starting...", createContainerResponse.ID, nextVersion.ImageId);
+            Logger.Information("Container {ContainerId} created for agent {ImageId}. Starting new agent...", createContainerResponse.ID, nextVersion.ImageId);
 
             //This is our last chance to get the hell out before committing
             if (cancellationToken.IsCancellationRequested)
@@ -114,18 +222,6 @@
             //Check to see if the application started
             if (started)
             {
-                //Rename current container to a temporary container name.
-                await _dockerClient.Containers.RenameContainerAsync(existingContainer.ID, new ContainerRenameParameters
-                {
-                    NewName = DockerContainerNames.AgentOutgoing
-                }, new CancellationToken());
-
-                //Rename the new container to the production name.
-                await _dockerClient.Containers.RenameContainerAsync(createContainerResponse.ID, new ContainerRenameParameters
-                {
-                    NewName = DockerContainerNames.Agent
-                }, new CancellationToken());
-                
                 //Commit container suicide (this should kill the container that we're in)
                 await _dockerClient.Containers.RemoveContainerAsync(existingContainer.ID,
                     new ContainerRemoveParameters()
@@ -133,10 +229,7 @@
                         Force = true
                     }, new CancellationToken());
 
-                //Stop doing update stuff so we don't interfere with the new agent instance.
-                await Task.Delay(-1, new CancellationToken());
-
-                //We will never get here
+                //We may never get here
                 return true;
             }
                     
@@ -181,7 +274,7 @@
                 new Progress<JSONMessage>(m => Console.WriteLine($"\tCreateImageProgress: {m.ProgressMessage}")),
                 cancellationToken);
 
-            Logger.Information("Application image {ImageId} downloaded.", versionReference.ImageId);
+            Logger.Information("Agent image {ImageId} downloaded.", versionReference.ImageId);
         }
     }
 }

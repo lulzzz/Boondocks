@@ -52,8 +52,8 @@
                 Console.WriteLine("Removing target agent container(s)...");
 
                 //Ditch the containers that might cause a problem.
-                await targetDockerClient.ObliterateContainerAsync(DockerContainerNames.Agent, cancellationToken: cancellationToken);
-                await targetDockerClient.ObliterateContainerAsync(DockerContainerNames.AgentOutgoing, cancellationToken: cancellationToken);
+                await targetDockerClient.ObliterateContainerAsync(DockerContainerNames.AgentA, cancellationToken: cancellationToken);
+                await targetDockerClient.ObliterateContainerAsync(DockerContainerNames.AgentB, cancellationToken: cancellationToken);
 
                 Console.WriteLine("Creating agent container...");
 

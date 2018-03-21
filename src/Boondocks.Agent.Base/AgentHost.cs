@@ -82,7 +82,6 @@
                 Console.WriteLine();
                 Console.WriteLine("Existing images:");
                 Console.WriteLine("---------------------------------------------------------");
-                Console.WriteLine();
 
                 var images = await _dockerClient.Images.ListImagesAsync(new ImagesListParameters()
                 {
@@ -95,6 +94,9 @@
 
                     Console.WriteLine($"{image.ID} {tags} {image.Created}");
                 }
+
+                Console.WriteLine();
+
             }
             catch (Exception ex)
             {
@@ -105,6 +107,8 @@
         public async Task RunAsync(CancellationToken cancellationToken)
         {
             await LogStateAsync(cancellationToken);
+
+            await _agentUpdateService.StartupAsync(cancellationToken);
 
             //Start up the application log sucker
             Task logSuckerTask = _applicationLogSucker.SuckAsync(cancellationToken);

@@ -15,6 +15,8 @@ namespace Boondocks.Agent.RaspberryPi3
         {
             Console.WriteLine("Boondocks agent starting [RaspberryPi3]...");
 
+            Thread.Sleep(10 * 1000);
+
             try
             {
                 var platformDetector = new PlatformDetector();

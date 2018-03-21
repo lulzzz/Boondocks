@@ -101,7 +101,7 @@
                         Name = RestartPolicyKind.Always
                     },
                 },
-                Name = DockerContainerNames.Agent,
+                Name = DockerContainerNames.AgentA,
                 Env = new List<string>()
                                 {
                                     "DOCKER_SOCKET=/var/run/balena.sock",
