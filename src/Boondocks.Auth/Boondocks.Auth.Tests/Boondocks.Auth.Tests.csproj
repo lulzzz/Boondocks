@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <LangVersion>7</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Boondocks.Auth.Api\Boondocks.Auth.Api.csproj" />
+    <ProjectReference Include="..\Boondocks.Auth.App\Boondocks.Auth.App.csproj" />
+    <ProjectReference Include="..\Boondocks.Auth.Domain\Boondocks.Auth.Domain.csproj" />
+    <ProjectReference Include="..\Boondocks.Auth.Infra\Boondocks.Auth.Infra.csproj" />
+    <ProjectReference Include="..\Boondocks.Auth.WebApi\Boondocks.Auth.WebApi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NetFusion.Rest.Client" Version="3.0.10" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NetFusion.Common" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Base" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Bootstrap" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Settings" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Test" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Messaging" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Messaging.Types" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Mapping" Version="3.0.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <PackageReference Include="Moq" Version="4.8.2" />
+  </ItemGroup>
+
+</Project>
