@@ -30,7 +30,7 @@
 
         public async Task<string> GetCurrentVersionAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            var container = await _dockerClient.GetContainerByName(DockerConstants.ApplicationContainerName, cancellationToken);
+            var container = await _dockerClient.GetContainerByName(DockerContainerNames.Application, cancellationToken);
 
             return container?.ImageID;
         }
@@ -87,7 +87,7 @@
             }
 
             //Ditch the current applications
-            await _dockerClient.ObliterateContainerAsync(DockerConstants.ApplicationContainerName, Logger, cancellationToken);
+            await _dockerClient.ObliterateContainerAsync(DockerContainerNames.Application, Logger, cancellationToken);
 
             Logger.Information("Create the container for {ImageId} ...", nextVersion.ImageId);
 

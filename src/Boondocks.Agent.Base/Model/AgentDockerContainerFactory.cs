@@ -1,4 +1,4 @@
-﻿namespace Boondocks.Agent.Base
+﻿namespace Boondocks.Agent.Base.Model
 {
     using System;
     using System.Collections.Generic;
@@ -9,14 +9,28 @@
 
     public class AgentDockerContainerFactory
     {
-        public async Task<CreateContainerResponse> CreateContainerForUpdateAsync(IDockerClient dockerClient, string imageId, CancellationToken cancellationToken)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dockerClient"></param>
+        /// <param name="imageId">The id of the new agent image.</param>
+        /// <param name="existingContainerName">The name of the existing container</param>
+        /// <param name="incomingContainerName">The name of the new container to create.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<CreateContainerResponse> CreateContainerForUpdateAsync(
+            IDockerClient dockerClient, 
+            string imageId, 
+            string existingContainerName, 
+            string incomingContainerName,  
+            CancellationToken cancellationToken)
         {
             var existingContainer =
-                await dockerClient.GetContainerByName(DockerConstants.AgentContainerOutgoingName, cancellationToken);
+                await dockerClient.GetContainerByName(existingContainerName, cancellationToken);
 
             if (existingContainer == null)
             {
-                string message = $"Unable to find container '{DockerConstants.AgentContainerOutgoingName}'";
+                string message = $"Unable to find container '{existingContainerName}'";
                 Console.Error.WriteLine(message);
                 throw new Exception(message);
             }
@@ -34,9 +48,8 @@
             var createContainerParameters = new CreateContainerParameters
             {
                 Image = imageId,
-                Name = DockerConstants.AgentContainerName,
+                Name = incomingContainerName,
                 HostConfig = existingContainerInspection.HostConfig,
-                //TODO: Figure out ENV
                 Env = existingContainerInspection.Config.Env
             };
 
@@ -88,7 +101,7 @@
                         Name = RestartPolicyKind.Always
                     },
                 },
-                Name = DockerConstants.AgentContainerName,
+                Name = DockerContainerNames.Agent,
                 Env = new List<string>()
                                 {
                                     "DOCKER_SOCKET=/var/run/balena.sock",

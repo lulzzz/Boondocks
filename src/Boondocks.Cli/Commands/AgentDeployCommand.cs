@@ -3,6 +3,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Agent.Base.Model;
     using CommandLine;
     using Docker.DotNet;
     using Docker.DotNet.Models;
@@ -51,8 +52,8 @@
                 Console.WriteLine("Removing target agent container(s)...");
 
                 //Ditch the containers that might cause a problem.
-                await targetDockerClient.ObliterateContainerAsync(DockerConstants.AgentContainerName, cancellationToken: cancellationToken);
-                await targetDockerClient.ObliterateContainerAsync(DockerConstants.AgentContainerOutgoingName, cancellationToken: cancellationToken);
+                await targetDockerClient.ObliterateContainerAsync(DockerContainerNames.Agent, cancellationToken: cancellationToken);
+                await targetDockerClient.ObliterateContainerAsync(DockerContainerNames.AgentOutgoing, cancellationToken: cancellationToken);
 
                 Console.WriteLine("Creating agent container...");
 

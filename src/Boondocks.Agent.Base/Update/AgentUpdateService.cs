@@ -7,33 +7,30 @@
     using Docker.DotNet;
     using Docker.DotNet.Models;
     using Interfaces;
+    using Model;
     using Serilog;
     using Services.Device.Contracts;
-    using Services.Device.WebApiClient;
 
     internal class AgentUpdateService : UpdateService
     {
         private readonly IDockerClient _dockerClient;
         private readonly AgentDockerContainerFactory _dockerContainerFactory;
-        private readonly DeviceApiClient _deviceApiClient;
         private readonly IPlatformDetector _platformDetecter;
 
         public AgentUpdateService(
             IDockerClient dockerClient,
             AgentDockerContainerFactory dockerContainerFactory,
-            DeviceApiClient deviceApiClient,
             IPlatformDetector platformDetecter,
             ILogger logger) : base(logger, dockerClient)
         {
             _dockerClient = dockerClient ?? throw new ArgumentNullException(nameof(dockerClient));
             _dockerContainerFactory = dockerContainerFactory ?? throw new ArgumentNullException(nameof(dockerContainerFactory));
-            _deviceApiClient = deviceApiClient ?? throw new ArgumentNullException(nameof(deviceApiClient));
             _platformDetecter = platformDetecter;
         }
 
         public async Task<string> GetCurrentVersionAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            var container = await _dockerClient.GetContainerByName(DockerConstants.AgentContainerName, cancellationToken);
+            var container = await _dockerClient.GetContainerByName(DockerContainerNames.Agent, cancellationToken);
 
             return container?.ImageID;
         }
@@ -58,29 +55,30 @@
 
             //We don't support updating on linux
             if (!_platformDetecter.IsLinux)
-                return false;
-
-            var renameParameters = new ContainerRenameParameters()
             {
-                NewName = DockerConstants.AgentContainerOutgoingName
-            };
-
-            //Remove the outgoing application (just in case)
-            await _dockerClient.ObliterateContainerAsync(DockerConstants.AgentContainerOutgoingName, Logger, cancellationToken);
+                Logger.Warning("Agent update is only supported on Linux.");
+                return false;
+            }
 
             //Get the existing container
-            var existingContainer = await _dockerClient.GetContainerByName(DockerConstants.AgentContainerName, cancellationToken);
+            var existingContainer = await _dockerClient.GetContainerByName(DockerContainerNames.Agent, cancellationToken);
 
-            //Rename to a temporary container name
-            if (existingContainer != null)
+            if (existingContainer == null)
             {
-                await _dockerClient.Containers.RenameContainerAsync(existingContainer.ID, renameParameters, cancellationToken);
+                Logger.Error("Unable to find the existing container {ContainerName}", DockerContainerNames.Agent);
+                throw new Exception("Unable to find the running agent container.");
             }
+
+            //Remove the outgoing / incoming agent (just in case)
+            await _dockerClient.ObliterateContainerAsync(DockerContainerNames.AgentOutgoing, Logger, cancellationToken);
+            await _dockerClient.ObliterateContainerAsync(DockerContainerNames.AgentIncoming, Logger, cancellationToken);
 
             //Create the new updated container
             var createContainerResponse = await _dockerContainerFactory.CreateContainerForUpdateAsync(
                 _dockerClient,
                 nextVersion.ImageId,
+                DockerContainerNames.Agent,
+                DockerContainerNames.AgentIncoming,
                 cancellationToken);
 
             //Show the warnings
@@ -93,31 +91,46 @@
 
             Logger.Information("Container {ContainerId} created for agent {ImageId}. Starting...", createContainerResponse.ID, nextVersion.ImageId);
 
+            //This is our last chance to get the hell out before committing
+            if (cancellationToken.IsCancellationRequested)
+                return false;
+
             //Attempt to start the container
             var started = await _dockerClient.Containers.StartContainerAsync(
                 createContainerResponse.ID,
                 new ContainerStartParameters(),
-                cancellationToken);
+                new CancellationToken());
 
             //Check to see if the application started
             if (started)
             {
-                //Commit container suicide (this should kill the container that we're in)
-                if (existingContainer != null)
+                //Rename current container to a temporary container name.
+                await _dockerClient.Containers.RenameContainerAsync(existingContainer.ID, new ContainerRenameParameters
                 {
-                    await _dockerClient.Containers.RemoveContainerAsync(existingContainer.ID,
-                        new ContainerRemoveParameters()
-                        {
-                            Force = true
-                        }, cancellationToken);
-                }
+                    NewName = DockerContainerNames.AgentOutgoing
+                }, new CancellationToken());
 
-                //We probably won't even get here
+                //Rename the new container to the production name.
+                await _dockerClient.Containers.RenameContainerAsync(createContainerResponse.ID, new ContainerRenameParameters
+                {
+                    NewName = DockerContainerNames.Agent
+                }, new CancellationToken());
+                
+                //Commit container suicide (this should kill the container that we're in)
+                await _dockerClient.Containers.RemoveContainerAsync(existingContainer.ID,
+                    new ContainerRemoveParameters()
+                    {
+                        Force = true
+                    }, new CancellationToken());
+
+                //Stop doing update stuff so we don't interfere with the new agent instance.
+                await Task.Delay(-1, new CancellationToken());
+
+                //We will never get here
                 return true;
             }
                     
-            Logger.Warning("Warning: Agent not started.");
-
+            Logger.Warning("Warning: New agent not started. Not entirely sure why.");
             return false;
         }
     }

@@ -17,7 +17,7 @@
         private readonly LogBatchCollector _batchCollector;
         private readonly ILogger _logger;
 
-        private const int RetrySeconds = 10;
+        private const int RetrySeconds = 30;
         private const double LogSlewSeconds = 1.0;
 
         public ApplicationLogSucker(IDockerClient dockerClient, ILogger logger, LogBatchCollector batchCollector)
@@ -49,7 +49,7 @@
 
                 try
                 {
-                    using (var logStream = await _dockerClient.Containers.GetContainerLogsAsync(DockerConstants.ApplicationContainerName, parameters, cancellationToken))
+                    using (var logStream = await _dockerClient.Containers.GetContainerLogsAsync(DockerContainerNames.Application, parameters, cancellationToken))
                     using (var streamReader = new LogStreamReader(logStream))
                     {
                         //Read the log event
@@ -78,13 +78,11 @@
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Exception occurred: {ex.Message}");
+                    _logger.Verbose("Exception occurred: {Message}", ex.Message);
                 }
 
-                Console.WriteLine("Waiting before trying to contact the server again...");
                 await Task.Delay(TimeSpan.FromSeconds(RetrySeconds), cancellationToken);
             }
-            
         }
     }
 }

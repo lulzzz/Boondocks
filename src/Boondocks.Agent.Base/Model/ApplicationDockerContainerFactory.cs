@@ -57,7 +57,7 @@
                         Name = RestartPolicyKind.Always
                     },
                 },
-                Name = DockerConstants.ApplicationContainerName,
+                Name = DockerContainerNames.Application,
                 Env = formattedEnvironmentVariables,
             };
 
