@@ -47,15 +47,6 @@ namespace Boondocks.Services.Management.WebApi.Controllers
                 if (string.IsNullOrWhiteSpace(request.ImageId))
                     return BadRequest(new Error("No image id was specified."));
 
-                //Check for duplicate image id.
-                if (connection.IsApplicationVersionImageIdInUse(request.ApplicationId, request.ImageId))
-                {
-                    return Ok(new GetUploadInfoResponse
-                    {
-                        Reason = $"Image '{request.ImageId}' has already been uploaded for application '{application.Name}'. No need to upload again."
-                    });
-                }
-
                 //Check for duplicate name.
                 if (connection.IsApplicationVersionNameInUse(request.ApplicationId, request.Name))
                 {

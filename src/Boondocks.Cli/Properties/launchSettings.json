@@ -2,7 +2,7 @@
   "profiles": {
     "BoondocksCli": {
       "commandName": "Project",
-      "commandLineArgs": "build --source C:\\git\\Scada\\CasCom -a CommModule -c -e http://dockerhub.captiveaire.com:5060  --name \"v1.0.1\""
+      "commandLineArgs": "app-build  -a CommModule -c -e http://dockerhub.captiveaire.com:5060  --name \"commmodule-v1.0.2\" c:\\git\\Scada\\CasCom"
     }
   }
 }
