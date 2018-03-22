@@ -56,6 +56,8 @@
                 return b.ImageID;
             }
 
+            Logger.Fatal("This is bad. I can't find the running agent container, so I can't determine what version it is!");
+
             return null;
         }
 
