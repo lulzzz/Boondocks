@@ -53,14 +53,13 @@
             _applicationLogSucker = applicationLogSucker ?? throw new ArgumentNullException(nameof(applicationLogSucker));
             _logger = logger.ForContext(GetType());
             _deviceStateProvider = deviceStateProvider ?? throw new ArgumentNullException(nameof(deviceStateProvider));
-            var pathFactory1 = pathFactory ?? throw new ArgumentNullException(nameof(pathFactory));
             _uptimeProvider = uptimeProvider ?? throw new ArgumentNullException(nameof(uptimeProvider));
             _deviceConfiguration = deviceConfiguration;
 
             //Config
-            _logger.Information("Docker Endpoint: {DockerSocket}", pathFactory1.DockerEndpoint);
+            _logger.Information("Docker Endpoint: {DockerSocket}", pathFactory.DockerEndpoint);
             _logger.Information("DeviceId: {DeviceId}", deviceConfiguration?.DeviceId);
-            _logger.Information("DeviceAp iUrl: {DeviceApiUrl}", deviceConfiguration?.DeviceApiUrl);
+            _logger.Information("DeviceApi Url: {DeviceApiUrl}", deviceConfiguration?.DeviceApiUrl);
 
             //The agent should be updated before the application
             _updateServices = new UpdateService[]

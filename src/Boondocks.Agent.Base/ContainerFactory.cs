@@ -15,7 +15,7 @@
         /// <param name="deviceConfiguration"></param>
         /// <param name="customModule">Must provide IRootFileSysteUpdateService.</param>
         /// <returns></returns>
-        public static IContainer Create(IPathFactory pathFactory, IDeviceConfiguration deviceConfiguration, Module customModule)
+        public static IContainer Create(IPathFactory pathFactory, IDeviceConfiguration deviceConfiguration, Module customModule = null)
         {
             if (pathFactory == null) throw new ArgumentNullException(nameof(pathFactory));
             if (deviceConfiguration == null) throw new ArgumentNullException(nameof(deviceConfiguration));
@@ -28,11 +28,13 @@
                 deviceConfiguration.DeviceKey,
                 deviceConfiguration.DeviceApiUrl)).SingleInstance();
 
-
             builder.RegisterInstance(pathFactory);
             builder.RegisterInstance(deviceConfiguration);
 
-            builder.RegisterModule(customModule);
+            if (customModule != null)
+            {
+                builder.RegisterModule(customModule);
+            }
 
             builder.RegisterModule<AgentModule>();
 

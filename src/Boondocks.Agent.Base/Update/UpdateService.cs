@@ -10,7 +10,7 @@
     /// <summary>
     /// Base class for update services.
     /// </summary>
-    internal abstract class UpdateService
+    public abstract class UpdateService
     {
         private readonly IDockerClient _dockerClient;
 

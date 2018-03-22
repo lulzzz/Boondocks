@@ -12,7 +12,7 @@
     using Services.Device.Contracts;
     using Services.Device.WebApiClient;
 
-    internal class AgentUpdateService : UpdateService
+    public class AgentUpdateService : UpdateService
     {
         private readonly IDockerClient _dockerClient;
         private readonly AgentDockerContainerFactory _dockerContainerFactory;
@@ -237,7 +237,7 @@
             return false;
         }
 
-        private async Task DownloadImageAsync(IDockerClient dockerClient, VersionReference versionReference,
+        public async Task DownloadImageAsync(IDockerClient dockerClient, VersionReference versionReference,
             CancellationToken cancellationToken)
         {
             var versionRequest = new GetImageDownloadInfoRequest()

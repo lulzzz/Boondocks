@@ -1,30 +1,25 @@
 ﻿using System;
 
-namespace Boondocks.Agent.RaspberryPi3
+namespace Boondocks.Bootstrap
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using Agent.Base;
+    using Agent.Base.Interfaces;
+    using Agent.Base.Model;
     using Autofac;
-    using Base;
-    using Base.Interfaces;
-    using Base.Model;
 
     class Program
     {
-        static int Main(string[] args)
+        static void Main(string[] args)
         {
-            Console.WriteLine("Boondocks agent starting [RaspberryPi3]... ");
-
-            Thread.Sleep(10 * 1000);
+            Console.WriteLine("Boondocks bootstrap starting...");
 
             try
             {
                 var platformDetector = new PlatformDetector();
 
                 IPathFactory pathFactory = platformDetector.CreatePathFactory();
-
-                Console.WriteLine($"Device config path: {pathFactory.DeviceConfigFile}");
-                Console.WriteLine($"Docker endpoint: {pathFactory.DockerEndpoint}");
 
                 var deviceConfigurationProvider = new DeviceConfigurationProvider(pathFactory);
 
@@ -34,10 +29,10 @@ namespace Boondocks.Agent.RaspberryPi3
                     var deviceConfiguration = deviceConfigurationProvider.GetDeviceConfiguration();
 
                     //Create the container
-                    using (var container = ContainerFactory.Create(pathFactory, deviceConfiguration, new RaspberryPiModule()))
+                    using (var container = ContainerFactory.Create(pathFactory, deviceConfiguration, new BootstrapModule()))
                     {
                         //Get the agent host
-                        var host = container.Resolve<IAgentHost>();
+                        var host = container.Resolve<BootstrapHost>();
 
                         var cancellationTokenSource = new CancellationTokenSource();
 
@@ -64,14 +59,11 @@ namespace Boondocks.Agent.RaspberryPi3
             {
                 Console.WriteLine($"An exception occurred: {ex.Message}");
                 Console.WriteLine(ex.ToString());
-                return 1;
             }
             finally
             {
-                Console.WriteLine("Agent exiting.");
+                Console.WriteLine("Bootstrap exiting.");
             }
-
-            return 0;
         }
 
         /// <summary>
@@ -81,7 +73,7 @@ namespace Boondocks.Agent.RaspberryPi3
         private static void SleepForever(string reason)
         {
             //There is no sense is attempting to run without a configuration.
-            Console.Error.WriteLine($"Unable to run: {reason}" );
+            Console.Error.WriteLine($"Bootstrap unable to run: {reason}" );
             Thread.Sleep(Timeout.Infinite);
         }
     }
