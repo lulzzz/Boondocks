@@ -17,4 +17,8 @@
     <PackageReference Include="NetFusion.Messaging" Version="3.0.15" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Dapper.Contrib" Version="1.50.4" />
+  </ItemGroup>
+
 </Project>

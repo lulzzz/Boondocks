@@ -5,13 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper.Contrib" Version="1.50.4" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="NetFusion.Common" Version="3.0.15" />
     <PackageReference Include="NetFusion.Base" Version="3.0.15" />
     <PackageReference Include="NetFusion.Bootstrap" Version="3.0.15" />
     <PackageReference Include="NetFusion.Settings" Version="3.0.15" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.3" />
   </ItemGroup>
 </Project>
