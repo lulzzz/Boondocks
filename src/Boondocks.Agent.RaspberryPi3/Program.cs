@@ -13,7 +13,7 @@ namespace Boondocks.Agent.RaspberryPi3
     {
         static int Main(string[] args)
         {
-            Console.WriteLine("Boondocks agent starting [RaspberryPi3]...");
+            Console.WriteLine("Boondocks agent starting [RaspberryPi3]... ");
 
             Thread.Sleep(10 * 1000);
 
