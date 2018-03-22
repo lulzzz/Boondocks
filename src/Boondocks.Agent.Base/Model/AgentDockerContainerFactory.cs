@@ -90,7 +90,13 @@
                                             Type = "bind",
                                             Source="/mnt/boot/config.json",
                                             Target = "/boot/config.json",
-                                        }
+                                        },
+                                        new Mount()
+                                        {
+                                            Type = "bind",
+                                            Source = "/",
+                                            Target = "/mnt/root"
+                                        }    
                                     },
                     Binds = new List<string>()
                                     {
