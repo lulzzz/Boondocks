@@ -36,9 +36,27 @@
 
         public async Task<string> GetCurrentVersionAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            var container = await _dockerClient.GetContainerByName(DockerContainerNames.AgentA, cancellationToken);
+            //Get all of the containers
+            var containers = await _dockerClient.Containers.ListContainersAsync(
+                new ContainersListParameters()
+                {
+                    All = true
+                }, cancellationToken);
 
-            return container?.ImageID;
+            var a = containers.FirstOrDefault(c => c.Names.Any(n => n.EndsWith(DockerContainerNames.AgentA)));
+            var b = containers.FirstOrDefault(c => c.Names.Any(n => n.EndsWith(DockerContainerNames.AgentB)));
+
+            if (a != null)
+            {
+                return a.ImageID;
+            }
+
+            if (b != null)
+            {
+                return b.ImageID;
+            }
+
+            return null;
         }
 
         public async Task StartupAsync(CancellationToken cancellationToken)
