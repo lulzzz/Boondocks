@@ -26,16 +26,16 @@ namespace Boondocks.Device.Domain.Entities
         /// <param name="status">Delegate passed an instance of the created
         /// entity so additional behaviors can be applied.</param>
         /// <returns>Created entity with valid state.</returns>
-        public static DeviceStatus ForExistingDevice(Guid deviceId, Action<DeviceStatus> status) 
+        public static DeviceStatus ForExistingDevice(Guid deviceId, Action<DeviceStatus> update) 
         {
             if (deviceId == Guid.Empty)
                 throw new ArgumentException("Device Id not specified.", nameof(deviceId));
 
-            if (status == null)
-                throw new ArgumentNullException(nameof(status));
+            if (update == null)
+                throw new ArgumentNullException(nameof(update));
 
             var entity = new DeviceStatus { DeviceId = deviceId };
-            status(entity);            
+            update(entity);            
             return entity;
         }
 

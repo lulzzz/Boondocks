@@ -38,7 +38,7 @@ namespace Boondocks.Device.App.Ports
         {
             var heartbeat = command.Heartbeat;
 
-            // Create domain model for the device associated for the current context and
+            // Create domain model for the device associated with the current context and
             // record the received heartbeat information.
             var deviceStatus = DeviceStatus.ForExistingDevice(_deviceContext.DeviceId, 
                 status => status.RecordHeartbeat(

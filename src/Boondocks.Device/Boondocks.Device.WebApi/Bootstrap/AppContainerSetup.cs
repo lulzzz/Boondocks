@@ -27,7 +27,7 @@ namespace Boondocks.Device.WebApi.Bootstrap
             var typeResolver = new TypeResolver(
                 "Boondocks.Device.WebApi", 
                 "Boondocks.Device.*",
-                "Boondocks.Data"); 
+                "Boondocks.Base.Data"); 
 
             // The following configures the NetFusion AppContainer. 
             AppContainer.Create(typeResolver)
