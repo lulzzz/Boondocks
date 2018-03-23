@@ -16,7 +16,7 @@
         private readonly ILogger _logger;
 
         //The maximum amount of time to go before sending all held messages.
-        private const int TimerInterval = 10 * 1000;
+        private const int TimerInterval = 30 * 1000;
 
         //The maximum number of items to allow in a batch.
         private const int EmitBatchMaximumSize = 100;
@@ -41,8 +41,6 @@
 
         private void TimerElapsed(object sender, ElapsedEventArgs e)
         {
-            Console.WriteLine("Timer elapsed");
-
             EmitAsync();
 
             _timer.Start();
@@ -96,10 +94,6 @@
                         //Clear out the events that we just sent. Keep the same list instance so that we
                         // don't keep allocating memory.
                         _events.Clear();
-                    }
-                    else
-                    {
-                        _logger.Verbose("No events to emit.");
                     }
                 }
             }
