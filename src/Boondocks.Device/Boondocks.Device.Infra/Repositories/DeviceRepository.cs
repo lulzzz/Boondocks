@@ -5,6 +5,7 @@ using Boondocks.Device.App.Databases;
 using Boondocks.Device.Domain.Entities;
 using Boondocks.Device.Domain.Repositories;
 using Dapper;
+using Dapper.Contrib.Extensions;
 
 namespace Boondocks.Device.Infra.Repositories
 {
@@ -15,6 +16,33 @@ namespace Boondocks.Device.Infra.Repositories
         public DeviceRepository(IRepositoryContext<DeviceDb> context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+        }
+
+        public async Task<DeviceEntity> GetDevice(Guid deviceId)
+        {
+            const string deviceSql = @"
+                SELECT 
+                    Id, 
+                    Name, 
+                    DeviceKey, 
+                    ApplicationId, 
+                    ApplicationVersionId, 
+                    AgentVersionId, 
+                    RootFileSystemVersionId,     
+                    ConfigurationVersion, 
+                    CreatedUtc
+                FROM dbo.Devices 
+                WHERE Id = @deviceId";
+            var device = await _context.OpenConn()
+                .QueryFirstAsync<DeviceEntity>(deviceSql, new { deviceId });
+
+            const string variableSql = "select * from DeviceEnvironmentVariables where DeviceId = @deviceId";
+
+            var variables = await _context.OpenConn()
+                .QueryAsync<EnvironmentVariable>(variableSql, new { deviceId });
+
+            device.SetVariables(variables);
+            return device;
         }
 
         public Task<DeviceVersion> GetDeviceVersionInfo(Guid deviceId)

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Boondocks.Base.Data;
 using Boondocks.Device.Api.Models;
@@ -5,17 +6,18 @@ using Boondocks.Device.Api.Queries;
 using Boondocks.Device.App.Databases;
 using Boondocks.Device.App.Settings;
 using Boondocks.Device.Domain.Entities;
+using Boondocks.Device.Domain.Repositories;
 using Dapper.Contrib.Extensions;
 using NetFusion.Messaging;
 
 namespace Boondocks.Device.Infra.Repositories
 {
-    public class ImageInformationRepository : IQueryConsumer
+    public class VersionRepository : IQueryConsumer, IVersionRepository
     {
         private readonly RegistrySettings _registrySettings;
         private readonly IRepositoryContext<DeviceDb> _repoContext;
 
-        public ImageInformationRepository(
+        public VersionRepository(
             RegistrySettings registrySettings,
             IRepositoryContext<DeviceDb> repoContext)        
         {
@@ -39,6 +41,18 @@ namespace Boondocks.Device.Infra.Repositories
                 Repository = agentVersion.RepositoryName,
                 Registry = _registrySettings.Host
             };
+        }
+
+        public Task<ApplicationVersion> GetApplicationVersion(Guid applicationVersionId)
+        {
+            return _repoContext.OpenConn()
+                .GetAsync<ApplicationVersion>(applicationVersionId);
+        }
+
+        public Task<AgentVersion> GetAgentVersion(Guid agentVersionId)
+        {
+            return _repoContext.OpenConn()
+                .GetAsync<AgentVersion>(agentVersionId);
         }
 
         public async Task<ImageDownloadModel> Query(ApplicationImageInfo query)

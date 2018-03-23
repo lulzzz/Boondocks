@@ -9,6 +9,8 @@ namespace Boondocks.Device.Domain.Repositories
     /// </summary>
     public interface IDeviceRepository
     {
+        Task<DeviceEntity> GetDevice(Guid deviceId);
+
         /// <summary>
         /// Return the current device version for an identified device.
         /// </summary>
