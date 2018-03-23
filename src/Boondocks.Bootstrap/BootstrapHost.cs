@@ -56,6 +56,9 @@
                         if (deviceConfiguration.AgentVersion == null)
                         {
                             Logger.Warning("The server isn't giving us a agent version. Can't proceed until that changes.");
+
+                            //Wait a bit before we start over
+                            await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
                         }
                         else
                         {
