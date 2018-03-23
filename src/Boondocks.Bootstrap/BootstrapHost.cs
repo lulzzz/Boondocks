@@ -69,6 +69,12 @@
                                 await _agentUpdateService.DownloadImageAsync(_dockerClient, deviceConfiguration.AgentVersion, cancellationToken);
                             }
 
+                            await _dockerClient.ObliterateContainersAsync(new string[]
+                            {
+                                DockerContainerNames.AgentA,
+                                DockerContainerNames.AgentB
+                            }, Logger, cancellationToken);
+
                             //Create the new updated container
                             var createContainerResponse = await _agentDockerContainerFactory.CreateContainerForDirectAsync(
                                 _dockerClient,
@@ -130,15 +136,9 @@
                 DockerContainerNames.Application
             };
 
-            foreach (var container in containers)
-            foreach (var name in names)
-            {
-                if (container.Names.Any(n => n.EndsWith(name)))
-                    return true;
-            }
-
-
-            return false;
+            return containers
+                .FindByNames(names)
+                .Any();
         }
     }
 }

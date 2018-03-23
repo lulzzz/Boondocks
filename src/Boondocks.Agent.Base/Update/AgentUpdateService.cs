@@ -43,8 +43,8 @@
                     All = true
                 }, cancellationToken);
 
-            var a = containers.FirstOrDefault(c => c.Names.Any(n => n.EndsWith(DockerContainerNames.AgentA)));
-            var b = containers.FirstOrDefault(c => c.Names.Any(n => n.EndsWith(DockerContainerNames.AgentB)));
+            var a = containers.FindByName(DockerContainerNames.AgentA);
+            var b = containers.FindByName(DockerContainerNames.AgentB);
 
             if (a != null)
             {
@@ -84,8 +84,8 @@
                                 All = true
                             }, cancellationToken);
 
-                        var a = containers.FirstOrDefault(c => c.Names.Any(n => n.EndsWith(DockerContainerNames.AgentA)));
-                        var b = containers.FirstOrDefault(c => c.Names.Any(n => n.EndsWith(DockerContainerNames.AgentB)));
+                        var a = containers.FindByName(DockerContainerNames.AgentA);
+                        var b = containers.FindByName(DockerContainerNames.AgentB);
 
                         int numberOfAgents = 0;
 
@@ -168,8 +168,8 @@
                     All = true
                 }, cancellationToken);
 
-            var a = containers.FirstOrDefault(c => c.Names.Any(n => n.EndsWith(DockerContainerNames.AgentA)));
-            var b = containers.FirstOrDefault(c => c.Names.Any(n => n.EndsWith(DockerContainerNames.AgentB)));
+            var a = containers.FindByName(DockerContainerNames.AgentA);
+            var b = containers.FindByName(DockerContainerNames.AgentB);
 
             if (a == null && b == null)
             {

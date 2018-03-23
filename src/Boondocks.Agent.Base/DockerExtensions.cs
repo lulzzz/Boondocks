@@ -1,156 +1,16 @@
 ﻿namespace Boondocks.Agent.Base
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Docker.DotNet;
     using Docker.DotNet.Models;
+    using Serilog;
 
     public static class DockerExtensions
     {
-        public static async Task StartAllContainers(this IDockerClient client)
-        {
-            var containers = await client.Containers.ListContainersAsync(new ContainersListParameters
-            {
-                All = true
-            });
-
-            foreach (var container in containers)
-            {
-                Console.WriteLine($"Starting container {container.ID}...");
-
-                await client.Containers.StartContainerAsync(container.ID, new ContainerStartParameters());
-            }
-        }
-
-        public static async Task RemoveAllContainersAsync(this IDockerClient client)
-        {
-            var containers = await client.Containers.ListContainersAsync(new ContainersListParameters
-            {
-                All = true
-            });
-
-            foreach (var container in containers)
-            {
-                Console.WriteLine($"Deleting container {container.ID}...");
-
-                await client.Containers.RemoveContainerAsync(container.ID, new ContainerRemoveParameters
-                {
-                    Force = true
-                });
-            }
-        }
-
-        public static async Task DeleteAllImagesAsync(this IDockerClient client)
-        {
-            var images = await client.Images.ListImagesAsync(new ImagesListParameters
-            {
-                All = true
-            });
-
-            foreach (var image in images)
-            {
-                Console.WriteLine($"Deleting image '{image.ID}'...");
-
-                await client.Images.DeleteImageAsync(image.ID, new ImageDeleteParameters
-                {
-                    Force = true,
-                    PruneChildren = true
-                });
-            }
-        }
-
-        public static async Task DeleteImageByImageId(this IDockerClient client, string imageId,
-            CancellationToken cancellationToken)
-        {
-            var images = await client.Images.ListImagesAsync(new ImagesListParameters
-            {
-                All = true
-            }, cancellationToken);
-
-            foreach (var image in images.Where(i => i.ID == imageId))
-            {
-                Console.WriteLine($"Deleting image '{image.ID}'...");
-
-                await client.Images.DeleteImageAsync(image.ID, new ImageDeleteParameters
-                {
-                    Force = true,
-                    PruneChildren = true
-                }, cancellationToken);
-            }
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="imageId"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns>The number of containers removed.</returns>
-        public static async Task<int> RemoveContainersByImageIdAsync(this IDockerClient client, string imageId,
-            CancellationToken cancellationToken)
-        {
-            var containersRemovedCount = 0;
-
-            var containers = await client.Containers.ListContainersAsync(new ContainersListParameters
-            {
-                All = true
-            }, cancellationToken);
-
-            foreach (var container in containers.Where(c => c.ImageID == imageId))
-            {
-                Console.WriteLine($"Deleting container {container.ID}...");
-
-                await client.Containers.RemoveContainerAsync(container.ID, new ContainerRemoveParameters
-                {
-                    Force = false
-                }, cancellationToken);
-
-                containersRemovedCount++;
-            }
-
-            return containersRemovedCount;
-        }
-
-        /// <summary>
-        ///     Should theoretically only ever stop one container.
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="imageId"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public static async Task StopContainersByImageId(this IDockerClient client, string imageId,
-            CancellationToken cancellationToken = new CancellationToken())
-        {
-            //List the running containers
-            var containers = await client.Containers.ListContainersAsync(new ContainersListParameters(), cancellationToken);
-
-            //Find the containers to stop (there should only be one if all has gone to plan)
-            var containersToStop = containers
-                .Where(c => string.Equals(c.ImageID, imageId))
-                .ToArray();
-
-            if (containersToStop.Any())
-            {
-                var stopParameters = new ContainerStopParameters
-                {
-                    WaitBeforeKillSeconds = 30
-                };
-
-                //Look at each 
-                foreach (var container in containersToStop)
-                {
-                    Console.WriteLine($"Stopping container '{container.ID}'...");
-
-                    //Stop this application
-                    await client.Containers.StopContainerAsync(container.ID, stopParameters, cancellationToken);
-
-                    Console.WriteLine($"Container '{container.ID}' stopped.");
-                }
-            }
-        }
-
         public static async Task<ImagesListResponse> GetImageAsync(
             this IDockerClient dockerClient,
             string imageId,
@@ -162,24 +22,6 @@
             }, cancellationToken);
 
             return images.FirstOrDefault(i => i.ID == imageId);
-        }
-
-        public static async Task<bool> IsContainerRunningAsync(this IDockerClient client, string containerId,
-            CancellationToken cancellationToken)
-        {
-            var runningContainers =
-                await client.Containers.ListContainersAsync(new ContainersListParameters(), cancellationToken);
-
-            return runningContainers.Any(c => c.ID == containerId);
-        }
-
-        public static async Task<int> GetNumberOfRunningContainersAsync(this IDockerClient client, string imageId,
-            CancellationToken cancellationToken)
-        {
-            var runningContainers =
-                await client.Containers.ListContainersAsync(new ContainersListParameters(), cancellationToken);
-
-            return runningContainers.Count(c => c.ImageID == imageId);
         }
 
         public static async Task<bool> DoesImageExistAsync(this IDockerClient client, string imageId,
@@ -209,7 +51,149 @@
                 All = true
             }, cancellationToken);
 
-            return allContainers.FirstOrDefault(c => c.Names.Any(n => n.EndsWith(name)));
+            return allContainers.FindByName(name);
+        }
+
+          /// <summary>
+        /// Removes a container (by name) using the Force option.
+        /// </summary>
+        /// <param name="dockerClient"></param>
+        /// <param name="name"></param>
+        /// <param name="logger"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task ObliterateContainerAsync(this IDockerClient dockerClient, string name,
+            ILogger logger = null, CancellationToken cancellationToken = new CancellationToken())
+        {
+            //Get all of the containers
+            var containers = await dockerClient.Containers.ListContainersAsync(new ContainersListParameters()
+            {
+                All = true
+            }, cancellationToken);
+
+            var container = containers.FindByName(name);
+
+            if (container != null)
+            {
+                //Create the parameters
+                var parameters = new ContainerRemoveParameters()
+                {
+                    Force = true
+                };
+
+                logger?.Information("Obliterating container {ContainerId} with image {ImageId}", container.ID,
+                    container.ImageID);
+
+                //Delete it
+                await dockerClient.Containers.RemoveContainerAsync(container.ID, parameters, cancellationToken);
+            }
+        }
+
+        /// <summary>
+        /// Removes a container (by name) using the Force option.
+        /// </summary>
+        /// <param name="dockerClient"></param>
+        /// <param name="names"></param>
+        /// <param name="logger"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task ObliterateContainersAsync(this IDockerClient dockerClient, string[] names, ILogger logger = null, CancellationToken cancellationToken = new CancellationToken())
+        {
+            //Get all of the containers
+            var containers = await dockerClient.Containers.ListContainersAsync(new ContainersListParameters()
+            {
+                All = true
+            }, cancellationToken);
+
+            //Find all of the application containers (should should be one)
+            var containersToDelete = containers.FindByNames(names);
+
+            //Create the parameters
+            var parameters = new ContainerRemoveParameters()
+            {
+                Force = true
+            };
+
+            //Delete each one
+            foreach (var container in containersToDelete)
+            {
+                logger?.Information("Removing application container {ContainerId} with image {ImageId}", container.ID, container.ImageID);
+
+                //Delete it
+                await dockerClient.Containers.RemoveContainerAsync(container.ID, parameters, cancellationToken);
+            }
+        }
+
+        /// <summary>
+        /// Removes the leading "/" from a container name.
+        /// </summary>
+        /// <param name="containerName"></param>
+        /// <returns></returns>
+        public static string GetContainerName(string containerName)
+        {
+            if (!string.IsNullOrWhiteSpace(containerName))
+                return containerName.Substring(1);
+
+            return containerName;
+        }
+
+        /// <summary>
+        /// Gets the friendly formatted names of a given container.
+        /// </summary>
+        /// <param name="container"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetContainerNames(this ContainerListResponse container)
+        {
+            return container.Names
+                .Select(GetContainerName);
+        }
+
+        /// <summary>
+        /// True if the container has the specified name, false otherwise.
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static bool HasName(this ContainerListResponse container, string name)
+        {
+            return container
+                .GetContainerNames()
+                .Contains(name);
+        }
+
+        /// <summary>
+        /// Gets a container by name. 
+        /// </summary>
+        /// <param name="containers"></param>
+        /// <param name="name"></param>
+        /// <returns>The container if it's found, null otherwise.</returns>
+        public static ContainerListResponse FindByName(this IEnumerable<ContainerListResponse> containers, string name)
+        {
+            return containers.FirstOrDefault(c => c.HasName(name));
+        }
+
+        /// <summary>
+        /// Gets containers by name.
+        /// </summary>
+        /// <param name="containers"></param>
+        /// <param name="names"></param>
+        /// <returns>The containers if found, emtpy list otherwise.</returns>
+        public static IList<ContainerListResponse> FindByNames(this IEnumerable<ContainerListResponse> containers, IList<string> names)
+        {
+            var response = new List<ContainerListResponse>();
+
+            foreach (var container in containers)
+            {
+                foreach (var name in names)
+                {
+                    if (container.HasName(name))
+                    {
+                        response.Add(container);
+                    }
+                }
+            }
+
+            return response;
         }
     }
 }
