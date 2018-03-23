@@ -5,11 +5,11 @@ using NetFusion.Messaging.Types;
 
 namespace Boondocks.Device.Api.Queries
 {
-    public class CurrentDeviceConfiguration : Query<DeviceConfiguration>
+    public class GetDeviceConfiguration : Query<DeviceConfiguration>
     {
         public Guid DeviceId { get; }
 
-        public CurrentDeviceConfiguration(Guid deviceId)
+        public GetDeviceConfiguration(Guid deviceId)
         {
             DeviceId =  deviceId;
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Boondocks.Base.Data;
+using Boondocks.Device.Api.Queries;
 using Boondocks.Device.App.Databases;
 using Boondocks.Device.Domain.Entities;
 using Boondocks.Device.Domain.Repositories;
@@ -46,6 +47,14 @@ namespace Boondocks.Device.Infra.Repositories
         {
             return _context.OpenConn()
                 .GetAsync<ApplicationVersion>(applicationVersionId);
+        }
+
+        public async Task<IVersionReference> Query(GetApplicationImageInfo query)
+        {
+            var appVersion = await _context.OpenConn()
+                .GetAsync<ApplicationVersion>(query.Id);
+
+            return appVersion;
         }
        
     }

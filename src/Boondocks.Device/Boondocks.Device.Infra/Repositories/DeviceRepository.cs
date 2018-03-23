@@ -1,15 +1,18 @@
 using System;
 using System.Threading.Tasks;
 using Boondocks.Base.Data;
+using Boondocks.Device.Api.Queries;
 using Boondocks.Device.App.Databases;
 using Boondocks.Device.Domain.Entities;
 using Boondocks.Device.Domain.Repositories;
 using Dapper;
 using Dapper.Contrib.Extensions;
+using NetFusion.Messaging;
 
 namespace Boondocks.Device.Infra.Repositories
 {
-    public class DeviceRepository : IDeviceRepository
+    public class DeviceRepository : IDeviceRepository,
+        IQueryConsumer
     {
         private readonly IRepositoryContext<DeviceDb> _context;
     
@@ -56,6 +59,14 @@ namespace Boondocks.Device.Infra.Repositories
         {
             return _context.OpenConn()
                 .GetAsync<AgentVersion>(agentVersionId);
+        }
+
+        public async Task<IVersionReference> Query(GetAgentImageInfo query)
+        {
+            var agentVersion = await _context.OpenConn()
+                .GetAsync<AgentVersion>(query.Id);
+
+            return agentVersion;
         }
 
         public Task UpdateDeviceStatus(DeviceStatus heartbeat)

@@ -2,6 +2,8 @@ using System.Threading.Tasks;
 using Boondocks.Base.Data;
 using Boondocks.Device.Api.Queries;
 using Boondocks.Device.App.Databases;
+using Boondocks.Device.App.Settings;
+using Boondocks.Device.Domain;
 using Boondocks.Device.Domain.Entities;
 using Boondocks.Device.Domain.Repositories;
 using NetFusion.Messaging;
@@ -17,20 +19,23 @@ namespace Boondocks.Device.App.Ports
     public class ConfigurationPort : IQueryConsumer
     {
         private readonly IRepositoryContext<DeviceDb> _repoContext;
+        private readonly RegistrySettings _registrySettings;
         private readonly IDeviceRepository _deviceRepo;
-        private IApplicationRepository _applicationRepo;
+        private readonly IApplicationRepository _applicationRepo;
 
         public ConfigurationPort(
             IRepositoryContext<DeviceDb> repoContext,
+            RegistrySettings registrySettings, 
             IDeviceRepository deviceRepo,
             IApplicationRepository applicationRepo)
         {
             _repoContext = repoContext;
+            _registrySettings = registrySettings;
             _deviceRepo = deviceRepo;
             _applicationRepo = applicationRepo;
         }
 
-        public async Task<DeviceConfiguration> DetermineConfiguration(CurrentDeviceConfiguration query)
+        public async Task<DeviceConfiguration> DetermineConfiguration(GetDeviceConfiguration query)
         {
             var device = await _deviceRepo.GetDevice(query.DeviceId);
             if (device == null)
@@ -49,39 +54,30 @@ namespace Boondocks.Device.App.Ports
 
             // Based on the combined settings, set the corresponding application and
             // agent versions.
-            await SetApplicationVersion(configuration);
-            await SetAgentVersion(configuration);
+            RegistryEntry registry = await GetRegistryEntry(configuration);
+            configuration.SetRegistry(registry);
 
             return configuration;
         }
 
-        private async Task SetApplicationVersion(DeviceConfiguration configuration)
+        private async Task<RegistryEntry> GetRegistryEntry(DeviceConfiguration configuration)
         {
-            if (configuration.ApplicationVersionId == null)
+            RegistryEntry registry = new RegistryEntry { Registry = _registrySettings.Host };
+
+            if (configuration.ApplicationVersionId != null)
             {
-                return;
+                registry.ApplicationVersion =  await _applicationRepo.GetApplicationVersion(
+                    configuration.ApplicationVersionId.Value);
             }
 
-            var appVersion = await _applicationRepo.GetApplicationVersion(
-                configuration.ApplicationVersionId.Value);
-                
-            var verRef = new VersionReference(appVersion.Id, appVersion.ImageId, appVersion.Name);
-            configuration.SetApplicationVersion(verRef);
-        }
-
-        private async Task SetAgentVersion(DeviceConfiguration configuration)
-        {
-            if (configuration.AgentVersionId == null)
+            if (configuration.AgentVersionId != null)
             {
-                return;
+                registry.AgentVersion = await _deviceRepo.GetAgentVersion(
+                    configuration.AgentVersionId.Value);
+
             }
 
-            var agentVersion = await _deviceRepo.GetAgentVersion(
-                configuration.AgentVersionId.Value);
-                
-            var verRef = new VersionReference(agentVersion.Id, agentVersion.ImageId, agentVersion.Name);
-            configuration.SetAgentVersion(verRef);
+            return registry;
         }
-
     }
 }

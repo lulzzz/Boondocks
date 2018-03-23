@@ -2,7 +2,7 @@ using System;
 
 namespace Boondocks.Device.Domain.Entities
 {
-    public class AgentVersion
+    public class AgentVersion : IVersionReference
     {
         public Guid Id { get; private set; }
         public bool IsDisabled { get; private set; }

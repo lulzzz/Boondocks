@@ -30,8 +30,7 @@ namespace Boondocks.Device.Domain.Entities
             ConfigurationVersion = configurationVersion;
         }
 
-        public VersionReference ApplicationVersion { get; private set; }
-        public VersionReference AgentVersion { get; private set; }
+        public RegistryEntry Registry { get; private set; }
 
         public void SetVariables(EnvironmentVariable[] variables)
         {
@@ -59,14 +58,9 @@ namespace Boondocks.Device.Domain.Entities
             return mergedConfig;
         }
 
-        public void SetApplicationVersion(VersionReference version)
+        public void SetRegistry(RegistryEntry registry)
         {
-            ApplicationVersion = version;
-        }
-
-        public void SetAgentVersion(VersionReference version)
-        {
-            AgentVersion = version;
+            Registry = registry;
         }
     }
 }

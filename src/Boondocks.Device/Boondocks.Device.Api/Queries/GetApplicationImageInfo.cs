@@ -1,14 +1,15 @@
 using System;
 using Boondocks.Device.Api.Models;
+using Boondocks.Device.Domain.Entities;
 using NetFusion.Messaging.Types;
 
 namespace Boondocks.Device.Api.Queries
 {
-    public class ApplicationImageInfo : Query<ImageDownloadModel>
+    public class GetApplicationImageInfo : Query<IVersionReference>
     {
         public Guid Id { get; }
 
-        public ApplicationImageInfo(Guid id)
+        public GetApplicationImageInfo(Guid id)
         {
             Id = id;
         }
