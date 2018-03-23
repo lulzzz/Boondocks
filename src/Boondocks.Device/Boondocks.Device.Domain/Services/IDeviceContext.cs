@@ -1,6 +1,6 @@
 using System;
 
-namespace Boondocks.Device.App
+namespace Boondocks.Device.Domain.Services
 {
     /// <summary>
     /// Referenced when a device token is validated to set the value of the 

@@ -17,18 +17,15 @@ namespace Boondocks.Device.App.Ports
     public class HeartbeatPort : IMessageConsumer
     {
         private readonly ILogger<HeartbeatPort> _logger;
-        private readonly IDeviceContext _deviceContext;
         private readonly IRepositoryContext<DeviceDb> _repoContext;
         private readonly IDeviceRepository _deviceRepo;
 
         public HeartbeatPort(
             ILogger<HeartbeatPort> logger,
-            IDeviceContext deviceContext,
             IRepositoryContext<DeviceDb> repoContext,
             IDeviceRepository deviceRepo)
         {
             _logger = logger;
-            _deviceContext = deviceContext;
             _repoContext = repoContext;
             _deviceRepo = deviceRepo;
         }
@@ -40,7 +37,7 @@ namespace Boondocks.Device.App.Ports
 
             // Create domain model for the device associated with the current context and
             // record the received heartbeat information.
-            var deviceStatus = DeviceStatus.ForExistingDevice(_deviceContext.DeviceId, 
+            var deviceStatus = DeviceStatus.ForExistingDevice(command.DeviceId, 
                 status => status.RecordHeartbeat(
                     heartbeat.State, 
                     heartbeat.UptimeSeconds,

@@ -20,7 +20,7 @@ namespace Boondocks.Device.WebApi.Controllers
         [HttpGet]
         public async Task<MicroserviceHealthCheck> GetHealthCheck()
         {
-            ServiceStatus status =  await _messagingSrv.DispatchAsync(HealthCheckStatus.Query);
+            ServiceStatus status =  await _messagingSrv.DispatchAsync(GetHealthCheckStatus.Query);
             return new MicroserviceHealthCheck {
                 DatabaseStatus = status.LastDataUpdates
             };

@@ -11,6 +11,8 @@ namespace Boondocks.Device.Api.Commands
     {
         private LogEventReceived() {}
 
+        public Guid DeviceId { get; private set; }
+
         /// <summary>
         /// Indicates that the device events should be deleted. 
         /// </summary>
@@ -28,9 +30,11 @@ namespace Boondocks.Device.Api.Commands
         /// <param name="purgeExisting">Indicates that any existing events associated with
         /// the device should be deleted before inserting the new events.</param>
         /// <returns>Created command.</returns>
-        public static LogEventReceived HavingDetails(LogEventsModel logEvents, bool purgeExisting = false) =>
+        public static LogEventReceived HavingDetails(Guid deviceId, LogEventsModel logEvents,
+            bool purgeExisting = false) =>
     
             new LogEventReceived { 
+                DeviceId = deviceId,
                 PurgeExisting = purgeExisting,
                 LogEvents = logEvents.Events ?? throw new ArgumentNullException(nameof(logEvents))
             };
@@ -39,6 +43,10 @@ namespace Boondocks.Device.Api.Commands
         /// Creates a command used to delete all log events associated with a device.
         /// </summary>
         /// <returns>Created command.</returns>
-        public static LogEventReceived Purge() => new LogEventReceived { PurgeExisting = true };
+        public static LogEventReceived Purge(Guid deviceId) => 
+            new LogEventReceived {
+                DeviceId = deviceId, 
+                PurgeExisting = true
+            };
     }
 }

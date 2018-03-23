@@ -52,6 +52,12 @@ namespace Boondocks.Device.Infra.Repositories
                 QuerySingleAsync<DeviceVersion>(responseSql, new {Id = deviceId});
         }
 
+        public Task<AgentVersion> GetAgentVersion(Guid agentVersionId)
+        {
+            return _context.OpenConn()
+                .GetAsync<AgentVersion>(agentVersionId);
+        }
+
         public Task UpdateDeviceStatus(DeviceStatus heartbeat)
         {
             const string updateSql = @"
@@ -67,6 +73,28 @@ namespace Boondocks.Device.Infra.Repositories
 
             return _context.OpenConn()
                 .ExecuteAsync(updateSql, heartbeat);
+        }
+
+        public async Task WriteDeviceLog(DeviceLog log, bool purgeBeforeWrite = false)
+        {
+           var connection = _context.OpenConn();
+
+           using(var transaction = connection.BeginTransaction())
+           {
+                if (purgeBeforeWrite)
+                {
+                    await connection.ExecuteAsync(
+                        "delete from ApplicationLogs where DeviceId = @deviceId", 
+                        new {deviceId = log.DeviceId}, transaction);
+                }
+
+                const string sql = @"
+                    insert into ApplicationLogs(Id, DeviceId, Type, Message, CreatedLocal, CreatedUtc) 
+                    values (@Id, @DeviceId, @Type, @Message, @CreatedLocal, @CreatedUtc)";
+
+
+                await connection.ExecuteAsync(sql, log.Entries, transaction);                
+           }
         }
     }
 }

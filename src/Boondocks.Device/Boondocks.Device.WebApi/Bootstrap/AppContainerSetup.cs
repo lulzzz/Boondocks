@@ -4,6 +4,7 @@ using Autofac.Extensions.DependencyInjection;
 using Boondocks.Base.Data.Core;
 using Boondocks.Device.App;
 using Boondocks.Device.App.Services;
+using Boondocks.Device.Domain.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

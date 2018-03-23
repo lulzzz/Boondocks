@@ -1,4 +1,5 @@
 using System;
+using Boondocks.Device.Domain.Services;
 
 namespace Boondocks.Device.App.Services
 {

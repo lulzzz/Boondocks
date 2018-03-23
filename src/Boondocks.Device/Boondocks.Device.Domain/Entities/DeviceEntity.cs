@@ -13,16 +13,16 @@ namespace Boondocks.Device.Domain.Entities
             Variables =  Enumerable.Empty<EnvironmentVariable>();
         }
 
-        public string Name { get; set; }
-        public Guid DeviceKey { get; set; }
-        public Guid ApplicationId { get; set; }
-        public Guid? ApplicationVersionId { get; set; }
-        public Guid? AgentVersionId { get; set; }
-        public Guid? RootFileSystemVersionId { get; set; }
-        public Guid ConfigurationVersion { get; set; }
-        public bool IsDisabled { get; set; }
-        public bool IsDeleted { get; set; }
-        public DateTime CreatedUtc { get; set; }
+        public string Name { get; private set; }
+        public Guid DeviceKey { get; private set; }
+        public Guid ApplicationId { get; private set; }
+        public Guid? ApplicationVersionId { get; private set; }
+        public Guid? AgentVersionId { get; private set; }
+        public Guid? RootFileSystemVersionId { get; private set; }
+        public Guid ConfigurationVersion { get; private set; }
+        public bool IsDisabled { get; private set; }
+        public bool IsDeleted { get; private set; }
+        public DateTime CreatedUtc { get; private set; }
 
         public void SetVariables(IEnumerable<EnvironmentVariable> variables)
         {
@@ -34,7 +34,8 @@ namespace Boondocks.Device.Domain.Entities
             var config = new DeviceConfiguration(
                 RootFileSystemVersionId, 
                 AgentVersionId, 
-                ApplicationVersionId);
+                ApplicationVersionId,
+                ConfigurationVersion);
 
             config.SetVariables(Variables.ToArray());
             return config;

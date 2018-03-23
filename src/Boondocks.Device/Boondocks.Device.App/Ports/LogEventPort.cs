@@ -14,25 +14,22 @@ namespace Boondocks.Device.App.Ports
     /// </summary>
     public class LogEventPort : IMessageConsumer
     {
-        private readonly IDeviceContext _deviceContext;
         private readonly IRepositoryContext<DeviceDb> _repoContext;
-        private readonly IApplicationLogRepository _applicationLogRepo;
+        private readonly IDeviceRepository _deviceRepository;
         
         public LogEventPort(
-            IDeviceContext deviceContext,
             IRepositoryContext<DeviceDb> repoContext,
-            IApplicationLogRepository applicationLogRepo)
+            IDeviceRepository deviceRepository)
         {
-            _deviceContext = deviceContext;
             _repoContext = repoContext;
-            _applicationLogRepo = applicationLogRepo;
+            _deviceRepository = deviceRepository;
         }
 
         [InProcessHandler]
         public async Task When (LogEventReceived command)
         {
             // Create a new device log domain entity from received command.
-            var deviceLog = DeviceLog.ForExistingDevice(_deviceContext.DeviceId);
+            var deviceLog = DeviceLog.ForExistingDevice(command.DeviceId);
 
             foreach (LogEventModel model in command.LogEvents)
             {
@@ -49,7 +46,7 @@ namespace Boondocks.Device.App.Ports
             // Save the device log and optionally delete any prior entries.
             using (_repoContext)
             {
-                await _applicationLogRepo.WriteDeviceLog(deviceLog, command.PurgeExisting);
+                await _deviceRepository.WriteDeviceLog(deviceLog, command.PurgeExisting);
             }
         }
     }

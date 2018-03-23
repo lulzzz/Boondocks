@@ -42,6 +42,11 @@ namespace Boondocks.Device.Infra.Repositories
             return application;
         }
 
+        public Task<ApplicationVersion> GetApplicationVersion(Guid applicationVersionId)
+        {
+            return _context.OpenConn()
+                .GetAsync<ApplicationVersion>(applicationVersionId);
+        }
        
     }
 }

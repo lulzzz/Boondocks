@@ -10,17 +10,20 @@ namespace Boondocks.Device.Api.Commands
     /// </summary>
     public class HeartbeatReceived : Command<DeviceVersion>
     {
+        public Guid DeviceId { get; private set; }
         public DeviceHeartbeatModel Heartbeat { get; private set; }
 
         private HeartbeatReceived() { }
 
-        public static HeartbeatReceived FromDevice(DeviceHeartbeatModel deviceHeartbeat)
+        public static HeartbeatReceived FromDevice(Guid deviceId, DeviceHeartbeatModel deviceHeartbeat)
         {
             if (deviceHeartbeat == null)
                 throw new ArgumentNullException(nameof(deviceHeartbeat), 
                     "Command can't be created from null model.");
 
-            return new HeartbeatReceived { Heartbeat = deviceHeartbeat };
+            return new HeartbeatReceived { 
+                DeviceId = deviceId, 
+                Heartbeat = deviceHeartbeat };
         }
     }
 }

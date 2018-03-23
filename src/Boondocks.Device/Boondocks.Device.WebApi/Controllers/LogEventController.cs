@@ -1,21 +1,27 @@
 using System.Threading.Tasks;
 using Boondocks.Device.Api.Commands;
 using Boondocks.Device.Api.Models;
+using Boondocks.Device.App;
+using Boondocks.Device.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 using NetFusion.Messaging;
 
 namespace Boondocks.Device.WebApi.Controllers
 {
     /// <summary>
-    /// Controller for recording device logs.
+    /// Controller for recording and purging device logs.
     /// </summary>
     [Route("api/v1/boondocks/device/logs")]
     public class LogEventController : Controller
     {
+        private readonly IDeviceContext _context;
         private readonly IMessagingService _messagingSrv;
 
-        public LogEventController(IMessagingService messagingSrv)
+        public LogEventController(
+            IDeviceContext context,
+            IMessagingService messagingSrv)
         {
+            _context = context;
             _messagingSrv = messagingSrv;
         }
 
@@ -26,7 +32,7 @@ namespace Boondocks.Device.WebApi.Controllers
         [HttpPost]
         public Task RecordLogEvent([FromBody]LogEventsModel logEvents)
         {
-            var command = LogEventReceived.HavingDetails(logEvents);
+            var command = LogEventReceived.HavingDetails(_context.DeviceId, logEvents);
             return _messagingSrv.SendAsync(command);
         }
 
@@ -38,11 +44,14 @@ namespace Boondocks.Device.WebApi.Controllers
         [HttpPost("purge")]
         public Task PurgeAndRecordLogEvent([FromBody]LogEventsModel logEvents)
         {
-            var command = LogEventReceived.Purge();
+            var command = LogEventReceived.Purge(_context.DeviceId);
 
             if (logEvents != null)
             {
-                command = LogEventReceived.HavingDetails(logEvents, purgeExisting: true);
+                command = LogEventReceived.HavingDetails(
+                    _context.DeviceId, 
+                    logEvents, 
+                    purgeExisting: true);
             }
 
             return _messagingSrv.SendAsync(command);

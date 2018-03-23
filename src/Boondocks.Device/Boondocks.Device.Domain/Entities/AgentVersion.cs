@@ -4,13 +4,13 @@ namespace Boondocks.Device.Domain.Entities
 {
     public class AgentVersion
     {
-        public Guid Id { get; set; }
-        public bool IsDisabled { get; set; }
-        public Guid DeviceTypeId { get; set; }
-        public string ImageId { get; set; }
-        public string Name { get; set; }
-        public string Logs { get; set; }
-        public DateTime CreatedUtc { get; set; }
+        public Guid Id { get; private set; }
+        public bool IsDisabled { get; private set; }
+        public Guid DeviceTypeId { get; private set; }
+        public string ImageId { get; private set; }
+        public string Name { get; private set; }
+        public string Logs { get; private set; }
+        public DateTime CreatedUtc { get; private set; }
 
          /// <summary>
         /// Canonical docker repository name for a given application.

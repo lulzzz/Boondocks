@@ -10,6 +10,11 @@ using NetFusion.Messaging;
 
 namespace Boondocks.Device.App.Ports
 {
+    /// <summary>
+    /// Handles a query requesting information used to determine the execution
+    /// health of the service.  Responds with the latest maximum date the sate
+    /// of certain entities were updated.
+    /// </summary>
     public class HealthCheckPort : IQueryConsumer
     {
         private readonly IRepositoryContext<DeviceDb> _repoContext;
@@ -23,7 +28,7 @@ namespace Boondocks.Device.App.Ports
             _healthCheckRepo = healthCheckRepo;
         }
 
-        public async Task<ServiceStatus> ForQuery(HealthCheckStatus query)
+        public async Task<ServiceStatus> ForQuery(GetHealthCheckStatus query)
         {
             IDictionary<string, DateTime?> dbUpdateStatuses;
             

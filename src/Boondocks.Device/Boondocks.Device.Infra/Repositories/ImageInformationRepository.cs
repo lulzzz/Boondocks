@@ -12,7 +12,7 @@ using NetFusion.Messaging;
 
 namespace Boondocks.Device.Infra.Repositories
 {
-    public class VersionRepository : IQueryConsumer, IVersionRepository
+    public class VersionRepository : IQueryConsumer
     {
         private readonly RegistrySettings _registrySettings;
         private readonly IRepositoryContext<DeviceDb> _repoContext;
@@ -41,18 +41,6 @@ namespace Boondocks.Device.Infra.Repositories
                 Repository = agentVersion.RepositoryName,
                 Registry = _registrySettings.Host
             };
-        }
-
-        public Task<ApplicationVersion> GetApplicationVersion(Guid applicationVersionId)
-        {
-            return _repoContext.OpenConn()
-                .GetAsync<ApplicationVersion>(applicationVersionId);
-        }
-
-        public Task<AgentVersion> GetAgentVersion(Guid agentVersionId)
-        {
-            return _repoContext.OpenConn()
-                .GetAsync<AgentVersion>(agentVersionId);
         }
 
         public async Task<ImageDownloadModel> Query(ApplicationImageInfo query)
