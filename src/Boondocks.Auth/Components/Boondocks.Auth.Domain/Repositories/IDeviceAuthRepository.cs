@@ -10,13 +10,6 @@ namespace Boondocks.Auth.Domain.Repositories
     public interface IDeviceAuthRepository
     {
         /// <summary>
-        /// Returns the symmetric keys used to determine if the device token is correctly signed.
-        /// </summary>
-        /// <param name="deviceId">The identity of the device.</param>
-        /// <returns>List of symmetric keys.</returns>
-        Task<Guid?> GetDeviceKeyAsync(Guid deviceId);
-
-        /// <summary>
         /// For an authenticated device, return a list of registry access items that the user has access.
         /// </summary>
         /// <param name="deviceId">The key value of the device.</param>

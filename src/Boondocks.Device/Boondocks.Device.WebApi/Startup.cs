@@ -1,4 +1,5 @@
 ﻿using Autofac.Extensions.DependencyInjection;
+using Boondocks.Base.Auth.Core;
 using Boondocks.Device.WebApi.Authentication;
 using Boondocks.Device.WebApi.Bootstrap;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -50,7 +51,7 @@ namespace Boondocks.Device.WebApi
             });
             
            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddDeviceAuthentication<DeviceAuthenticationService>(JwtBearerDefaults.AuthenticationScheme, o =>
+                .AddDeviceAuthentication<DeviceAuthService>(JwtBearerDefaults.AuthenticationScheme, o =>
                 {
                    
                 });

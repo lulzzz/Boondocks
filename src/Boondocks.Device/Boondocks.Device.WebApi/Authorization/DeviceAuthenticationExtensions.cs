@@ -1,6 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
+using Boondocks.Base.Auth;
 
 namespace Boondocks.Device.WebApi.Authentication
 {
@@ -9,10 +10,10 @@ namespace Boondocks.Device.WebApi.Authentication
         public static AuthenticationBuilder AddDeviceAuthentication<TAuthService>(this AuthenticationBuilder builder, 
             string authenticationScheme, 
             Action<DeviceAuthenticationOptions> configureOptions)
-        where TAuthService : class, IDeviceAuthenticationService
+        where TAuthService : class, IDeviceAuthService
     {
         builder.Services.AddSingleton<DeviceAuthenticationOptions>();
-        builder.Services.AddTransient<IDeviceAuthenticationService, TAuthService>();
+        builder.Services.AddTransient<IDeviceAuthService, TAuthService>();
 
         return builder.AddScheme<DeviceAuthenticationOptions, DeviceAuthenticationHandler>(
             authenticationScheme, configureOptions);

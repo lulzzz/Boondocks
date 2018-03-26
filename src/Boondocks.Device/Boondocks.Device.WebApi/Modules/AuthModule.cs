@@ -1,25 +1,23 @@
-using Autofac;
+﻿using Autofac;
 using Boondocks.Auth.Infra.Repositories;
 using Boondocks.Base.Auth;
+using Boondocks.Base.Auth.Core;
 using NetFusion.Bootstrap.Plugins;
 
-namespace Boondocks.Auth.Modules
+namespace Boondocks.Device.WebApi.Modules
 {
-    // Convention based registration.
-    public class RepositoryModule : PluginModule
+    public class AuthModule : PluginModule
     {
         public override void RegisterComponents(ContainerBuilder builder)
         {
             builder.RegisterType<DeviceKeyAuthRepository>()
                 .As<IDeviceKeyAuthRepository>()
                 .InstancePerLifetimeScope();
-        }
 
-        public override void ScanPlugin(TypeRegistration registration)
-        {
-            registration.PluginTypes.Where(t => t.Name.EndsWith("Repository", System.StringComparison.Ordinal))
-                .AsImplementedInterfaces()
+            builder.RegisterType<DeviceAuthService>()
+                .As<IDeviceAuthService>()
                 .InstancePerLifetimeScope();
+
         }
     }
 }
