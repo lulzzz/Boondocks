@@ -1,5 +1,4 @@
 using System;
-using Boondocks.Device.Domain;
 
 namespace Boondocks.Device.Api.Models
 {

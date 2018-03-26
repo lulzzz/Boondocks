@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Boondocks.Base.Data;
 using Boondocks.Device.Api.Commands;
 using Boondocks.Device.App.Databases;
@@ -7,11 +5,12 @@ using Boondocks.Device.Domain.Entities;
 using Boondocks.Device.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 using NetFusion.Messaging;
+using System.Threading.Tasks;
 
 namespace Boondocks.Device.App.Ports
 {
     /// <summary>
-    /// Port responsible for handeling a command dispatched when a
+    /// Port responsible for handling a command dispatched when a
     /// heartbeat is received from a device.
     /// </summary>
     public class HeartbeatPort : IMessageConsumer

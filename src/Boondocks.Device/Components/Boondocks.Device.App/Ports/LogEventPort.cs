@@ -1,16 +1,16 @@
-using System.Threading.Tasks;
-using NetFusion.Messaging;
-using Boondocks.Device.Api.Commands;
 using Boondocks.Base.Data;
-using Boondocks.Device.App.Databases;
-using Boondocks.Device.Domain.Repositories;
-using Boondocks.Device.Domain.Entities;
+using Boondocks.Device.Api.Commands;
 using Boondocks.Device.Api.Models;
+using Boondocks.Device.App.Databases;
+using Boondocks.Device.Domain.Entities;
+using Boondocks.Device.Domain.Repositories;
+using NetFusion.Messaging;
+using System.Threading.Tasks;
 
 namespace Boondocks.Device.App.Ports
 {
     /// <summary>
-    /// Port contianing log event related handlers.
+    /// Port containing log event related handlers.
     /// </summary>
     public class LogEventPort : IMessageConsumer
     {

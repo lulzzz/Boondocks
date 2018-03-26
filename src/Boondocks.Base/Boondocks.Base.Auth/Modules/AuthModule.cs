@@ -1,15 +1,18 @@
 ﻿using Autofac;
-using Boondocks.Auth.Infra.Repositories;
-using Boondocks.Base.Auth;
 using Boondocks.Base.Auth.Core;
+using Microsoft.AspNetCore.Http;
 using NetFusion.Bootstrap.Plugins;
 
-namespace Boondocks.Device.WebApi.Modules
+namespace Boondocks.Base.Auth.Modules
 {
     public class AuthModule : PluginModule
     {
-        public override void RegisterComponents(ContainerBuilder builder)
+        public override void RegisterDefaultComponents(ContainerBuilder builder)
         {
+            builder.RegisterType<HttpContextAccessor>()
+                .As<IHttpContextAccessor>()
+                .SingleInstance();
+
             builder.RegisterType<DeviceKeyAuthRepository>()
                 .As<IDeviceKeyAuthRepository>()
                 .InstancePerLifetimeScope();
@@ -18,6 +21,9 @@ namespace Boondocks.Device.WebApi.Modules
                 .As<IDeviceAuthService>()
                 .InstancePerLifetimeScope();
 
+            builder.RegisterType<DeviceContext>()
+                .As<IDeviceContext>()
+                .InstancePerLifetimeScope();
         }
     }
 }

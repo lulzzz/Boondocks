@@ -5,7 +5,7 @@ using System.Data;
 /// Tracks an open connection to a database for the lifetime of the request.
 /// This class is responsible for creating and opening the database on first use.
 /// An instance of this class is best used within a using statement to dispose
-/// the connection from a root object handeling request (i.e. command-handler).
+/// the connection from a root object handling request (i.e. command-handler).
 /// If not disposed within a using statement, the DI container will dispose it
 /// at the end of the request since the instance is registers per-lifetime scope.
 /// </summary>

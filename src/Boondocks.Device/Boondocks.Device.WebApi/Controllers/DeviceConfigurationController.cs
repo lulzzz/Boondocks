@@ -1,13 +1,11 @@
-using System;
-using System.Threading.Tasks;
+using Boondocks.Base.Auth;
 using Boondocks.Device.Api.Models;
 using Boondocks.Device.Api.Queries;
-using Boondocks.Device.App;
 using Boondocks.Device.Domain.Entities;
-using Boondocks.Device.Domain.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetFusion.Messaging;
+using System;
+using System.Threading.Tasks;
 
 namespace Boondocks.Device.WebApi.Controllers
 {
@@ -18,6 +16,7 @@ namespace Boondocks.Device.WebApi.Controllers
         private IMessagingService _messagingSrv;
 
         public DeviceConfigurationController(
+            IDeviceContext context2,
             IDeviceContext context,
             IMessagingService messagingSrv)
         {

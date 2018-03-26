@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Boondocks.Base.Data;
 using Boondocks.Device.Api.Queries;
 using Boondocks.Device.App.Databases;
 using Boondocks.Device.Domain;
 using Boondocks.Device.Domain.Repositories;
 using NetFusion.Messaging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Boondocks.Device.App.Ports
 {

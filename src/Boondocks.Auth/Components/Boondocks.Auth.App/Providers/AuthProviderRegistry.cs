@@ -1,7 +1,7 @@
-using System;
-using System.Collections.Generic;
 using Boondocks.Auth.Domain.Entities;
 using Boondocks.Auth.Domain.Services;
+using System;
+using System.Collections.Generic;
 
 namespace Boondocks.Auth.App.Providers
 {

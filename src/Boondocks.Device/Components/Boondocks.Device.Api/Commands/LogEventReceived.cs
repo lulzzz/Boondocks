@@ -1,6 +1,6 @@
-using System;
 using Boondocks.Device.Api.Models;
 using NetFusion.Messaging.Types;
+using System;
 
 namespace Boondocks.Device.Api.Commands
 {

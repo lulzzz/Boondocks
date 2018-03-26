@@ -1,10 +1,6 @@
-﻿using System;
-using Autofac;
+﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Boondocks.Base.Data.Core;
-using Boondocks.Device.App;
-using Boondocks.Device.App.Services;
-using Boondocks.Device.Domain.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -28,7 +24,7 @@ namespace Boondocks.Device.WebApi.Bootstrap
             var typeResolver = new TypeResolver(
                 "Boondocks.Device.WebApi", 
                 "Boondocks.Device.*",
-                "Boondocks.Base.Data"); 
+                "Boondocks.Base.*"); 
 
             // The following configures the NetFusion AppContainer. 
             AppContainer.Create(typeResolver)
@@ -51,13 +47,7 @@ namespace Boondocks.Device.WebApi.Bootstrap
                 .WithConfig((AutofacRegistrationConfig config) => {
                     config.Build = builder =>
                     {
-                        // TODO:  When adding authorization, complete this code for valid device token...
-                        // and should be per-request...
-                        var deviceContext = new DeviceContext();
-                        deviceContext.SetRequestingDeviceId(Guid.Parse("4C0E880E-255A-4967-8A00-EED604F29417"));
-                        builder.RegisterInstance(deviceContext)
-                            .As<IDeviceContext>();
-
+                      
                         builder.RegisterInstance(new SqlServerDbConnectionFactory())
                             .As<IDbConnectionFactory>();
                     

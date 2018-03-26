@@ -1,6 +1,6 @@
+using Boondocks.Device.Domain.Entities;
 using System;
 using System.Threading.Tasks;
-using Boondocks.Device.Domain.Entities;
 
 namespace Boondocks.Device.Domain.Repositories
 {

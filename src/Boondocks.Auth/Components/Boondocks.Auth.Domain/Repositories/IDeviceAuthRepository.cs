@@ -1,6 +1,6 @@
+using Boondocks.Auth.Domain.Entities;
 using System;
 using System.Threading.Tasks;
-using Boondocks.Auth.Domain.Entities;
 
 namespace Boondocks.Auth.Domain.Repositories
 {

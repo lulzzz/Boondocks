@@ -1,8 +1,7 @@
-using Boondocks.Base.Auth;
 using System;
 using System.Threading.Tasks;
 
-namespace Boondocks.Auth.Infra.Repositories
+namespace Boondocks.Base.Auth.Core
 {
     public class DeviceKeyAuthRepository : IDeviceKeyAuthRepository
     {

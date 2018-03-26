@@ -1,5 +1,5 @@
-using System;
 using Boondocks.Device.Domain.Entities;
+using System;
 
 namespace Boondocks.Device.Api.Models
 {

@@ -1,13 +1,15 @@
-using System.Threading.Tasks;
 using Boondocks.Device.Api.Models;
 using Boondocks.Device.Api.Queries;
 using Boondocks.Device.Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetFusion.Messaging;
+using System.Threading.Tasks;
 
 namespace Boondocks.Device.WebApi.Controllers
 {
     [Route("api/v1/boondocks/device/healthcheck")]
+    [AllowAnonymous]
     public class HealthCheckController : Controller
     {
         private readonly IMessagingService _messagingSrv;

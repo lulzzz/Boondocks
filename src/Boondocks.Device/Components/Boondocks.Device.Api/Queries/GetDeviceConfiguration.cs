@@ -1,7 +1,6 @@
-using System;
-using Boondocks.Device.Api.Models;
 using Boondocks.Device.Domain.Entities;
 using NetFusion.Messaging.Types;
+using System;
 
 namespace Boondocks.Device.Api.Queries
 {

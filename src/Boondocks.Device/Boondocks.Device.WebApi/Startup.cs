@@ -5,17 +5,15 @@ using Boondocks.Device.WebApi.Bootstrap;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using NetFusion.Bootstrap.Container;
 using NetFusion.Rest.Server.Hal;
 using NetFusion.Web.Mvc.Composite;
 using System;
-using System.Collections.Generic;
-using System.Security.Claims;
 
 namespace Boondocks.Device.WebApi
 {
@@ -36,6 +34,7 @@ namespace Boondocks.Device.WebApi
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddMvc(options => {
                 options.UseHalFormatter();

@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Boondocks.Base.Data;
 using Boondocks.Device.App.Databases;
 using Boondocks.Device.Domain.Repositories;
 using Boondocks.Device.Infra.Repositories.Models;
 using Dapper;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Boondocks.Device.Infra.Repositories
 {

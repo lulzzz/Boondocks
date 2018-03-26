@@ -1,7 +1,7 @@
-using System;
+using Boondocks.Base.Auth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
-using Boondocks.Base.Auth;
+using System;
 
 namespace Boondocks.Device.WebApi.Authentication
 {

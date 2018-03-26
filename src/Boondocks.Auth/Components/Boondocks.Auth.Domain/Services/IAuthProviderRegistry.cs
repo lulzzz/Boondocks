@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using Boondocks.Auth.Domain.Entities;
 using NetFusion.Base.Plugins;
+using System.Collections.Generic;
 
 namespace Boondocks.Auth.Domain.Services
 {

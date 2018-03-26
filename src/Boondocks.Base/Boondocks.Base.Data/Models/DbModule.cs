@@ -1,7 +1,8 @@
 using Autofac;
+using Boondocks.Base.Data.Core;
 using NetFusion.Bootstrap.Plugins;
 
-namespace Boondocks.Base.Data.Core
+namespace Boondocks.Base.Data.Modules
 {
     /// <summary>
     /// Plugin module invoked when the application container is bootstrapped.

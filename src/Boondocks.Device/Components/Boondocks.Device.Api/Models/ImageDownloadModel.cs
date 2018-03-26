@@ -2,14 +2,14 @@ namespace Boondocks.Device.Api.Models
 {
     /// <summary>
     /// The download information for an image that can be used 
-    /// for retreiving the image.
+    /// for retrieving the image.
     /// </summary>
     public class ImageDownloadModel
     {
         public bool NoResult { get; set; }
 
         /// <summary>
-        /// The Url for the registry to download the image from
+        /// The URL for the registry to download the image from
         /// </summary>
         public string Registry { get; set; }
 

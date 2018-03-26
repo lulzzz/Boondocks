@@ -1,10 +1,9 @@
-using System.Threading.Tasks;
+using Boondocks.Base.Auth;
 using Boondocks.Device.Api.Commands;
 using Boondocks.Device.Api.Models;
-using Boondocks.Device.App;
-using Boondocks.Device.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 using NetFusion.Messaging;
+using System.Threading.Tasks;
 
 namespace Boondocks.Device.WebApi.Controllers
 {

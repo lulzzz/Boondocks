@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
-using Boondocks.Auth.Domain.Entities;
+﻿using Boondocks.Auth.Domain.Entities;
 
 namespace Boondocks.Auth.Domain.Services
 {
