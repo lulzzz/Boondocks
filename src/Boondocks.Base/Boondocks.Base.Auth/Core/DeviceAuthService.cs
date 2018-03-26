@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Boondocks.Base.Auth.Core
 {
+    /// <summary>
+    /// Service containing the common logic for authentication a signed device-token.
+    /// </summary>
     public class DeviceAuthService : IDeviceAuthService
     {
         private const string DeviceIdClaimName = "device-id";
@@ -18,27 +21,27 @@ namespace Boondocks.Base.Auth.Core
             ILogger<DeviceAuthService> logger,
             IDeviceKeyAuthRepository deviceKeyAuthRepo)
         {
-            _logger = logger;
-            _deviceKeyAuthRepo = deviceKeyAuthRepo;
-
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _deviceKeyAuthRepo = deviceKeyAuthRepo ?? throw new ArgumentNullException(nameof(deviceKeyAuthRepo));
         }
 
-        public async Task<(KeyAuthResult authResult, Guid deviceId)> ValidateDeviceToken(string deviceToken, TokenValidationParameters validationParams)
+        public async Task<(DeviceAuthResult authResult, Guid deviceId)> ValidateDeviceToken(string deviceToken, 
+            TokenValidationParameters validationParams)
         {           
             var token = new JwtSecurityToken(deviceToken);
             Guid deviceId = GetDeviceIdFromToken(token);
 
             if (deviceId == Guid.Empty)
             {
-                return (KeyAuthResult.Failed("Invalid credential token"), deviceId);
+                return (DeviceAuthResult.Failed("Invalid credential token"), deviceId);
             }
 
             Guid? deviceKey = await _deviceKeyAuthRepo.GetDeviceKeyAsync(deviceId);
             if (deviceKey == null)
             {
                 _logger.LogDebug("Device key not found for device with id: {deviceId}", deviceId);
-
-                return (KeyAuthResult.Failed("Invalid credential token"), deviceId);
+          
+                return (DeviceAuthResult.Failed("Invalid credential token"), deviceId);
             }
 
             try
@@ -51,7 +54,7 @@ namespace Boondocks.Base.Auth.Core
                 _logger.LogError(ex, "Error validating submitted device token {deviceToken} for Device Id: {deviceId}.",
                     deviceToken, deviceId);
 
-                return (KeyAuthResult.Failed("Invalid credential token"), deviceId);
+                return (DeviceAuthResult.Failed("Invalid credential token"), deviceId);
 
             }
             catch (Exception ex)
@@ -72,7 +75,7 @@ namespace Boondocks.Base.Auth.Core
         }
 
         // TODO:  Add support for multiple keys...
-        private KeyAuthResult ValidateTokenUsingSymmetricKey(Guid symmetricKey, string deviceToken, TokenValidationParameters validationParams)
+        private DeviceAuthResult ValidateTokenUsingSymmetricKey(Guid symmetricKey, string deviceToken, TokenValidationParameters validationParams)
         {
             TokenValidationParameters jwtValidationParams = validationParams.Clone();
 
@@ -83,7 +86,7 @@ namespace Boondocks.Base.Auth.Core
                     }
             };
 
-            return KeyAuthResult.SetAuthenticated(
+            return DeviceAuthResult.SetAuthenticated(
                 IsDeviceTokenValid(deviceToken, jwtValidationParams));
         }
 

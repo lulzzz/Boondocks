@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace Boondocks.Base.Auth.Core
 {
+    /// <summary>
+    /// Default repository implementation that resolves the DeviceKey for a specified DeviceId.
+    /// </summary>
     public class DeviceKeyAuthRepository : IDeviceKeyAuthRepository
     {
         public Task<Guid?> GetDeviceKeyAsync(Guid deviceId)

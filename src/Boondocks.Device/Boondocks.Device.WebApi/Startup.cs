@@ -1,6 +1,5 @@
 ﻿using Autofac.Extensions.DependencyInjection;
 using Boondocks.Base.Auth.Core;
-using Boondocks.Device.WebApi.Authentication;
 using Boondocks.Device.WebApi.Bootstrap;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -14,6 +13,7 @@ using NetFusion.Bootstrap.Container;
 using NetFusion.Rest.Server.Hal;
 using NetFusion.Web.Mvc.Composite;
 using System;
+using Boondocks.Base.Auth;
 
 namespace Boondocks.Device.WebApi
 {
@@ -40,6 +40,8 @@ namespace Boondocks.Device.WebApi
                 options.UseHalFormatter();
             });
 
+            var deviceAuthOptions = _configuration.GetDeviceOptions();
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(
@@ -50,10 +52,7 @@ namespace Boondocks.Device.WebApi
             });
             
            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddDeviceAuthentication<DeviceAuthService>(JwtBearerDefaults.AuthenticationScheme, o =>
-                {
-                   
-                });
+                .AddDeviceTokenAuth(deviceAuthOptions);
 
              services.AddMvc(options => {
                 options.Filters.Add(new AuthorizeFilter("RequireAuthenticatedUser"));

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace Boondocks.Base.Auth
 {
     /// <summary>
-    /// Repository for querying device authentication information.
+    /// Repository for querying device-key associated with a DeviceId.
     /// </summary>
     public interface IDeviceKeyAuthRepository
     {
