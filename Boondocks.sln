@@ -4,8 +4,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27004.2008
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Auth", "Auth", "{2C640C02-F643-40A5-8548-FCE39D3290CA}"
+	ProjectSection(SolutionItems) = preProject
+		src\Boondocks.Auth\Dockerfile = src\Boondocks.Auth\Dockerfile
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Device", "Device", "{36FC0A68-4206-475B-9EE2-C75AC260921D}"
+	ProjectSection(SolutionItems) = preProject
+		src\Boondocks.Device\Dockerfile = src\Boondocks.Device\Dockerfile
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{335FF8B8-01C2-460F-8E8C-0A25BC481231}"
 EndProject
@@ -40,10 +46,15 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Base.Data", "src\Boondocks.Base\Boondocks.Base.Data\Boondocks.Base.Data.csproj", "{2DD222F4-F4C2-4343-B282-5600FEB39634}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Management", "Management", "{37456F4A-F373-4F27-BD35-9E85ADF443AD}"
+	ProjectSection(SolutionItems) = preProject
+		src\Boondocks.Management\Dockerfile = src\Boondocks.Management\Dockerfile
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Device.Client", "src\Boondocks.Device\Boondocks.Device.Client\Boondocks.Device.Client.csproj", "{4DFF2A43-00C8-4F8F-8726-D4D789ABA179}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boondocks.Base.Auth", "src\Boondocks.Base\Boondocks.Base.Auth\Boondocks.Base.Auth.csproj", "{3D1879E9-D9B9-431C-A0D7-3AC3463DB07E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", "{37E0E9CC-296D-4E53-B3C5-D78BEE17BDE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -257,6 +268,7 @@ Global
 		{2DD222F4-F4C2-4343-B282-5600FEB39634} = {335FF8B8-01C2-460F-8E8C-0A25BC481231}
 		{4DFF2A43-00C8-4F8F-8726-D4D789ABA179} = {36FC0A68-4206-475B-9EE2-C75AC260921D}
 		{3D1879E9-D9B9-431C-A0D7-3AC3463DB07E} = {335FF8B8-01C2-460F-8E8C-0A25BC481231}
+		{37E0E9CC-296D-4E53-B3C5-D78BEE17BDE9} = {37456F4A-F373-4F27-BD35-9E85ADF443AD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7BE6CBEB-06BC-4F58-9F0E-5B9C06148A60}
