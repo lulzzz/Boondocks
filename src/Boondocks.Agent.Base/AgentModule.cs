@@ -1,18 +1,29 @@
 ﻿namespace Boondocks.Agent.Base
 {
     using System;
+    using AgentLogging;
+    using ApplicationLogging;
     using Autofac;
     using Docker.DotNet;
     using Interfaces;
-    using Logs;
     using Model;
     using Serilog;
     using Update;
 
     public static partial class ContainerFactory
     {
-        public class AgentModule : Module
+        internal class AgentModule : Module
         {
+            /// <summary>
+            /// The maximum amount of time that an agent log event will be held before being transmitted to the server.
+            /// </summary>
+            private const double BatchPeriodSeconds = 30;
+
+            /// <summary>
+            /// The maximum number of agent log events to send in a single batch.
+            /// </summary>
+            private const int BatchSizeLimit = 100;
+
             protected override void Load(ContainerBuilder builder)
             {
                 //Update services
@@ -32,9 +43,14 @@
 
                 }).As<IDockerClient>().SingleInstance();
 
+                var sink = new AgentLogSink(BatchSizeLimit, TimeSpan.FromSeconds(BatchPeriodSeconds));
+
+                builder.RegisterInstance(sink);
+
                 Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Verbose()
                     .WriteTo.Console()
+                    .WriteTo.Sink(sink)
                     .CreateLogger();
 
                 builder.RegisterInstance(Log.Logger);
@@ -52,5 +68,7 @@
                 base.Load(builder);
             }
         }
+
+        
     }
 }

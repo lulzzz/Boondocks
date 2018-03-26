@@ -164,6 +164,4 @@
             Logger.Information("Application image {ImageId} downloaded.", versionReference.ImageId);
         }
     }
-
-
 }

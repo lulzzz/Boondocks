@@ -10,6 +10,7 @@
         [Theory]
         [InlineData("/name", "name")]
         [InlineData("/to", "to")]
+        [InlineData("to", "to")]
         public void GetName(string rawName, string expected)
         {
             var result = DockerExtensions.GetContainerName(rawName);

@@ -1,4 +1,4 @@
-﻿namespace Boondocks.Agent.Base.Logs
+﻿namespace Boondocks.Agent.Base.ApplicationLogging
 {
     using System;
     using System.Collections.Generic;

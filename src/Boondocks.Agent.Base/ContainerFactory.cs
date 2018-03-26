@@ -1,6 +1,7 @@
 ﻿namespace Boondocks.Agent.Base
 {
     using System;
+    using AgentLogging;
     using Autofac;
     using Model;
     using Services.Contracts.Interfaces;
@@ -38,7 +39,14 @@
 
             builder.RegisterModule<AgentModule>();
 
-            return builder.Build();
+            var container = builder.Build();
+
+            //TODO: Find less horribly hacky way to do this.
+            var deviceApiClient = container.Resolve<DeviceApiClient>();
+            var sink = container.Resolve<AgentLogSink>();
+            sink.DeviceApiClient = deviceApiClient;
+
+            return container;
         }
     }
 }

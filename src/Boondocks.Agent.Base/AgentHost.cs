@@ -3,10 +3,10 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using ApplicationLogging;
     using Docker.DotNet;
     using Docker.DotNet.Models;
     using Interfaces;
-    using Logs;
     using Model;
     using Serilog;
     using Services.Contracts.Interfaces;
@@ -78,10 +78,6 @@
                 _logger.Information("Application Version: {CurrentApplicationVersion}", await _applicationUpdateService.GetCurrentVersionAsync(cancellationToken));
                 _logger.Information("Root File System Version: {RootFileSystemVersion}", await _rootFileSystemUpdateService.GetCurrentVersionAsync(cancellationToken));
 
-                Console.WriteLine();
-                Console.WriteLine("Existing images:");
-                Console.WriteLine("---------------------------------------------------------");
-
                 var images = await _dockerClient.Images.ListImagesAsync(new ImagesListParameters()
                 {
                     All = true
@@ -91,11 +87,8 @@
                 {
                     string tags = string.Join(",", image.RepoTags);
 
-                    Console.WriteLine($"{image.ID} {tags} {image.Created}");
+                    _logger.Information("Image: {ImageId} {Tags} {Created}",image.ID, tags, image.Created);
                 }
-
-                Console.WriteLine();
-
             }
             catch (Exception ex)
             {

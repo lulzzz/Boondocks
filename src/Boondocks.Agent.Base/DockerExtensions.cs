@@ -11,6 +11,13 @@
 
     public static class DockerExtensions
     {
+        /// <summary>
+        /// Gets an image given its id. 
+        /// </summary>
+        /// <param name="dockerClient"></param>
+        /// <param name="imageId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>The image if it is found, null otherwise.</returns>
         public static async Task<ImagesListResponse> GetImageAsync(
             this IDockerClient dockerClient,
             string imageId,
@@ -24,6 +31,13 @@
             return images.FirstOrDefault(i => i.ID == imageId);
         }
 
+        /// <summary>
+        /// Deteremines if an image has been downloaded.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="imageId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public static async Task<bool> DoesImageExistAsync(this IDockerClient client, string imageId,
             CancellationToken cancellationToken)
         {
@@ -32,6 +46,13 @@
             return image != null;
         }
 
+        /// <summary>
+        /// Gets the first container with the given image id.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="imageId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public static async Task<ContainerListResponse> GetContainerByImageId(this IDockerClient client, string imageId,
             CancellationToken cancellationToken)
         {
@@ -43,6 +64,13 @@
             return allContainers.FirstOrDefault(c => c.ImageID == imageId);
         }
 
+        /// <summary>
+        /// Attemmpts to get a container by its name.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="name"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>The container if it is found, null otherwise.</returns>
         public static async Task<ContainerListResponse> GetContainerByName(this IDockerClient client, string name,
             CancellationToken cancellationToken)
         {
@@ -131,7 +159,7 @@
         /// <returns></returns>
         public static string GetContainerName(string containerName)
         {
-            if (!string.IsNullOrWhiteSpace(containerName))
+            if (!string.IsNullOrWhiteSpace(containerName) && containerName.StartsWith("/"))
                 return containerName.Substring(1);
 
             return containerName;

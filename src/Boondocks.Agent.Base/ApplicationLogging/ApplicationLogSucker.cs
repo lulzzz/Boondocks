@@ -1,4 +1,4 @@
-﻿namespace Boondocks.Agent.Base.Logs
+﻿namespace Boondocks.Agent.Base.ApplicationLogging
 {
     using System;
     using System.Threading;
@@ -60,8 +60,6 @@
                         {
                             //Keep track of this so we don't keep sucking down the same log entries.
                             lastTimestamp = logEvent.TimestampUtc;
-
-                            //Console.WriteLine($"  [{logEvent.TimestampUtc}] {logEvent.Type} - {logEvent.Content}");
 
                             //Add this to the collector.
                             await _batchCollector.AddAsync(logEvent);
