@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+     <ProjectReference Include="..\..\..\Boondocks.Base\Boondocks.Base.Data\Boondocks.Base.Data.csproj" />
+     <ProjectReference Include="..\Boondocks.Device.Api\Boondocks.Device.Api.csproj" />
+    <ProjectReference Include="..\Boondocks.Device.App\Boondocks.Device.App.csproj" />
+    <ProjectReference Include="..\Boondocks.Device.Domain\Boondocks.Device.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NetFusion.Common" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Base" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Bootstrap" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Settings" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Messaging" Version="3.0.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper.Contrib" Version="1.50.4" />
+  </ItemGroup>
+
+</Project>
