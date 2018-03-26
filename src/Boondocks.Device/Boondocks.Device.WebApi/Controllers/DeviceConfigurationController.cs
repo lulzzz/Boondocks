@@ -5,6 +5,7 @@ using Boondocks.Device.Api.Queries;
 using Boondocks.Device.App;
 using Boondocks.Device.Domain.Entities;
 using Boondocks.Device.Domain.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetFusion.Messaging;
 

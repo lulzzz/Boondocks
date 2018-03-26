@@ -1,14 +1,20 @@
 ﻿using Autofac.Extensions.DependencyInjection;
+using Boondocks.Device.WebApi.Authentication;
 using Boondocks.Device.WebApi.Bootstrap;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using NetFusion.Bootstrap.Container;
 using NetFusion.Rest.Server.Hal;
 using NetFusion.Web.Mvc.Composite;
 using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace Boondocks.Device.WebApi
 {
@@ -34,6 +40,25 @@ namespace Boondocks.Device.WebApi
                 options.UseHalFormatter();
             });
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(
+                   "RequireAuthenticatedUser",                  
+                   policyBuilder => {
+                       policyBuilder.RequireAuthenticatedUser();
+                   });
+            });
+            
+           services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddDeviceAuthentication<DeviceAuthenticationService>(JwtBearerDefaults.AuthenticationScheme, o =>
+                {
+                   
+                });
+
+             services.AddMvc(options => {
+                options.Filters.Add(new AuthorizeFilter("RequireAuthenticatedUser"));
+            });
+
             // Configure NetFusion Application Container
             AppContainerSetup.Bootstrap(_configuration, _loggerFactory, services);
 
@@ -51,6 +76,10 @@ namespace Boondocks.Device.WebApi
             // safely stopped.
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
 
+
+            // Inserts the filter to make sure all HTTP requests are authenticated.
+            app.UseAuthentication();
+
             if (env.IsDevelopment())
             {
                 app.UseCors(builder => builder.WithOrigins("http://localhost:4200")
@@ -59,11 +88,7 @@ namespace Boondocks.Device.WebApi
                     
                 app.UseDeveloperExceptionPage();
                 app.UseCompositeQuerying();
-
             }
-
-            // Inserts the filter to make sure all HTTP requests are authenticated.
-            app.UseAuthentication();
 
             // Adds MVC components to the pipe-line.  Common ASP.NET Core call.
             app.UseMvc();

@@ -236,6 +236,8 @@ namespace Boondocks.Auth.Tests
             var factory = new TokenFactory(deviceId, deviceKey);
             var token = factory.CreateToken();
 
+            Console.WriteLine(token);
+
             //      Return expected device key:
             var mockRepo = new Mock<IDeviceAuthRepository>();
             mockRepo.Setup(m => m.GetDeviceKeyAsync(It.IsAny<Guid>())).Returns(Task.FromResult<Guid?>(deviceKey));

@@ -18,10 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Boondocks.Auth.Api\Boondocks.Auth.Api.csproj" />
-    <ProjectReference Include="..\Boondocks.Auth.App\Boondocks.Auth.App.csproj" />
-    <ProjectReference Include="..\Boondocks.Auth.Domain\Boondocks.Auth.Domain.csproj" />
-    <ProjectReference Include="..\Boondocks.Auth.Infra\Boondocks.Auth.Infra.csproj" />
+    <ProjectReference Include="..\Components\Boondocks.Auth.Api\Boondocks.Auth.Api.csproj" />
+    <ProjectReference Include="..\Components\Boondocks.Auth.App\Boondocks.Auth.App.csproj" />
+    <ProjectReference Include="..\Components\Boondocks.Auth.Domain\Boondocks.Auth.Domain.csproj" />
+    <ProjectReference Include="..\Components\Boondocks.Auth.Infra\Boondocks.Auth.Infra.csproj" />
   </ItemGroup>
 
   <ItemGroup>
