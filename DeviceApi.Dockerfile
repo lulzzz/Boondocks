@@ -9,9 +9,11 @@ COPY ./src/ /build/
 #move to the build directory
 WORKDIR /build/
 
-#restore and publish the bloody agent
-RUN dotnet restore -s https://api.nuget.org/v3/index.json \
-	&& dotnet publish -r ubuntu.16.04-x64 -f netcoreapp2.0 /build/Boondocks.Services.Device.WebApi/Boondocks.Services.Device.WebApi.csproj
+#restore and publish the bloody api
+RUN dotnet publish \
+    --source https://api.nuget.org/v3/index.json \
+    --runtime ubuntu.16.04-x64 \
+	--framework netcoreapp2.0 /build/Boondocks.Services.Device.WebApi/Boondocks.Services.Device.WebApi.csproj
 
 #===========================================================
 # Now start making the actual image

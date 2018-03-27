@@ -10,8 +10,11 @@ COPY ./src/ /build/
 WORKDIR /build/
 
 #restore and publish the bloody agent
-RUN dotnet restore -s https://api.nuget.org/v3/index.json \
-	&& dotnet publish -r linux-arm -f netcoreapp2.0 /build/Boondocks.Agent.RaspberryPi3/Boondocks.Agent.RaspberryPi3.csproj
+RUN dotnet publish \
+    --runtime linux-arm \
+	--framework netcoreapp2.0 \
+	--source https://api.nuget.org/v3/index.json \
+	/build/Boondocks.Agent.RaspberryPi3/Boondocks.Agent.RaspberryPi3.csproj
 
 #===========================================================
 # Now start making the image that will run on the pi
