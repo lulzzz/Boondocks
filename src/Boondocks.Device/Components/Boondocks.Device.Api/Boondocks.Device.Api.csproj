@@ -9,14 +9,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NetFusion.Common" Version="3.0.15" />
-    <PackageReference Include="NetFusion.Base" Version="3.0.15" />
-    <PackageReference Include="NetFusion.Bootstrap" Version="3.0.15" />
-    <PackageReference Include="NetFusion.Mapping" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Common" Version="3.0.16" />
+    <PackageReference Include="NetFusion.Base" Version="3.0.16" />
+    <PackageReference Include="NetFusion.Bootstrap" Version="3.0.16" />
+    <PackageReference Include="NetFusion.Mapping" Version="3.0.16" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NetFusion.Rest.Resources" Version="3.0.10" />
+    <PackageReference Include="NetFusion.Rest.Resources" Version="3.0.11" />
   </ItemGroup>
 
 </Project>

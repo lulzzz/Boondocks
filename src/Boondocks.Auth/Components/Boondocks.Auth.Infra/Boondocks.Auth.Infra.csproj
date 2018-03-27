@@ -16,16 +16,16 @@
 
   <ItemGroup>
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NetFusion.Common" Version="3.0.15" />
-    <PackageReference Include="NetFusion.Base" Version="3.0.15" />
-    <PackageReference Include="NetFusion.Bootstrap" Version="3.0.15" />
-    <PackageReference Include="NetFusion.Settings" Version="3.0.15" />
-    <PackageReference Include="NetFusion.Messaging" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Common" Version="3.0.16" />
+    <PackageReference Include="NetFusion.Base" Version="3.0.16" />
+    <PackageReference Include="NetFusion.Bootstrap" Version="3.0.16" />
+    <PackageReference Include="NetFusion.Settings" Version="3.0.16" />
+    <PackageReference Include="NetFusion.Messaging" Version="3.0.16" />
   </ItemGroup>
 
   <ItemGroup>

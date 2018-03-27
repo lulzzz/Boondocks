@@ -18,21 +18,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NetFusion.Rest.Client" Version="3.0.10" />
+    <PackageReference Include="NetFusion.Rest.Client" Version="3.0.11" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.0.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.1" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NetFusion.Common" Version="3.0.15" />
-    <PackageReference Include="NetFusion.Base" Version="3.0.15" />
-    <PackageReference Include="NetFusion.Bootstrap" Version="3.0.15" />
-    <PackageReference Include="NetFusion.Settings" Version="3.0.15" />
-    <PackageReference Include="NetFusion.Test" Version="3.0.15" />
-    <PackageReference Include="NetFusion.Messaging" Version="3.0.15" />
-    <PackageReference Include="NetFusion.Messaging.Types" Version="3.0.15" />
-    <PackageReference Include="NetFusion.Mapping" Version="3.0.15" />
+    <PackageReference Include="NetFusion.Common" Version="3.0.16" />
+    <PackageReference Include="NetFusion.Base" Version="3.0.16" />
+    <PackageReference Include="NetFusion.Bootstrap" Version="3.0.16" />
+    <PackageReference Include="NetFusion.Settings" Version="3.0.16" />
+    <PackageReference Include="NetFusion.Test" Version="3.0.16" />
+    <PackageReference Include="NetFusion.Messaging" Version="3.0.16" />
+    <PackageReference Include="NetFusion.Messaging.Types" Version="3.0.16" />
+    <PackageReference Include="NetFusion.Mapping" Version="3.0.16" />
   </ItemGroup>
 
   <ItemGroup>
