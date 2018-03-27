@@ -16,7 +16,7 @@ RUN dotnet restore -s https://api.nuget.org/v3/index.json \
 #===========================================================
 # Now start making the image that will run on the pi
 #===========================================================
-FROM boondocks/resin-dotnet:resin-raspberrypi3-dotnet260
+FROM boondocks/resin-dotnet:resin-raspberrypi3-dotnet206
 
 RUN [ "cross-build-start" ]
 
