@@ -20,7 +20,7 @@
         {
         }
 
-        protected override async Task EmitBatchAsync(IEnumerable<LogEvent> events)
+        protected override Task EmitBatchAsync(IEnumerable<LogEvent> events)
         {
             if (DeviceApiClient == null)
             {
@@ -44,6 +44,8 @@
                 //TODO: Get this to the server!
                 Console.WriteLine($"Quasi emitting {transformed.Length} events to the server.");
             }
+
+            return Task.CompletedTask;
         }
 
         public DeviceApiClient DeviceApiClient { get; set; }

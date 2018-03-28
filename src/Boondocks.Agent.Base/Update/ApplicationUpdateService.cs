@@ -42,22 +42,28 @@
 
             VersionReference nextVersion = configuration.ApplicationVersion;
 
-            if (nextVersion == null)
-                return false;
-
-            bool versionChanged = currentVersion != nextVersion.ImageId;
-
-            if (versionChanged)
+            //Shouldn't ever happen
+            if (configuration.EnvironmentVariables == null)
             {
-                Logger.Information($"The application version has changed from {currentVersion} to {nextVersion.ImageId}.");
+                configuration.EnvironmentVariables = new EnvironmentVariable[]{};
+            }
+
+            Logger.Information("The new configuration has {EnvironmentVariableCount} environment variables.", configuration.EnvironmentVariables.Length);
+
+            if (nextVersion == null)
+            {
+                Logger.Information("No application version information was specified.");
+                return false;
+            }
+
+            if (currentVersion != nextVersion.ImageId)
+            {
+                Logger.Information("The application version has changed from {CurrentVersion} to {NextVersion}.", currentVersion, nextVersion.ImageId);
             }
             else
             {
-                Logger.Verbose($"The application version has stayed {currentVersion}.");
-            }
+                Logger.Verbose("The application version has stayed {CurrentVersion}.", currentVersion);
 
-            if (!versionChanged)
-            {
                 //Get the container
                 var container = await _dockerClient.GetContainerByImageId(nextVersion.ImageId, cancellationToken);
 

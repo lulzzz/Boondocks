@@ -19,7 +19,7 @@
             _logger = logger?.ForContext(GetType());
         }
 
-        public bool AreSame(IEnumerable<string> currentVariables, IEnumerable<EnvironmentVariable> newVariables)
+        public bool AreSame(IList<string> currentVariables, IList<EnvironmentVariable> newVariables)
         {
             string[] nonReservedCurrent = currentVariables
                 .Where(v => !IsReservedVariable(v))
