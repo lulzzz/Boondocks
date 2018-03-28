@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Boondocks.Base\Boondocks.Base.Auth\Boondocks.Base.Auth.csproj" />
+    <ProjectReference Include="..\..\..\Boondocks.Base.Auth\Boondocks.Base.Auth.csproj" />
     <ProjectReference Include="..\Boondocks.Auth.App\Boondocks.Auth.App.csproj" />
     <ProjectReference Include="..\Boondocks.Auth.Domain\Boondocks.Auth.Domain.csproj" />
   </ItemGroup>

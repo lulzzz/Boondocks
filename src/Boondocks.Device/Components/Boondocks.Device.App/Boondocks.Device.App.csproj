@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Boondocks.Base\Boondocks.Base.Data\Boondocks.Base.Data.csproj" />
+    <ProjectReference Include="..\..\..\Boondocks.Base.Data\Boondocks.Base.Data.csproj" />
     <ProjectReference Include="..\Boondocks.Device.Domain\Boondocks.Device.Domain.csproj" />
     <ProjectReference Include="..\Boondocks.Device.Api\Boondocks.Device.Api.csproj" />
   </ItemGroup>
