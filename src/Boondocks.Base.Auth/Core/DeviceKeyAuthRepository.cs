@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using Boondocks.Base.Data;
+using Dapper;
 
 namespace Boondocks.Base.Auth.Core
 {
@@ -8,10 +10,28 @@ namespace Boondocks.Base.Auth.Core
     /// </summary>
     public class DeviceKeyAuthRepository : IDeviceKeyAuthRepository
     {
+        private readonly IRepositoryContext<AuthDb> _context;
+
+        public DeviceKeyAuthRepository(IRepositoryContext<AuthDb> context)
+        {
+            _context = context;
+        }
+
         public Task<Guid?> GetDeviceKeyAsync(Guid deviceId)
         {
-            Guid? deviceKey = Guid.Parse("671674D6-7D14-4DC0-94A0-B1085B878C23"); // TODO:  Provider real implementation.
-            return Task.FromResult(deviceKey);
+            if (deviceId == null || deviceId == Guid.Empty) 
+            {
+                throw new ArgumentException("Device id not specified.", nameof(deviceId));
+            }
+
+            const string deviceSql = @"
+                SELECT 
+                    DeviceKey
+                FROM dbo.Devices 
+                WHERE Id = @deviceId";
+
+            return _context.OpenConn()
+                .QueryFirstOrDefaultAsync<Guid?>(deviceSql, new { deviceId });
         }
     }
 }

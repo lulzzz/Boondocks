@@ -38,6 +38,7 @@ services:
     environment:
       - boondocks__registry__host="http://registry.captiveaire.com"
       - boondocks__connections__device__connectionString=Server=devdb.captiveaire.com;Database=Boondocks;User Id=boondocks;Password=ak*7sjfgum;
+      - boondocks__connections__auth__connectionString=Server=devdb.captiveaire.com;Database=Boondocks;User Id=boondocks;Password=ak*7sjfgum;
     ports:
       - 8081:80
 

@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Boondocks.Base.Auth\Boondocks.Base.Auth.csproj" />
+    <ProjectReference Include="..\..\Boondocks.Base.Data\Boondocks.Base.Data.csproj" />
     <ProjectReference Include="..\Components\Boondocks.Device.Api\Boondocks.Device.Api.csproj" />
     <ProjectReference Include="..\Components\Boondocks.Device.App\Boondocks.Device.App.csproj" />
     <ProjectReference Include="..\Components\Boondocks.Device.Domain\Boondocks.Device.Domain.csproj" />

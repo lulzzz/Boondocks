@@ -25,7 +25,7 @@ namespace Boondocks.Device.WebApi.Controllers
         }
 
         [HttpGet("configuration")]
-        public Task<DeviceConfiguration> GetCurrentConfiguration()
+        public Task<DeviceConfiguration> GetConfiguration()
         {
             var query = new GetDeviceConfiguration(_context.DeviceId);
             return _messagingSrv.DispatchAsync(query);

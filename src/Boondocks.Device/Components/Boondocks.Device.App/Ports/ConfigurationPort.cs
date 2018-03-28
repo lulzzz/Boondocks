@@ -11,10 +11,9 @@ using System.Threading.Tasks;
 namespace Boondocks.Device.App.Ports
 {
     /// <summary>
-    /// Responds to the CurrentDeviceConfiguration query by determining the version by 
-    /// delegating to the device and application entities.  When configurations settings
-    /// and environment variables are found at the device level, they take precedence 
-    /// over the application corresponding settings and environment variables.     
+    /// Determines the configuration for a specific device.  When configurations settings
+    /// and environment variables are found at the device level, they take precedence over
+    /// the application corresponding settings and environment variables.     
     /// </summary>
     public class ConfigurationPort : IQueryConsumer
     {

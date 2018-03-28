@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using NetFusion.Common.Extensions;
 
 /// <summary>
 /// Tracks an open connection to a database for the lifetime of the request.
@@ -20,6 +21,8 @@ namespace Boondocks.Base.Data.Core
         {
             if (dbSettings == null) throw new ArgumentNullException(nameof(dbSettings));
             if (connFactory == null) throw new ArgumentNullException(nameof(connFactory));
+
+            Console.WriteLine(dbSettings.ToJson());
 
             _connection = new Lazy<IDbConnection>(() => connFactory.Create(dbSettings.ConnectionString));
         }
