@@ -24,8 +24,8 @@ services:
       - boondocks__auth__jwt__issuer="boondocks-auth-api" 
       - boondocks__auth__jwt__audience="boondocks-registry"
       - boondocks__auth__jwt__validForMinutes=10080
-      - boondocks__auth__ldap__DomainName="YOUR_DOMAIN"
-      - boondocks__auth__ldap__Connection=IP_ADDRESS
+      - boondocks__auth__ldap__DomainName="CAPTIVE_AIRE"
+      - boondocks__auth__ldap__Connection=2008dc1.captiveaire.com
       - boondocks__auth__ldap__Port=389
     ports:
       - 8080:80
@@ -35,6 +35,9 @@ services:
       context: .
       dockerfile: Boondocks-Device.Dockerfile
     image: boondocks-device-api
+    environment:
+      - boondocks__registry__host="http://registry.captiveaire.com"
+      - boondocks__connections__device__connectionString=Server=devdb.captiveaire.com;Database=Boondocks;User Id=boondocks;Password=ak*7sjfgum;
     ports:
       - 8081:80
 
