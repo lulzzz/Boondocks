@@ -4,7 +4,8 @@
 FROM microsoft/dotnet:2.0-sdk AS core-build-step
 
 # Copy the code to the image
-COPY ./src/Boondocks.Base/ /build/src/Boondocks.Base
+COPY ./src/Boondocks.Base.Auth /build/src/Boondocks.Base.Auth
+COPY ./src/Boondocks.Base.Data /build/src/Boondocks.Base.Data
 COPY ./src/Boondocks.Device/Components /build/src/Boondocks.Device/Components
 COPY ./src/Boondocks.Device/Boondocks.Device.WebApi /build/src/Boondocks.Device/Boondocks.Device.WebApi
 
