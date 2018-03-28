@@ -2,21 +2,31 @@ version: '3.1'
 
 services: 
 
-  # Database server
-  # boondocks-db:
-  #   image: microsoft/mssql-server-linux
-  #   environment: 
-  #     - ACCEPT_EULA=Y
-  #     - SA_PASSWORD=987ysnskaFsf 
-  #   ports:
-  #     -  1500:1433 
-  #     -  1501:1434 
+# Database server
+# boondocks-db:
+#   image: microsoft/mssql-server-linux
+#   environment: 
+#     - ACCEPT_EULA=Y
+#     - SA_PASSWORD=987ysnskaFsf 
+#   ports:
+#     -  1500:1433 
+#     -  1501:1434 
 
   boondocks-auth-api:
     build:
       context: .
       dockerfile: Boondocks-Auth.Dockerfile
     image: boondocks-auth-api
+    volumes: 
+      - ./content/certs:/certs
+    environment:
+      - boondocks__auth__jwt__certificateFilePath=/certs/auth-private.pfx
+      - boondocks__auth__jwt__issuer="boondocks-auth-api" 
+      - boondocks__auth__jwt__audience="boondocks-registry"
+      - boondocks__auth__jwt__validForMinutes=10080
+      - boondocks__auth__ldap__DomainName="YOUR_DOMAIN"
+      - boondocks__auth__ldap__Connection=IP_ADDRESS
+      - boondocks__auth__ldap__Port=389
     ports:
       - 8080:80
 
@@ -28,18 +38,6 @@ services:
     ports:
       - 8081:80
 
-  # management api
-  # boondocks-management-api:
-  #   build:
-  #     context: .
-  #     dockerfile: ManagementApi.Dockerfile
-  #   image: boondocks-management-api
-  #   environment:
-  #     - MANAGEMENTAPI_CONNSTRING=Server=desktop-richq.captiveaire.com\sqlexpress;Database=Boondocks;User Id=boondocks;Password=#Px@S:w_j+V97ngz;
-  #     - MANAGEMENTAPI_REGISTRYHOST=10.0.4.44:5000
-  #     - MANAGEMENTAPI_DEVICEAPIURL=http://desktop-richq.captiveaire.com:8080/Boondocks.Services.Management.WebApi/
-  #   ports:
-  #     - 8081:80
 
   # # management web site
 

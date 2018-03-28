@@ -50,6 +50,8 @@ namespace Boondocks.Auth.Infra.Modules
 
         private X509Certificate2 LoadCertificate(JwtTokenSettings tokenSettings)
         {
+            _logger.LogInformation("Loaded Certificate File {Named}", tokenSettings.CertificateFilePath);
+
             byte[] certBytes = ReadCertificateBytes(tokenSettings);
             X509Certificate2 cert = null;
             
