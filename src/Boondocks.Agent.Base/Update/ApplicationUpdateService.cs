@@ -67,8 +67,8 @@
                     var inspection =
                         await _dockerClient.Containers.InspectContainerAsync(container.ID, cancellationToken);
 
-                    var comparer =
-                        new EnvironmentVariableComparer(ApplicationDockerContainerFactory.ReservedEnvironmentVariables);
+                    //Create the environment comparer
+                    var comparer = new EnvironmentVariableComparer(ApplicationDockerContainerFactory.ReservedEnvironmentVariables, Logger);
 
                     if (comparer.AreSame(inspection.Config.Env, configuration.EnvironmentVariables))
                     {
