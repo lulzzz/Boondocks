@@ -14,8 +14,13 @@
         public static string[] FormatForDevice(this IEnumerable<EnvironmentVariable> variables)
         {
             return variables
-                .Select(v => $"{v.Name}={v.Value}")
+                .Select(FormatForDevice)
                 .ToArray();
+        }
+
+        public static string FormatForDevice(this EnvironmentVariable variable)
+        {
+            return $"{variable.Name}={variable.Value}";
         }
     }
 }

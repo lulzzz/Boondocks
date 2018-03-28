@@ -69,20 +69,39 @@
 
                 if (container != null)
                 {
-                    //Inspect the container to get its environment variables
-                    var inspection =
-                        await _dockerClient.Containers.InspectContainerAsync(container.ID, cancellationToken);
-
-                    //Create the environment comparer
-                    var comparer = new EnvironmentVariableComparer(ApplicationDockerContainerFactory.ReservedEnvironmentVariables, Logger);
-
-                    if (comparer.AreSame(inspection.Config.Env, configuration.EnvironmentVariables))
+                    try
                     {
-                        Logger.Verbose("The environment variables have stayed the same.");
-                        return false;
-                    }
+                        //Inspect the container to get its environment variables
+                        var containerInspection = await _dockerClient.Containers.InspectContainerAsync(container.ID, cancellationToken);
+                        var imageInspection = await _dockerClient.Images.InspectImageAsync(nextVersion.ImageId, cancellationToken);
 
-                    Logger.Information("The environment variables have changed.");
+                        EnvironmentVariable[] currentVariables = containerInspection.Config.Env
+                            .Select(EnvironnmentVariableParser.Parse)
+                            .ToArray();
+
+                        var parsedInspectionVariables = imageInspection.Config.Env
+                            .Select(EnvironnmentVariableParser.Parse)
+                            .ToArray();
+
+                        //Resolve the potentially new environment variables
+                        EnvironmentVariable[] newVariables = EnvironmentVariableResolver.Resolve(parsedInspectionVariables,
+                                configuration.EnvironmentVariables);
+
+                        //Create the environment comparer
+                        var comparer = new EnvironmentVariableComparer(Logger);
+
+                        if (comparer.AreSame(currentVariables, newVariables))
+                        {
+                            Logger.Verbose("The environment variables have stayed the same.");
+                            return false;
+                        }
+
+                        Logger.Information("The environment variables have changed.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Warning(ex, "An error occured while checking environment variables. Skipping check: {Message}", ex.Message);
+                    }
                 }
             }
 

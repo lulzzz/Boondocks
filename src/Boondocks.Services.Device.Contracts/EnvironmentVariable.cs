@@ -2,6 +2,17 @@
 {
     public class EnvironmentVariable
     {
+
+        public EnvironmentVariable()
+        {
+        }
+
+        public EnvironmentVariable(string name, string value)
+        {
+            Name = name;
+            Value = value;
+        }
+
         /// <summary>
         ///     The name of the environment variable.
         /// </summary>

@@ -12,17 +12,6 @@
     /// </summary>
     public class ApplicationDockerContainerFactory
     {
-        public static readonly IList<string> ReservedEnvironmentVariables;
-
-        static ApplicationDockerContainerFactory()
-        {
-            //TODO: Add reserved environment variables as we start using them.
-
-            ReservedEnvironmentVariables = new List<string>()
-            {
-            }.AsReadOnly();
-        }
-
         public async Task<CreateContainerResponse> CreateContainerAsync(
             IDockerClient dockerClient, 
             string imageId, 
