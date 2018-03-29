@@ -18,7 +18,7 @@ using Boondocks.Base.Auth;
 namespace Boondocks.Device.WebApi
 {
     // Configures the HTTP request pipeline and bootstraps the NetFusion 
-    // application.
+    // application container.
     public class Startup
     {
         private readonly IConfiguration _configuration;
@@ -34,28 +34,34 @@ namespace Boondocks.Device.WebApi
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+
+            // Required by Boondocks.Base.Auth to allow access to the current HTTP Context.
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+            // Support REST/HAL based API responses.
             services.AddMvc(options => {
                 options.UseHalFormatter();
             });
 
             var deviceAuthOptions = _configuration.GetDeviceOptions();
 
+            // Create policy that will require access to all controllers to be authenticated.
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(
-                   "RequireAuthenticatedUser",                  
+                   "RequireAuthenticatedCaller",                  
                    policyBuilder => {
                        policyBuilder.RequireAuthenticatedUser();
                    });
             });
-            
-           services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+           
+            // Add authentication handler that will verify the caller as a valid signed device token.
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddDeviceTokenAuth(deviceAuthOptions);
 
-             services.AddMvc(options => {
-                options.Filters.Add(new AuthorizeFilter("RequireAuthenticatedUser"));
+            // Add filter to request pipeline containing policy,
+            services.AddMvc(options => {
+                options.Filters.Add(new AuthorizeFilter("RequireAuthenticatedCaller"));
             });
 
             // Configure NetFusion Application Container
@@ -69,27 +75,26 @@ namespace Boondocks.Device.WebApi
         public void Configure(IApplicationBuilder app, IHostingEnvironment env,
             IApplicationLifetime applicationLifetime)
         { 
-
             // This registers a method to be called when the Web Application is stopped.
             // In this case, we want to delegate to the NetFusion AppContainer so it can
             // safely stopped.
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
 
-
-            // Inserts the filter to make sure all HTTP requests are authenticated.
-            app.UseAuthentication();
-
             if (env.IsDevelopment())
             {
-                app.UseCors(builder => builder.WithOrigins("http://localhost:4200")
-                    .AllowAnyMethod()
-                    .AllowAnyHeader());
-                    
+                string viewerUrl = _configuration.GetValue<string>("Startup:Netfusion:ViewerUrl");
+                if (!string.IsNullOrWhiteSpace(viewerUrl))
+                {
+                    app.UseCors(builder => builder.WithOrigins(viewerUrl)
+                   .AllowAnyMethod()
+                   .AllowAnyHeader());
+                }
+
                 app.UseDeveloperExceptionPage();
                 app.UseCompositeQuerying();
             }
 
-            // Adds MVC components to the pipe-line.  Common ASP.NET Core call.
+            app.UseAuthentication();
             app.UseMvc();
         }
 

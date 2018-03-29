@@ -21,7 +21,8 @@ namespace Boondocks.Api.WebApi.Bootstrap
             // to the .NET core classes used to discover/probe for assemblies.
             var typeResolver = new TypeResolver(
                 "Boondocks.Auth.WebApi", 
-                "Boondocks.Auth.*"); 
+                "Boondocks.Auth.*",
+                "Boondocks.Base.*"); 
 
             // The following configures the NetFusion AppContainer. 
             AppContainer.Create(typeResolver)

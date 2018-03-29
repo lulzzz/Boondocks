@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using Boondocks.Base.Auth.Core;
-using Microsoft.AspNetCore.Http;
 using NetFusion.Bootstrap.Plugins;
 
 namespace Boondocks.Base.Auth.Modules
@@ -12,11 +11,6 @@ namespace Boondocks.Base.Auth.Modules
     {
         public override void RegisterDefaultComponents(ContainerBuilder builder)
         {
-            // Allows access to the current HTTP Context
-            builder.RegisterType<HttpContextAccessor>()
-                .As<IHttpContextAccessor>()
-                .SingleInstance();
-
             // Register repository responsible for querying DeviceKeys.
             builder.RegisterType<DeviceKeyAuthRepository>()
                 .As<IDeviceKeyAuthRepository>()

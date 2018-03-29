@@ -6,9 +6,8 @@ using NetFusion.Bootstrap.Configuration;
 
 namespace Boondocks.Device.WebApi
 {
-    // Setup configuration and logging then invokes the application 
-    // Startup class which configures the HTTP Request pipeline and
-    // the NetFusion application-container. 
+    // Initializes the application's configuration and logging then delegates 
+    // to the Startup class to initialize HTTP pipeline related settings.
     public class Program
     {
         public static void Main(string[] args)
@@ -19,36 +18,50 @@ namespace Boondocks.Device.WebApi
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, configBuilder) => SetupConfiguration(context, args, configBuilder))
-                .ConfigureLogging(SetupLogging)                
+                .ConfigureLogging(SetupLogging)
                 .UseStartup<Startup>()
                 .Build();
 
-        // Configure application configuration providers.  When running within Docker,
-        // the configuration settings will be read from environment variables.
         private static void SetupConfiguration(
-            WebHostBuilderContext context, 
+            WebHostBuilderContext context,
             string[] args,
             IConfigurationBuilder configBuilder)
         {
             // Settings contained within the appsettings.json file are only to be used
             // as a developer convenience.  In other environments, the settings are to 
-            // be specified using docker environment variables.
+            // be specified using environment variables.
             if (EnvironmentConfig.IsDevelopment)
             {
                 configBuilder.AddDefaultAppSettings();
             }
- 
+
             configBuilder.AddEnvironmentVariables();
             configBuilder.AddCommandLine(args);
         }
 
-        // Configure logging for the service.  TODO:  Add additional logger once we
-        // have decided which one will be used.
-        private static void SetupLogging(ILoggingBuilder loggingBuilder)
+        private static void SetupLogging(WebHostBuilderContext context, ILoggingBuilder loggingBuilder)
         {
-            loggingBuilder.SetMinimumLevel(LogLevel.Trace);
-            loggingBuilder.AddDebug().SetMinimumLevel(LogLevel.Trace);
-            loggingBuilder.AddConsole().SetMinimumLevel(LogLevel.Trace);
+            var minLogLevel = GetMinLogLevel(context);
+
+            loggingBuilder.ClearProviders()
+                .SetMinimumLevel(minLogLevel)
+                .AddDebug().SetMinimumLevel(minLogLevel)
+                .AddConsole().SetMinimumLevel(minLogLevel);
         }
+
+        // Determines the minimum log level that should be used.  First a configuration value used to specify the 
+        // minimum log level is checked.  If present, it will be used.  If not found, the minimum log level based 
+        // on the application's execution environment is used.
+        private static LogLevel GetMinLogLevel(WebHostBuilderContext context)
+        {
+            return context.Configuration.GetValue<LogLevel?>("Logging:MinLogLevel")
+                ?? EnvironmentMinLogLevel;
+        }
+
+        private static LogLevel EnvironmentMinLogLevel =>
+            EnvironmentConfig.IsDevelopment ? LogLevel.Trace
+                : EnvironmentConfig.IsTest || EnvironmentConfig.IsStaging ? LogLevel.Debug
+                : EnvironmentConfig.IsProduction ? LogLevel.Warning
+                : LogLevel.Information;
     }
 }

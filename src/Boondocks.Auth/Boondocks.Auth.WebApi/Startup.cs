@@ -13,7 +13,7 @@ using System;
 namespace Boondocks.Auth.WebApi
 {
     // Configures the HTTP request pipeline and bootstraps the NetFusion 
-    // application.
+    // application container.
     public class Startup
     {
         private readonly IConfiguration _configuration;
@@ -25,11 +25,11 @@ namespace Boondocks.Auth.WebApi
             _loggerFactory = loggingFactory;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
 
+            // Support REST/HAL based API responses.
             services.AddMvc(options => {
                 options.UseHalFormatter();
             });
@@ -41,11 +41,9 @@ namespace Boondocks.Auth.WebApi
             return new AutofacServiceProvider(AppContainer.Instance.Services);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env,
             IApplicationLifetime applicationLifetime)
         { 
-
             // This registers a method to be called when the Web Application is stopped.
             // In this case, we want to delegate to the NetFusion AppContainer so it can
             // safely stopped.
@@ -53,19 +51,19 @@ namespace Boondocks.Auth.WebApi
 
             if (env.IsDevelopment())
             {
-                app.UseCors(builder => builder.WithOrigins("http://localhost:4200")
-                    .AllowAnyMethod()
-                    .AllowAnyHeader());
-                    
+                string viewerUrl = _configuration.GetValue<string>("Startup:Netfusion:ViewerUrl");
+                if (! string.IsNullOrWhiteSpace(viewerUrl))
+                {
+                    app.UseCors(builder => builder.WithOrigins(viewerUrl)
+                   .AllowAnyMethod()
+                   .AllowAnyHeader());
+                }
+
                 app.UseDeveloperExceptionPage();
                 app.UseCompositeQuerying();
-
             }
 
-            // Inserts the filter to make sure all HTTP requests are authenticated.
             app.UseAuthentication();
-
-            // Adds MVC components to the pipe-line.  Common ASP.NET Core call.
             app.UseMvc();
         }
 
