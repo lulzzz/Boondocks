@@ -1,9 +1,12 @@
 using Boondocks.Base.Auth;
 using Boondocks.Device.Api.Models;
 using Boondocks.Device.Api.Queries;
+using Boondocks.Device.Api.Resources;
 using Boondocks.Device.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using NetFusion.Messaging;
+using NetFusion.Rest.Common;
+using NetFusion.Rest.Server.Hal;
 using NetFusion.Web.Mvc.Metadata;
 using System;
 using System.Threading.Tasks;
@@ -27,40 +30,60 @@ namespace Boondocks.Device.WebApi.Controllers
         }
 
         [HttpGet("configurations"), 
-            ActionMeta(nameof(DeviceConfiguration))]
-        public Task<DeviceConfiguration> GetConfiguration()
+            ActionMeta(nameof(DeviceConfiguration)),
+            Produces(typeof(DeviceConfigResource))]
+        public async Task<IActionResult> GetConfiguration()
         {
-            var query = new GetDeviceConfiguration(_context.DeviceId);
-            return _messagingSrv.DispatchAsync(query);
+            DeviceConfiguration config = await _messagingSrv.DispatchAsync(new GetDeviceConfiguration(_context.DeviceId));
+            var configResource = new DeviceConfigResource {
+                DeviceId = _context.DeviceId,
+                RegistryName = config.Registry.RegistryName
+            };
+
+            configResource.Embed(AppVersionResource.FromVersionRef(config.Registry.ApplicationVersion), "app-version");
+            configResource.Embed(AgentVersionResource.FromVersionRef(config.Registry.AgentVersion), "agent-version");
+
+            return Ok(configResource);
         }
 
         [HttpGet("images/applications/{id}/download"), 
             ActionMeta(nameof(GetAppDownloadInfo)),
-            Produces(typeof(ImageDownloadModel))]
+            Produces(typeof(AppVersionResource))]
         public async Task<IActionResult> GetAppDownloadInfo(Guid id)
         {
-            var imageInfo = await _messagingSrv.DispatchAsync(new GetApplicationImageInfo(id));
-
-            // if (imageInfo.NoResult)
-            // {
-            //     return NotFound();
-            // }
-
-            return Ok(imageInfo);
+            IVersionReference versionRef = await _messagingSrv.DispatchAsync(new GetApplicationImageInfo(id));
+            return Ok(AppVersionResource.FromVersionRef(versionRef));
         }
 
+        #pragma warning disable CS4014
         [HttpGet(template: "images/agents/{id}/download"), 
-            ActionMeta(nameof(GetAgentDownloadInfo))]
+            ActionMeta(nameof(GetAgentDownloadInfo)),
+            Produces(typeof(AgentVersionResource))]
         public async Task<IActionResult> GetAgentDownloadInfo(Guid id)
         {
-            var imageInfo = await _messagingSrv.DispatchAsync(new GetAgentImageInfo(id));
+            IVersionReference versionRef = await _messagingSrv.DispatchAsync(new GetAgentImageInfo(id));
+            return Ok(AgentVersionResource.FromVersionRef(versionRef));
+        }
 
-            // if (imageInfo.NoResult)
-            // {
-            //     return NotFound();
-            // }
+        public class DeviceConfigurationRelations : HalResourceMap
+        {
+            public override void OnBuildResourceMap()
+            {
+                Map<DeviceConfigResource>()
+                    .LinkMeta<DeviceConfigurationController>(meta => {
+                        meta.Url(RelationTypes.Self, (c, r) => c.GetConfiguration());
+                    });
 
-            return Ok(imageInfo);
+                Map<AppVersionResource>()
+                    .LinkMeta<DeviceConfigurationController>(meta => {
+                        meta.Url(RelationTypes.Self, (c, r) => c.GetAppDownloadInfo(r.Id));
+                    });
+
+                Map<AgentVersionResource>()
+                    .LinkMeta<DeviceConfigurationController>(meta => {
+                        meta.Url(RelationTypes.Self, (c, r) => c.GetAgentDownloadInfo(r.Id));
+                    });
+            }
         }
 
     }

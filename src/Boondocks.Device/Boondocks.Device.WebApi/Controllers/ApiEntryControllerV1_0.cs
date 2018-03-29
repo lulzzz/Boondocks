@@ -4,6 +4,7 @@ using Boondocks.Device.Api.Models;
 using Boondocks.Device.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NetFusion.Rest.Common;
 using NetFusion.Rest.Resources.Hal;
 using NetFusion.Rest.Server.Hal;
 
@@ -47,7 +48,7 @@ namespace Boondocks.Device.WebApi.Controllers
                 .LinkMeta<DeviceConfigurationController>(meta => {
                     meta.UrlTemplate<Guid, Task<IActionResult>>("appInfo", c => c.GetAppDownloadInfo);
                     meta.UrlTemplate<Guid, Task<IActionResult>>("agentInfo", c => c.GetAppDownloadInfo);
-                    meta.UrlTemplate<Task<DeviceConfiguration>>("deviceConfigInfo", c => c.GetConfiguration);
+                    meta.UrlTemplate<Task<IActionResult>>("deviceConfigInfo", c => c.GetConfiguration);
                 })
                 .LinkMeta<HeartbeatController>(meta => {
                     meta.UrlTemplate<DeviceHeartbeatModel, Task<HeartbeatResponseModel>>("recordHeartbeat", c => c.RecordHeartbeat);

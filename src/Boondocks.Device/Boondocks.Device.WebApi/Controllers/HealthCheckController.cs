@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Boondocks.Device.WebApi.Controllers
 {
-    [Route("api/v1/boondocks/device/healthcheck")]
+    [Route("v1.0/device/healthchecks")]
     [AllowAnonymous]
     public class HealthCheckController : Controller
     {

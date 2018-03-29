@@ -61,7 +61,7 @@ namespace Boondocks.Device.App.Ports
 
         private async Task<RegistryEntry> GetRegistryEntry(DeviceConfiguration configuration)
         {
-            RegistryEntry registry = new RegistryEntry { Registry = _registrySettings.Host };
+            RegistryEntry registry = new RegistryEntry { RegistryName = _registrySettings.Host };
 
             if (configuration.ApplicationVersionId != null)
             {
