@@ -96,8 +96,6 @@ namespace Boondocks.Device.WebApi
                 app.UseDeveloperExceptionPage();
                 app.UseCompositeQuerying();
             }
-
-
         }
 
         private void OnShutdown()

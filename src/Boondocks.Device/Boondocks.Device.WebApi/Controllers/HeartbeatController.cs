@@ -3,11 +3,13 @@ using Boondocks.Device.Api.Commands;
 using Boondocks.Device.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using NetFusion.Messaging;
+using NetFusion.Web.Mvc.Metadata;
 using System.Threading.Tasks;
 
 namespace Boondocks.Device.WebApi.Controllers
 {
-    [Route("api/v1/boondocks/device/heartbeat")]
+    [Route("v1.0/device/heartbeats"),
+        GroupMeta(nameof(HeartbeatController))]
     public class HeartbeatController : Controller
     {
         private readonly IDeviceContext _context;
@@ -27,8 +29,8 @@ namespace Boondocks.Device.WebApi.Controllers
         /// </summary>
         /// <param name="model">The posted model containing the updated heartbeat information.</param>
         /// <returns>Model</returns>
-        [HttpPost]
-        public async Task<HeartbeatResponseModel> UpdateDeviceHeartbeat([FromBody]DeviceHeartbeatModel model)
+        [HttpPost, ActionMeta(nameof(RecordHeartbeat))]
+        public async Task<HeartbeatResponseModel> RecordHeartbeat([FromBody]DeviceHeartbeatModel model)
         {
             var command = HeartbeatReceived.FromDevice(_context.DeviceId, model);
             var deviceVersion = await _messagingSrv.SendAsync(command);

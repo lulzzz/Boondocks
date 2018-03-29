@@ -5,12 +5,14 @@ using Boondocks.Device.Domain.Entities;
 using Boondocks.Device.Domain.Repositories;
 using Dapper;
 using Dapper.Contrib.Extensions;
+using NetFusion.Messaging;
 using System;
 using System.Threading.Tasks;
 
 namespace Boondocks.Device.Infra.Repositories
 {
-    public class ApplicationRepository : IApplicationRepository
+    public class ApplicationRepository : IApplicationRepository,
+        IQueryConsumer
     {
         private readonly IRepositoryContext<DeviceDb> _context;
     

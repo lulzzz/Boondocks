@@ -3,6 +3,7 @@ using Boondocks.Device.Api.Commands;
 using Boondocks.Device.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using NetFusion.Messaging;
+using NetFusion.Web.Mvc.Metadata;
 using System.Threading.Tasks;
 
 namespace Boondocks.Device.WebApi.Controllers
@@ -10,7 +11,8 @@ namespace Boondocks.Device.WebApi.Controllers
     /// <summary>
     /// Controller for recording and purging device logs.
     /// </summary>
-    [Route("api/v1/boondocks/device/logs")]
+    [Route("v1.0/device/logs"),
+        GroupMeta(nameof(DeviceConfigurationController))]
     public class LogEventController : Controller
     {
         private readonly IDeviceContext _context;
@@ -28,7 +30,8 @@ namespace Boondocks.Device.WebApi.Controllers
         /// Allows current requesting device to record a set of logs.
         /// </summary>
         /// <param name="logEvents">The logs to be saved.</param>
-        [HttpPost]
+        [HttpPost,
+            ActionMeta(nameof(RecordLogEvent))]
         public Task RecordLogEvent([FromBody]LogEventsModel logEvents)
         {
             var command = LogEventReceived.HavingDetails(_context.DeviceId, logEvents);
@@ -40,7 +43,8 @@ namespace Boondocks.Device.WebApi.Controllers
         /// record a new set of logs.
         /// </summary>
         /// <param name="logEvents">The received log events.</param>
-        [HttpPost("purge")]
+        [HttpPost("purge"),
+             ActionMeta(nameof(PurgeAndRecordLogEvent))]
         public Task PurgeAndRecordLogEvent([FromBody]LogEventsModel logEvents)
         {
             var command = LogEventReceived.Purge(_context.DeviceId);
