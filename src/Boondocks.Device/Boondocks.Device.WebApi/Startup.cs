@@ -80,6 +80,9 @@ namespace Boondocks.Device.WebApi
             // safely stopped.
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
 
+            app.UseAuthentication();
+            app.UseMvc();
+
             if (env.IsDevelopment())
             {
                 string viewerUrl = _configuration.GetValue<string>("Startup:Netfusion:ViewerUrl");
@@ -94,8 +97,7 @@ namespace Boondocks.Device.WebApi
                 app.UseCompositeQuerying();
             }
 
-            app.UseAuthentication();
-            app.UseMvc();
+
         }
 
         private void OnShutdown()

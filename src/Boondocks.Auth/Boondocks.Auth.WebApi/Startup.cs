@@ -49,6 +49,9 @@ namespace Boondocks.Auth.WebApi
             // safely stopped.
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
 
+            app.UseAuthentication();
+            app.UseMvc();
+
             if (env.IsDevelopment())
             {
                 string viewerUrl = _configuration.GetValue<string>("Startup:Netfusion:ViewerUrl");
@@ -62,9 +65,6 @@ namespace Boondocks.Auth.WebApi
                 app.UseDeveloperExceptionPage();
                 app.UseCompositeQuerying();
             }
-
-            app.UseAuthentication();
-            app.UseMvc();
         }
 
         private void OnShutdown()
