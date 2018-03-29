@@ -1,7 +1,7 @@
 using System;
-using NetFusion.Rest.Resources.Hal;
+using NetFusion.Rest.Client.Resources;
 
-namespace Boondocks.Device.Api.Resources
+namespace Boondocks.Device.Client.Resource
 {
     public class DeviceConfigResource : HalResource
     {
