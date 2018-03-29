@@ -20,6 +20,7 @@ services:
     volumes: 
       - ./content/certs:/certs
     environment:
+      - ASPNETCORE_ENVIRONMENT=DEVELOPMENT
       - boondocks__auth__jwt__certificateFilePath=/certs/auth-private.pfx
       - boondocks__auth__jwt__issuer="boondocks-auth-api" 
       - boondocks__auth__jwt__audience="boondocks-registry"
@@ -36,6 +37,7 @@ services:
       dockerfile: Boondocks-Device.Dockerfile
     image: boondocks-device-api
     environment:
+      - ASPNETCORE_ENVIRONMENT=DEVELOPMENT
       - boondocks__registry__host="http://registry.captiveaire.com"
       - boondocks__connections__device__connectionString=Server=devdb.captiveaire.com;Database=Boondocks;User Id=boondocks;Password=ak*7sjfgum;
       - boondocks__connections__auth__connectionString=Server=devdb.captiveaire.com;Database=Boondocks;User Id=boondocks;Password=ak*7sjfgum;

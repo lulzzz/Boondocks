@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Boondocks.Auth.Domain.Entities
 {
@@ -13,6 +14,11 @@ namespace Boondocks.Auth.Domain.Entities
 
         // The name identifying the service-API requesting authentication token.
         public string RequestingApi { get; private set; }
+
+        // Values used by provider registered for requesting api to authenticate.
+        // NOTE:  Marking this as ignored so there is no chance of it ever being logged
+        // unless explicitly by the developer.
+        [JsonIgnore]
         public IDictionary<string, string> Credentials { get; private set; }
 
         // Optional information about the resource to be granted access.
